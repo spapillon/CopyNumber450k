@@ -1,3 +1,8 @@
 Some notes:
 
 - I need to correct for outliers in the model matrix. Could get potential aberrant normalized quantile distributions otherwise
+
+Questions:
+
+- JP, I usually tend to remove probes which measure a SNP or contain one (a total of 89,678 probes).  Should this be done pre-normalization or
+	will the effect be minimal?
