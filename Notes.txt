@@ -1,0 +1,3 @@
+Some notes:
+
+- I need to correct for outliers in the model matrix. Could get potential aberrant normalized quantile distributions otherwise
