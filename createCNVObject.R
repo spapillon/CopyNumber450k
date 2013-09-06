@@ -7,8 +7,8 @@
 createCNVObject <- function(cnMatrix, phenotype, good_probes) {
 	library(DNAcopy)
 	cnMatrix <- cnMatrix[good_probes, ]
-	control_medians <- rowMeans(cnMatrix[, phenotype == "CONTROL"])
-	cases_log2 <- log2(cnMatrix[, phenotype != "CONTROL"] / control_medians)
+	control_medians <- rowMeans(cnMatrix[, phenotype == "control"])
+	cases_log2 <- log2(cnMatrix[, phenotype != "control"] / control_medians)
 	CNA.object <- CNA(cases_log2, ordered(site_annotation$CHR)[usable_probes], as.numeric(site_annotation$MAPINFO)[usable_probes], data.type="logratio" )
 	
 	smoothed.CNA.object <- smooth.CNA(CNA.object)
