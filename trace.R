@@ -6,11 +6,13 @@
 
 # load everything (RGSet)
 library(minfi)
-source('formatCNVobject.R')
-source('extractFromRGSet450k.R')
-source('FunNormCN450k.R')
+source('~/git/CopyNumber450k/formatCNVobject.R')
+source('~/git/CopyNumber450k/extractFromRGSet450k.R')
+source('~/git/CopyNumber450k/FunNormCN450k.R')
+source('~/git/CopyNumber450k/createCNVObject.R')
 
-path <- '~/Documents/iChange/data_ETMR'
+
+path <- '~/Documents/iChange/data_GBM'
 RGset <- read.450k.exp(base = path, targets = read.450k.sheet(path))
 
 # normalize (JP's new thing)
@@ -48,7 +50,7 @@ good_probes <- usable_probes & non_snp_probes
 rm(usable_probes, non_snp_probes)
 
 # log2
-CNVobject <- createCNVObject.R(cnMatrix, phenotype, good_probes)
+CNVobject <- createCNVObject(cnMatrix, phenotype, good_probes)
 
 
 # segmentation
