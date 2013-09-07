@@ -51,5 +51,6 @@ formatCNVObject <- function(CNAobject, sample_intensity, control_intensity, site
 				message(paste("Processed", names(segments_per_sample)[i]))
 			return(result)
 		})
+	names(x) <- names(CNVobject)
 	return(x)
 }
