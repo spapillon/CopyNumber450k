@@ -15,11 +15,13 @@ subgroupDifferenceCNV <- function(CNVformat, filter, subgroups, pheno)
 	group1_CNVs <- intersectCNV(CNVformat[group1], filter[group1], type="gain")
 	group2_CNVs <- intersectCNV(CNVformat[group2], filter[group2], type="gain")
 	gains <- subgroupDifferenceCNVByType(group1_CNVs, group2_CNVs, group1_size, group2_size) 
+	colnames(gains) <- c(subgroups[1], subgroups[2], "pvalue")
 	
 	#Losses
 	group1_CNVs <- intersectCNV(CNVformat[group1], filter[group1], type="loss")
 	group2_CNVs <- intersectCNV(CNVformat[group2], filter[group2], type="loss")
 	losses <- subgroupDifferenceCNVByType(group1_CNVs, group2_CNVs, group1_size, group2_size) 
+	colnames(losses) <- c(subgroups[1], subgroups[2], "pvalue")
 	
 	return(list(gains=gains, losses=losses))
 }
@@ -41,7 +43,6 @@ subgroupDifferenceCNVByType <- function(group1_CNVs, group2_CNVs, group1_size, g
 						pvalue <-  fisher.test(matrix(c(group1_hit, group2_hit, group1_fail , group2_fail), 2))$p.value
 						return(c(group1_hit, group2_hit, pvalue))
 					}))
-	colnames(x) <- c(subgroups[1], subgroups[2], "pvalue")
-	x <- x[order(x[,'pvalue']),]
+	x <- x[order(x[, 3]), ]
 	return(x)
 }
