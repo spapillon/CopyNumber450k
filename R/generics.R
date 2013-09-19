@@ -10,8 +10,8 @@ setGeneric("buildSegments", function(object) standardGeneric("buildSegments"))
 setGeneric("createFilters", function(object,  tick.threshold=50, pvalue.threshold=0.01, breakpoints=c(0,0,0,0)) standardGeneric("createFilters"))
 
 # Workable methods
-setGeneric("findCNV", function(object, CNVs, type) standardGeneric("findCNV"))
-setGeneric("intersectCNV", function(object, sample_indices, type) standardGeneric("intersectCNV"))
+setGeneric("findCNV", function(object, CNVs, type="both") standardGeneric("findCNV"))
+setGeneric("intersectCNV", function(object, sample_indices, type="both") standardGeneric("intersectCNV"))
 setGeneric("subgroupDifference", function(object, group1_indices, group2_indices) standardGeneric("subgroupDifference"))
 
 # Accession methods
