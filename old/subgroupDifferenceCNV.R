@@ -4,14 +4,8 @@
 ###############################################################################
 
 
-subgroupDifferenceCNV <- function(CNVformat, filter, subgroups, pheno)
+subgroupDifferenceCNV <- function(CNVformat, filter, group1, group2)
 {
-	group1 <- pheno == subgroups[1] & !is.na(pheno)
-	if(subgroups[2] == 'all')
-		group2 <- pheno != subgroups[1] & !is.na(pheno)
-	else
-		group2 <- pheno == subgroups[2] & !is.na(pheno)
-	
 	group1_size <- sum(group1)
 	group2_size <- sum(group2)
 	

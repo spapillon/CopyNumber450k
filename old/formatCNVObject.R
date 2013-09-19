@@ -1,4 +1,4 @@
-formatCNVObject <- function(CNAobject, sample_intensity, control_intensity, site_annotation, p.adjust.method="bonferroni", verbose=T) {
+formatSegments <- function(CNAobject, sample_intensity, control_intensity, site_annotation, p.adjust.method="bonferroni", verbose=T) {
 	all_segments <- CNAobject$output
 	
 	segments_per_sample <- lapply(unique(all_segments$ID), function(sample) all_segments[all_segments$ID == sample,-1])
@@ -17,7 +17,6 @@ formatCNVObject <- function(CNAobject, sample_intensity, control_intensity, site
 	# Ensure row consistent ordering
 	control_intensity <- control_intensity[rownames(sample_intensity), ]
 	site_annotation <- site_annotation[rownames(sample_intensity), ]
-	
 	x <- lapply(1:length(segments_per_sample), function(i) {
 			result <- t(apply(segments_per_sample[[i]], 1, function(cnv) {
 				# Extract probes
@@ -51,6 +50,6 @@ formatCNVObject <- function(CNAobject, sample_intensity, control_intensity, site
 				message(paste("Processed", names(segments_per_sample)[i]))
 			return(result)
 		})
-	names(x) <- names(CNVobject)
+	names(x) <- names(segments_per_sample)
 	return(x)
 }
