@@ -6,3 +6,6 @@ Questions:
 
 - JP, I usually tend to remove probes which measure a SNP or contain one (a total of 89,678 probes).  Should this be done pre-normalization or
 	will the effect be minimal?
+
+
+Answer: They should clearly be removed before
