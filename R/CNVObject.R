@@ -161,7 +161,6 @@ setMethod("intersectCNV", signature("CNVObject"), function(object, sample_indice
 				used_CNVs <- segments_list[[i]][,'logratio'] > 0 & filters_list[[i]]
 			else if(type == "loss")
 				used_CNVs <- segments_list[[i]][,'logratio'] < 0 & filters_list[[i]]
-			browser()
 			unique(unlist(strsplit(x=segments_list[[i]][used_CNVs,'genes'], ";")))
 			}))
 	return(sort(table(x), decreasing=T))
