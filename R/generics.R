@@ -6,7 +6,7 @@
 # Object building
 setGeneric("filterSNPProbes",function(object) standardGeneric("filterSNPProbes"))
 setGeneric("normalize", function(object, sex_cutoff=-3) standardGeneric("normalize"))
-setGeneric("buildSegments", function(object) standardGeneric("buildSegments"))
+setGeneric("buildSegments", function(object, verbose=T) standardGeneric("buildSegments"))
 setGeneric("createFilters", function(object,  tick.threshold=50, pvalue.threshold=0.01, breakpoints=c(0,0,0,0)) standardGeneric("createFilters"))
 
 # Workable methods
