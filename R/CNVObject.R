@@ -58,7 +58,7 @@ setMethod("normalize", signature("CNVObject"), function(object, sex_cutoff) {
 })
 
 
-setMethod("buildSegments", signature("CNVObject"), function(object) {
+setMethod("buildSegments", signature("CNVObject"), function(object, verbose) {
 	if(length(segments(object)) > 0)
 		stop("This object has already been segmented")
 	used_probes <- usedProbes(object)
@@ -76,11 +76,13 @@ setMethod("buildSegments", signature("CNVObject"), function(object) {
 	segment.smoothed.CNA.object <- segment(smoothed.CNA.object, min.width=5 ,verbose=1, nperm=10000, 
 			alpha=0.01, undo.splits="sdundo", undo.SD=2)
 	object@segments <- formatSegments(segment.smoothed.CNA.object, cnMatrix[, sample_groups != "control"], 
-								cnMatrix[, sample_groups == "control"], probesAnnotation(object) )
+								cnMatrix[, sample_groups == "control"], probesAnnotation(object) , verbose=verbose)
 	object
 })
 
 setMethod("createFilters", signature("CNVObject"), function(object, tick.threshold, pvalue.threshold, breakpoints) {
+	if(length(filters(object)) > 0)
+		warning("Previous filters existed, overwriting with new ones")
 	filters <- lapply(segments(object), function(sample) as.numeric(sample[,'num.mark']) >= tick.threshold &
 														as.numeric(sample[,'adjusted.pvalue']) <= pvalue.threshold)
 	object@filters <- filters
@@ -120,7 +122,7 @@ setMethod("plot", signature("CNVObject"), function(x,  y="missing", path=".") {
 	})
 })
 
-setMethod("findCNV", signature("CNVObject"), function(object, CNVs, type="both") {
+setMethod("findCNV", signature("CNVObject"), function(object, CNVs, type) {
 	if(!is.character(CNVs))
 		stop("The CNVs arguments needs to be a vector of characters")
 	segments_list <- segments(object)
@@ -143,22 +145,23 @@ setMethod("findCNV", signature("CNVObject"), function(object, CNVs, type="both")
 	return(x)
 })
 
-setMethod("intersectCNV", signature("CNVObject"), function(object, sample_indices, type="both") {
+setMethod("intersectCNV", signature("CNVObject"), function(object, sample_indices, type) {
 	sample_count <- length(sampleGroups(object))
-	if(is.missing(sample_indices))
+	if(missing(sample_indices))
 		sample_indices <- 1:sample_count
-	if(!is.integer(sample_indices) || length(setdiff(sample_indices, 1:sample_count)) == 0)
+	if(!is.integer(sample_indices) || length(setdiff(sample_indices, 1:sample_count)) > 0)
 		stop("The sample_indices argument needs to be a integer vector with values corresponding to existing samples indices")
 
 	segments_list <- segments(object)[sample_indices]
 	filters_list <- filters(object)[sample_indices]
 	x <- unlist(sapply(1:length(segments_list), function(i) {
 			if(type == "both")
-				used_CNVs <- filter[[i]]
+				used_CNVs <- filters_list[[i]]
 			else if(type == "gain")
 				used_CNVs <- segments_list[[i]][,'logratio'] > 0 & filters_list[[i]]
 			else if(type == "loss")
 				used_CNVs <- segments_list[[i]][,'logratio'] < 0 & filters_list[[i]]
+			browser()
 			unique(unlist(strsplit(x=segments_list[[i]][used_CNVs,'genes'], ";")))
 			}))
 	return(sort(table(x), decreasing=T))
