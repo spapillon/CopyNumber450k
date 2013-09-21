@@ -6,7 +6,7 @@ formatSegments <- function(CNAobject, sample_intensity, control_intensity, site_
 	
 	# Data check
 	if(length(segments_per_sample) != ncol(sample_intensity))
-		stop("The number of samples in CNAobject must match ncols(sample_intensity)")
+		stop("The number of samples in CNAobject must match ncol(sample_intensity)")
 	
 	if(nrow(sample_intensity) != nrow(control_intensity))
 		stop("sample_intensity and control_intensity must have the same number of rows")
@@ -38,18 +38,18 @@ formatSegments <- function(CNAobject, sample_intensity, control_intensity, site_
 				genes <- unique(unlist(strsplit(x=genes, ";")))
 				genes <- paste(genes, collapse=";")
 				l <- as.numeric(cnv['loc.end']) - as.numeric(cnv['loc.start'])
-
 				return(c(cnv, seg.length=l, logratio=segment_log_ratio, pvalue=segment_p_value, genes=genes))
 			}))
-				
 			# pvalue correction for multiple testing
-			result <- as.data.frame(result)
+			result <- as.data.frame(result, stringsAsFactors=F)
 			result$adjusted.pvalue <- p.adjust(result$pvalue, method=p.adjust.method)
-				
+			
+
 			if(verbose)
 				message(paste("Processed", names(segments_per_sample)[i]))
 			return(result)
 		})
+	browser()
 	names(x) <- names(segments_per_sample)
 	return(x)
 }
