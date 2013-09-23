@@ -17,7 +17,7 @@ formatSegments <- function(CNAobject, sample_intensity, control_intensity, site_
 	# Ensure row consistent ordering
 	control_intensity <- control_intensity[rownames(sample_intensity), ]
 	site_annotation <- site_annotation[rownames(sample_intensity), ]
-	x <- lapply(1:length(segments_per_sample), function(i) {
+		x <- lapply(1:length(segments_per_sample), function(i) {
 			result <- t(apply(segments_per_sample[[i]], 1, function(cnv) {
 				# Extract probes
 				probes <- site_annotation$CHR == cnv['chrom'] &
