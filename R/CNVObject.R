@@ -75,6 +75,7 @@ setMethod("buildSegments", signature("CNVObject"), function(object, verbose) {
 	smoothed.CNA.object <- smooth.CNA(CNA.object)
 	segment.smoothed.CNA.object <- segment(smoothed.CNA.object, min.width=5 ,verbose=1, nperm=10000, 
 			alpha=0.01, undo.splits="sdundo", undo.SD=2)
+	browser()
 	object@segments <- formatSegments(segment.smoothed.CNA.object, cnMatrix[, sample_groups != "control"], 
 								cnMatrix[, sample_groups == "control"], probesAnnotation(object) , verbose=verbose)
 	object
@@ -96,13 +97,17 @@ setMethod("show", signature("CNVObject"), function(object) {
 setMethod("plot", signature("CNVObject"), function(x,  y="missing", path=".") {
 	segments_list <- segments(x)
 	filters_list <- filters(x)
-	lapply(1:length(segments_list), function(i) {
+	template_sample <- segments_list[[1]]
+	chromosomes <-  unique(template_sample[,'chrom'])
+	idx <- which(chromosomes %in% c("X", "Y"))
+	chromosomes <- sort(as.numeric(chromosomes[-idx]))
+	site_per_chr <- cumsum(c(0, sapply(chromosomes, function(chr) max(as.numeric(template_sample[template_sample[,'chrom']== chr,'loc.end'])))))
+	offset <- site_per_chr - min(as.numeric(template_sample[template_sample[,'chrom'] == 1, 'loc.start']))
+	Xmax <- max(site_per_chr)
+	
+	lapply((1:length(segments_list)), function(i) {
 		png(paste(path, "/", names(segments_list)[i], ".png", sep=""), height=900, width=1200)				
 		sample <- segments_list[[i]]
-		chromosomes <-  sort(as.numeric(unique(segments_list[[1]][,'chrom'])[-c(23,24)]))
-		site_per_chr <- cumsum(c(0, sapply(chromosomes, function(chr) max(as.numeric(sample[sample[,'chrom']== chr,'loc.end'])))))
-		offset <- site_per_chr - min(as.numeric(sample[sample[,'chrom'] == 1, 'loc.start']))
-		Xmax <- max(site_per_chr)
 		Ymin <- min(as.numeric(sample[,'logratio']))
 		Ymax <- max(as.numeric(sample[,'logratio']))
 		plot(range(0, Xmax), range(Ymin, Ymax), type='n', xaxt='n', xlab="", ylab="", main=names(segments_list[i]))
@@ -116,7 +121,7 @@ setMethod("plot", signature("CNVObject"), function(x,  y="missing", path=".") {
 			starts <- as.numeric(sample[used_segments,'loc.start']) +  offset[j]
 			ends <- as.numeric(sample[used_segments,'loc.end']) + offset[j]
 			y <- as.numeric(sample[used_segments,'logratio'])
-			segments(starts, y, ends, y, col=colors, lwd=2, lty=1)
+			graphics::segments(starts, y, ends, y, col=colors, lwd=2, lty=1)
 		})
 		dev.off()
 	})
@@ -146,10 +151,10 @@ setMethod("findCNV", signature("CNVObject"), function(object, CNVs, type) {
 })
 
 setMethod("intersectCNV", signature("CNVObject"), function(object, sample_indices, type) {
-	sample_count <- length(sampleGroups(object))
+	sample_count <- length(segments(object))
 	if(missing(sample_indices))
 		sample_indices <- 1:sample_count
-	if(!is.integer(sample_indices) || length(setdiff(sample_indices, 1:sample_count)) > 0)
+	if(!is.numeric(sample_indices) || length(setdiff(sample_indices, 1:sample_count)) > 0)
 		stop("The sample_indices argument needs to be a integer vector with values corresponding to existing samples indices")
 
 	segments_list <- segments(object)[sample_indices]
@@ -167,10 +172,10 @@ setMethod("intersectCNV", signature("CNVObject"), function(object, sample_indice
 })
 
 setMethod("subgroupDifference", signature("CNVObject"), function(object, group1_indices, group2_indices) {
-	sample_count <- length(sampleGroups(object))
-	if(!is.integer(group1_indices) || length(setdiff(group1_indices, 1:sample_count)) > 0 )
+	sample_count <- length(segments(object))
+	if(!is.numeric(group1_indices) || length(setdiff(group1_indices, 1:sample_count)) > 0 )
 		stop("The group1_indices argument needs to be a integer vector with values corresponding to existing samples indices")		
-	if(!is.integer(group2_indices) || length(setdiff(sample_indices, 1:sample_count)) > 0 )
+	if(!is.numeric(group2_indices) || length(setdiff(group1_indices, 1:sample_count)) > 0 )
 		stop("The group2_indices argument needs to be a integer vector with values corresponding to existing samples indices")
 	if(length(intersect(group1_indices, group2_indices)) > 0)
 		warning("Some samples are present in both subgroups")
@@ -182,13 +187,13 @@ setMethod("subgroupDifference", signature("CNVObject"), function(object, group1_
 	group1_CNVs <- intersectCNV(object, group1_indices, type="gain")
 	group2_CNVs <- intersectCNV(object, group2_indices, type="gain")
 	gains <- subgroupDifferenceCNVByType(group1_CNVs, group2_CNVs, group1_size, group2_size) 
-	colnames(gains) <- c(subgroups[1], subgroups[2], "pvalue")
+	colnames(gains) <- c("Group 1", "Group 2", "pvalue")
 
 	#Losses
 	group1_CNVs <- intersectCNV(object, group1_indices, type="loss")
 	group2_CNVs <- intersectCNV(object, group2_indices, type="loss")
 	losses <- subgroupDifferenceCNVByType(group1_CNVs, group2_CNVs, group1_size, group2_size) 
-	colnames(losses) <- c(subgroups[1], subgroups[2], "pvalue")
+	colnames(losses) <- c("Group 1", "Group 2", "pvalue")
 
 	return(list(gains=gains, losses=losses))
 })
