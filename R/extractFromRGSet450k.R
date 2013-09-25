@@ -1,21 +1,15 @@
 ########################################################
 ## Data extraction for FunNorm450k
 ## Jean-Philippe Fortin 
-## Aug 30 2013
+## Sept 24 2013
 ## Code in development
 #######################################################
 
 
 
-extractFromRGSet450k <- function(RGSet, file="extractedData.Rda") {
-	extractedData <- returnSummaryRGSet450k(RGSet)
-	save(extractedData, file=file)
-	return(extractedData)
-}
-
 
 ### Main function
-returnSummaryRGSet450k <- function(RGSet){
+extractFromRGSet450k <- function(RGSet){
 	
     library(minfi)
     library(IlluminaHumanMethylation450kmanifest)
@@ -47,6 +41,7 @@ returnSummaryRGSet450k <- function(RGSet){
 	m <- getM(MSet.raw)
 	cn <- meth + unmeth
 
+
 	## Extraction of the controls
 	greenControls=vector("list",length(controlType))
 	redControls=vector("list",length(controlType))
@@ -73,28 +68,7 @@ returnSummaryRGSet450k <- function(RGSet){
     
     numberQuantiles <- 100
 	probs <- 1:numberQuantiles/100
-	
-	
-    greenNegativePooledA <- apply(getGreen(RGSet)[TypeI.Red$AddressA,], 2,
-                               function(x)  quantile(x, probs=probs, na.rm=T)
-                            )
-    greenNegativePooledB <- apply(getGreen(RGSet)[TypeI.Red$AddressB,], 2,
-                               function(x)  quantile(x, probs=probs, na.rm=T)
-                            )
-                            
-
-    
-                            
-    redNegativePooledA   <- apply(getRed(RGSet)[TypeI.Green$AddressA,], 2,
-                               function(x)  quantile(x, probs=probs, na.rm=T)
-                            )
-    redNegativePooledB   <- apply(getRed(RGSet)[TypeI.Green$AddressB,], 2,
-                               function(x)  quantile(x, probs=probs, na.rm=T)
-                            )
-    
-    oobControls <- list(greenNegativePooledA,greenNegativePooledB,redNegativePooledA,redNegativePooledB)         
-    names(oobControls) <- c("oobGreenA","oobGreenB","oobRedA","oobRedB")
-                              
+	                              
 
     greenOOB <- rbind(getGreen(RGSet)[TypeI.Red$AddressA,], getGreen(RGSet)[TypeI.Red$AddressB,])
     redOOB <- rbind(getRed(RGSet)[TypeI.Green$AddressA,], getRed(RGSet)[TypeI.Green$AddressB,])
@@ -126,19 +100,21 @@ returnSummaryRGSet450k <- function(RGSet){
 	chrX <- names(locations[seqnames(locations)=="chrX"])
 	        
 	probesIGrn <- intersect( probesI$Name[probesI$Color=="Grn"], autosomal )
-	 probesIRed   <- intersect( probesI$Name[probesI$Color=="Red"], autosomal )
-	 probesII     <- intersect( probesII$Name, autosomal )
+	probesIRed   <- intersect( probesI$Name[probesI$Color=="Red"], autosomal )
+	probesII     <- intersect( probesII$Name, autosomal )
 
 	uProbeNames <- rownames(beta)
 	uProbesIGrn <- intersect(uProbeNames, probesIGrn)
 	uProbesIRed <- intersect(uProbeNames, probesIRed)
 	uProbesII   <- intersect(uProbeNames, probesII)
+	uProbesX <- intersect(uProbeNames, chrX)
+	uProbesY <-  intersect(uProbeNames, chrY)
 	indicesIGrn <- match(uProbesIGrn, uProbeNames)
 	indicesIRed <- match(uProbesIRed, uProbeNames)
 	indicesII   <- match(uProbesII, uProbeNames)
-    indicesX <- match(chrX, uProbeNames)
-	 indicesY <- match(chrY, uProbeNames)
-	 
+    indicesX <- match(uProbesX, uProbeNames)
+	indicesY <- match(uProbesY, uProbeNames)
+	
 	 indList <- list(indicesIGrn, indicesIRed, indicesII, indicesX, indicesY)
 	 names(indList) <- c("IGrn", "IRed", "II","X","Y")
 	
@@ -187,50 +163,19 @@ returnSummaryRGSet450k <- function(RGSet){
 		    )
 	}
 	
-	### Extraction of the densities
-	mDensities               <- vector("list",5)
-	betaDensities            <- vector("list", 5)
-	methDensities          <- vector("list", 5)
-	unmethDensities        <- vector("list", 5)
-	cnDensities             <- vector("list", 5)
-	names(mDensities)        <- c("IGrn", "IRed", "II","X","Y")
-	names(betaDensities)     <- c("IGrn", "IRed", "II","X","Y")
-	names(methDensities)   <- c("IGrn", "IRed", "II","X","Y")
-	names(unmethDensities) <- c("IGrn", "IRed", "II","X","Y")
-	names(cnDensities) <- c("IGrn", "IRed", "II","X","Y")
+
+     	medianXU <-  unmethQuantiles$X[250,]
+		medianXM <-  methQuantiles$X[250,]
+		medianYU <- unmethQuantiles$Y[250,]
+		medianYM <- methQuantiles$Y[250,]
 
 
-	for (i in 1:5){
-		mDensities[[i]] <- 
-		   apply(m[indList[[i]], ], 2, 
-		       function(x) density(x, na.rm=T, bw=0.1, n = 500)$y
-		    )
-		    
-		betaDensities[[i]] <- 
-		   apply(beta[indList[[i]], ], 2, 
-		       function(x) density(x, na.rm=T, bw=0.01, n = 500, from=0, to=1)$y
-		 )
-		    
-		methDensities[[i]] <- 
-		   apply(meth[indList[[i]], ], 2, 
-		       function(x) quantile(x, probs=probs, na.rm=T)
-		)
-		    
-		unmethDensities[[i]] <- 
-		   apply(unmeth[indList[[i]], ], 2, 
-		       function(x) quantile(x, probs=probs, na.rm=T)
-		)
-		
-		cnDensities[[i]] <- 
-		   apply(cn[indList[[i]], ], 2, 
-		       function(x) quantile(x, probs=probs, na.rm=T)
-		)
-		
-	}
 	
-	XYMedians <- extractXYMedians(RGSet)
-	sampleDistance <- returnSampleDistance(beta , 1000)
-	pcaInfo <- returnPCScores(beta, 5000 )
+	XYMedians <- list(medianXU = medianXU,
+		    medianXM = medianXM,
+		    medianYU = medianYU,
+		    medianYM = medianYM)
+		    
 
 	return(list(
 		mQuantiles = mQuantiles,
@@ -238,17 +183,9 @@ returnSummaryRGSet450k <- function(RGSet){
 		methQuantiles = methQuantiles,
 		unmethQuantiles = unmethQuantiles,
 		cnQuantiles = cnQuantiles,
-		mDensities = mDensities,
-		betaDensities = betaDensities,
-		methDensities = methDensities,
-		unmethDensities = unmethDensities,
-		cnDensities = cnDensities,
 		greenControls = greenControls,
 		redControls = redControls,
-		oobControls = oobControls,
 		XYMedians = XYMedians,
-		sampleDistance = sampleDistance,
-		pcaInfo = pcaInfo,
 		oob = oob))
 }
 
@@ -256,73 +193,14 @@ returnSummaryRGSet450k <- function(RGSet){
 
 
 
-	#### Extraction of the XYMedians for gender prediction
-	extractXYMedians <- function(RGSet){
-		library(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
-		library(minfi)
-		locations <- getLocations(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
-		chrY <- names(locations[seqnames(locations)=="chrY"])
-		chrX <- names(locations[seqnames(locations)=="chrX"])
-		rawSet <- preprocessRaw(RGSet)
-		M <- getMeth(rawSet)
-		U <- getUnmeth(rawSet)
-		MX <- M[match(chrX,rownames(M)),]
-		MY <- M[match(chrY,rownames(M)),]
-		UX  <- U[match(chrX,rownames(U)),]
-		UY  <- U[match(chrY,rownames(U)),]
-		medianXU <-  apply(UX,2,function(x) median(x,na.rm=T))
-		medianXM <-  apply(MX,2,function(x) median(x,na.rm=T))
-		medianYU <- apply(UY,2,function(x) median(x,na.rm=T))
-		medianYM <- apply(MY,2,function(x) median(x,na.rm=T))
-		return(list(medianXU = medianXU,
-		    medianXM = medianXM,
-		    medianYU = medianYU,
-		    medianYM = medianYM)
-		)
-	}
-	
-	
-	### Extraction of the PCs
-	returnPCScores <- function(beta, numPositions, XYExcluded = TRUE){
-		library(matrixStats)
-		library(gmodels)
-		library(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
-		locations <- getLocations(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
-		chrY <- names(locations[seqnames(locations)=="chrY"])
-		chrX <- names(locations[seqnames(locations)=="chrX"])
-		XY <- union(chrY,chrX)
-		
-		if (XYExcluded & sum(is.na(match(XY,rownames(beta))))!=length(XY)  ){
-			b <- beta[-match(XY,rownames(beta)),]
-		} else {
-			b <- beta
-		}
-		o <- order(-rowVars(b))[1:numPositions]
-		pca <- fast.prcomp(t(b[o,]))
-		scores <- pca$x
-		PCpercs <- (pca$sdev^2)/(sum(pca$sdev^2))*100
-		return(list(scores=scores, PCpercs = PCpercs ))
-	}
 
-	### Extraction for mds plot
-	returnSampleDistance <- function(beta, numPositions, XYExcluded = TRUE){
-		library(matrixStats)
-		library(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
-		locations <- getLocations(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
-		chrY <- names(locations[seqnames(locations)=="chrY"])
-		chrX <- names(locations[seqnames(locations)=="chrX"])
-		XY <- union(chrY,chrX)
-		
-		if (XYExcluded & sum(is.na(match(XY,rownames(beta))))!=length(XY)  ){
-			b <- beta[-match(XY,rownames(beta)),]
-		} else {
-			b <- beta
-		}
-		
-		o <- order(-rowVars(b))[1:numPositions]
-		d <- dist(t(b[o,]))
-		return(d)
-	}
+
+
+
+
+
+
+
 	
 
 

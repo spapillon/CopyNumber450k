@@ -203,8 +203,7 @@ buildControlMatrix450k <- function(extractedData) {
 
 ### Return the corrected quantile distributions 
 #################################################################
-## Assuming the phenoMatrix is a model.matrix
-returnFit <- function(model.matrix, quantiles, oobQuantiles, nPCs, method, phenoMatrix = NULL, dyebias = NULL){
+returnFit <- function(model.matrix, quantiles, oobQuantiles, nPCs, dyebias = NULL){
 	library(fda)
 	library(refund)
 	newQuantiles<- quantiles
@@ -214,34 +213,19 @@ returnFit <- function(model.matrix, quantiles, oobQuantiles, nPCs, method, pheno
 	### If correcting for dyebias (e.g. when normalizing directly on the beta-values)
 	if (!is.null(dyebias)){
 		model.matrix <- cbind(model.matrix,dyebias)
-	}
-	
-	# Pointwise estimation (using a separate linear 
-	# regression model at each point)
-	if (method == "pointwise"){
+	}	
 		
 		
-	### The model is: Y(s) = u(s) + XB(s) + UD(s)  + \int_t OA(s,t)dt + error(s)
-		
+	### The model is: Y(s) = u(s)  + UD(s)  + \int_t OA(s,t)dt + error(s)
 	meanFunction <- apply(quantiles,1,mean)
 	res <- quantiles - meanFunction
 	
-	### If a phenotype matrix X is provided (XB(s) estimation)
-	if (!is.null(phenoMatrix)){
-		phenoRes <- res
-		for (i in 1:nrow(quantiles)){
-			model <- lm(res[i,]~phenoMatrix-1)
-			phenoRes[i,] <- model$fitted.values
-		}
-	res <- res - phenoRes	
-	}
 	
 	### Estimation of UD(s)
 	for (i in 1:nrow(quantiles)){
 		model     <- lm(res[i,] ~ model.matrix-1)
 	    res[i,] <- res[i,] - model$fitted.values
 	} 
-	
 
 	### Function-on-function regression on the residuals (Estimation of \int_t OA(s,t)dt )
 	oobQuantiles <- log(oobQuantiles +1)
@@ -255,49 +239,8 @@ returnFit <- function(model.matrix, quantiles, oobQuantiles, nPCs, method, pheno
 	}
 	res <- res - coeff%*%oobQuantiles/nrow(oobQuantiles)
 	
-	if (!is.null(phenoMatrix)){
-		newQuantiles <- meanFunction + phenoRes + res
-	} else {
-		newQuantiles <- meanFunction + res
-	}
-	
-	
-    # Using function-on-scalar regression (can be 
-    # very slow and memory consuming)
-	} else if (method == "fosr") {
-        breaks <- c(seq(0, 0.05, 0.01), 
-                              seq(0.10, 0.90, 0.05), 
-                                  seq(0.95, 1, 0.01))         
-        basis <- create.bspline.basis(
-                               rangeval = c(0,1), 
-                                    norder = 10, 
-                                        breaks = breaks)
-                                        
-        smooth.quantiles <- smooth.basis(
-                                   seq(0, 1, 1/499), 
-                                       quantiles, basis)$fd    
-        fit <- fosr(
-                 fdobj = smooth.quantiles,
-                     X = cbind(1, model.matrix))    
-        mean  <- eval.fd(seq(0, 1, 1/499), fit$fd[1])
-        residuals <- eval.fd(seq(0, 1, 1/499), fit$resid)
-        newQuantiles <- as.vector(mean) + residuals
-        
-        
-    # Using 2-step function-on-scalar 
-    # regression (for fast computation)
-	} else {
-	    fit <- fosr2s(
-	           t(quantiles[-c(1, 500), ]), 
-	               X = model.matrix, 
-	                   argvals = seq(0, 1, 1/499)[ -c(1, 500) ],
-	                        basistype = "bspline",
-	                             nbasis = 30)
-		meanQuantile <- fit$est.func[,1]
-		residuals <- quantiles[-c(1, 500),] - t(fit$yhat)
-		newQuantiles[-c(1, 500), ] <- as.vector(meanQuantile) + residuals
-	}
-	
+
+	newQuantiles <- meanFunction + res
 	
 	newQuantiles[newQuantiles < 0] = 0
 	return(newQuantiles)
@@ -308,22 +251,13 @@ returnFit <- function(model.matrix, quantiles, oobQuantiles, nPCs, method, pheno
 
 
 
-
-
-
-
-
-
-
-
 ### Assumes that the predicted sex is 1 and 2. The sex prediction function used by default respects this
 ### Return the corrected quantile distributions for the X-chromosome intensities
 #################################################################
-returnFitX <- function(model.matrix, quantiles, oobQuantiles, nPCs, method, sex, phenoMatrix = NULL, dyebias = NULL){
+returnFitX <- function(model.matrix, quantiles, oobQuantiles, nPCs, dyebias = NULL){
 	
 	quantiles1 <- quantiles[, sex == 1]
 	model.matrix1 <- model.matrix[sex == 1, ]
-	phenoMatrix1 <- phenoMatrix[sex == 1,]
 	dyebias1 <- dyebias[sex == 1]
 	oobQuantiles1 <- oobQuantiles[,sex==1]
 	
@@ -331,13 +265,10 @@ returnFitX <- function(model.matrix, quantiles, oobQuantiles, nPCs, method, sex,
 	                                   quantiles = quantiles1, 
 	                                     oobQuantiles = oobQuantiles1, 
 	                                       nPCs = nPCs,
-	                                        method = method,
-	                                          phenoMatrix = phenoMatrix1, 
 	                                          dyebias = dyebias1)
 	
 	quantiles2 <- quantiles[, sex == 2]
 	model.matrix2 <- model.matrix[sex == 2, ]
-	phenoMatrix2 <- phenoMatrix[sex == 2,]
 	dyebias2 <- dyebias[sex == 2]
 	oobQuantiles2 <- oobQuantiles[,sex==2]
 	
@@ -345,8 +276,6 @@ returnFitX <- function(model.matrix, quantiles, oobQuantiles, nPCs, method, sex,
 	                                   quantiles = quantiles2, 
 	                                     oobQuantiles = oobQuantiles2, 
 	                                       nPCs = nPCs,
-	                                        method = method,
-	                                          phenoMatrix = phenoMatrix2, 
 	                                          dyebias = dyebias2)
 	
 	newQuantiles <- quantiles
@@ -373,39 +302,35 @@ returnFitX <- function(model.matrix, quantiles, oobQuantiles, nPCs, method, sex,
 
 
 
+
 ### Normalize a matrix of intensities with 
 ### the corrected quantile distributions
 #################################################################
 normalizeByType <- function(intMatrix, newQuantiles){
 	normMatrix <- matrix(NA, nrow(intMatrix), ncol(intMatrix))
 	library(preprocessCore) 
-	x <- seq(0,1,1/499)
-	n <- 1000
-	for (si in 1:ncol(intMatrix)){
-		crtColumn <- intMatrix[ , si]
-		crtColumn.reduced <- crtColumn[!is.na(crtColumn)]
+	n <- 500
+	
+	normMatrix <- sapply(1:ncol(intMatrix), function(i) {
+				crtColumn <- intMatrix[ , i]
+				crtColumn.reduced <- crtColumn[!is.na(crtColumn)]
+				### Generation of the corrected intensities:
+				target <- sapply(1:499, function(j) {
+							start <- newQuantiles[j,i]
+							end  <- newQuantiles[j+1,i]
+							sequence <- seq(start, end,( end-start)/n)[-n]
+							return(sequence)
+				})
 
-		### Simulation of the normalized distribution: 
-		
-		target <- c()
-		for (cell in 1:499){
-			start <- newQuantiles[cell,si]
-			end  <- newQuantiles[cell+1,si]
-			sequence <- seq(start, end,( end-start)/n)[-n]
-			target <- c(target,sequence)
-		 }
-			 
-				
-		### Quantile normalization with the simulated normalized distribution:
-		normMatrix[,si][!is.na(crtColumn)] <- 
-		               normalize.quantiles.use.target(
-		                     matrix(crtColumn.reduced), 
-		                         target)
-		print(paste("Sample ", si ," is normalized"))
-	}
+				target <- as.vector(target)
+				result <- normalize.quantiles.use.target(matrix(crtColumn.reduced), target)
+				print(paste("Sample ", i ," is normalized"))
+				return(result)
+			})
 	return(normMatrix)
 }
 #################################################################
+
 
 
 
@@ -427,9 +352,7 @@ normalizeByType <- function(intMatrix, newQuantiles){
 normalizeFunNorm450kCN <- function(cnMatrix, 
                                                                    extractedData, 
                                                                      nPCs = 4, 
-                                                                         method = "pointwise",
-                                                                             predictedSex, 
-                                                                                 phenoMatrix = NULL ){
+                                                                             predictedSex){
 	
 	
 	oobQuantiles <- extractedData$oob$greenOOB
@@ -456,12 +379,14 @@ normalizeFunNorm450kCN <- function(cnMatrix,
     uProbesIGrn <- intersect(uProbeNames, probesIGrn)
 	uProbesIRed <- intersect(uProbeNames, probesIRed)
 	uProbesII   <- intersect(uProbeNames, probesII)
+	uProbesX  <-  intersect(uProbeNames, chrX)
+	uProbesY  <-  intersect(uProbeNames, chrY)
     
 	II <- match(uProbesII, uProbeNames)
 	IRed <- match(uProbesIRed, uProbeNames)
 	IGreen <- match(uProbesIGrn, uProbeNames)
-	X <- match(chrX, uProbeNames)
-	Y <- match(chrY, uProbeNames)
+	X <- match(uProbesX, uProbeNames)
+	Y <- match(uProbesY, uProbeNames)
 	types <- c("II", "IRed", "IGreen","X","Y")
 	indList <- list(II, IRed, IGreen, X, Y)
 
@@ -489,30 +414,31 @@ normalizeFunNorm450kCN <- function(cnMatrix,
 				                                                quantiles = cnList[[i]], 
 				                                                oobQuantiles = oobQuantiles, 
 				                                                nPCs = nPCs,
-				                                                method = method,
-				                                                phenoMatrix = phenoMatrix,
 				                                                dyebias = dbList[[i]])
 				                                                
 				     print("Normalizing subset of probes...")                                          
 				     cnMatrix[indList[[i]] , ] <- normalizeByType(cnMatrix[indList[[i] ] ,], newQuantiles)
 				}
 			
-				print("Normalization of the X-chromosome...")
-				newQuantiles <- returnFitX(model.matrix = model.matrix,
-				                                             quantiles = cnList[[4]],
-				                                             oobQuantiles = oobQuantiles,
-				                                             nPCs=nPCs, 
-				                                             method = method, 
-				                                             sex = predictedSex,
-				                                             phenoMatrix = phenoMatrix,
-				                                             dyebias = dyebias)
-				                                             
-				cnMatrix[X,] <- normalizeByType(cnMatrix[X,], newQuantiles)
-				
-				print("Quantile normalization of the Y-chromosome...")
-				cnMatrix[Y, predictedSex == 1] <- preprocessCore::normalize.quantiles(cnMatrix[Y, predictedSex == 1])
-				cnMatrix[Y, predictedSex == 2] <- preprocessCore::normalize.quantiles(cnMatrix[Y, predictedSex == 2])
+			    if (length(X)!=0){
+				    print("Normalization of the X-chromosome...")
+					newQuantiles <- returnFitX(model.matrix = model.matrix,
+					                                             quantiles = cnList[[4]],
+					                                             oobQuantiles = oobQuantiles,
+					                                             nPCs=nPCs, 
+					                                             sex = predictedSex,
+					                                             dyebias = dyebias)
+					                                             
+					cnMatrix[X,] <- normalizeByType(cnMatrix[X,], newQuantiles)
+			    }
 	
+				
+				if (length(Y)!=0){
+					print("Quantile normalization of the Y-chromosome...")
+					cnMatrix[Y, predictedSex == 1] <- preprocessCore::normalize.quantiles(cnMatrix[Y, predictedSex == 1])
+					cnMatrix[Y, predictedSex == 2] <- preprocessCore::normalize.quantiles(cnMatrix[Y, predictedSex == 2])
+				}
+					
 	 			print("Normalization done.")
 	 			
 	 			return(cnMatrix)
