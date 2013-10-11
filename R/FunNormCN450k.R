@@ -318,7 +318,7 @@ normalizeFunNorm450kCN <- function(cnMatrix, extractedData, nPCs = 4, predictedS
 	if (length(X)!=0) {
 		print("Normalization of the X-chromosome...")
 		newQuantiles <- returnFitX(model.matrix = model.matrix, quantiles = cnList[[4]],
-				oobQuantiles = oobQuantiles, nPCs=nPCs, sex = predictedSex, dyebias = dyebias)
+				oobQuantiles = oobQuantiles, nPCs=nPCs, dyebias = dyebias)
 					                                             
 		cnMatrix[X,] <- normalizeByType(cnMatrix[X,], newQuantiles)
 	}
