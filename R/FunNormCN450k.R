@@ -206,7 +206,7 @@ returnFit <- function(model.matrix, quantiles, oobQuantiles, nPCs, dyebias = NUL
 ### Assumes that the predicted sex is 1 and 2. The sex prediction function used by default respects this
 ### Return the corrected quantile distributions for the X-chromosome intensities
 #################################################################
-returnFitX <- function(model.matrix, quantiles, oobQuantiles, nPCs, dyebias = NULL) {
+returnFitX <- function(model.matrix, quantiles, oobQuantiles, nPCs, sex, dyebias = NULL) {
 	
 	quantiles1 <- quantiles[, sex == 1]
 	model.matrix1 <- model.matrix[sex == 1, ]
@@ -318,7 +318,7 @@ normalizeFunNorm450kCN <- function(cnMatrix, extractedData, nPCs = 4, predictedS
 	if (length(X)!=0) {
 		print("Normalization of the X-chromosome...")
 		newQuantiles <- returnFitX(model.matrix = model.matrix, quantiles = cnList[[4]],
-				oobQuantiles = oobQuantiles, nPCs=nPCs, dyebias = dyebias)
+				oobQuantiles = oobQuantiles, nPCs=nPCs, sex = predictedSex, dyebias = dyebias)
 					                                             
 		cnMatrix[X,] <- normalizeByType(cnMatrix[X,], newQuantiles)
 	}
