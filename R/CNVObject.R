@@ -53,6 +53,7 @@ setMethod("normalize", signature("CNVObject"), function(object, sex_cutoff) {
 	sexes <- predictSex(extractedData = RGSetSummary(object), cutoff = sex_cutoff)
 	object@intensity_matrix  <- normalizeFunNorm450kCN(cnMatrix = intensityMatrix(object)[usedProbes(object), ], 
 			extractedData = RGSetSummary(object), predictedSex = sexes)
+	usedProbes(object) <- rep(TRUE, sum(usedProbes(object)))
 	object@is_normalized <- TRUE
 	object
 })
