@@ -17,8 +17,9 @@ formatSegments <- function(CNAobject, sample_intensity, control_intensity, site_
 	# Ensure row consistent ordering
 	control_intensity <- control_intensity[rownames(sample_intensity), ]
 	site_annotation <- site_annotation[rownames(sample_intensity), ]
-		x <- lapply(1:length(segments_per_sample), function(i) {
-			result <- t(apply(segments_per_sample[[i]], 1, function(cnv) {
+
+	x <- lapply(1:length(segments_per_sample), function(i) {
+		result <- t(apply(segments_per_sample[[i]], 1, function(cnv) {
 				# Extract probes
 				probes <- site_annotation$CHR == cnv['chrom'] &
 					as.numeric(site_annotation$MAPINFO) >= as.numeric(cnv['loc.start']) &
@@ -41,14 +42,13 @@ formatSegments <- function(CNAobject, sample_intensity, control_intensity, site_
 				return(c(cnv, seg.length=l, logratio=segment_log_ratio, pvalue=segment_p_value, genes=genes))
 			}))
 			# pvalue correction for multiple testing
-			result <- as.data.frame(result, stringsAsFactors=F)
-			result$adjusted.pvalue <- p.adjust(result$pvalue, method=p.adjust.method)
-			
+		result <- as.data.frame(result, stringsAsFactors=F)
+		result$adjusted.pvalue <- p.adjust(result$pvalue, method=p.adjust.method)
 
-			if(verbose)
-				message(paste("Processed", names(segments_per_sample)[i]))
-			return(result)
-		})
+		if(verbose)
+			message(paste("Processed", names(segments_per_sample)[i]))
+		return(result)
+	})
 	browser()
 	names(x) <- names(segments_per_sample)
 	return(x)
