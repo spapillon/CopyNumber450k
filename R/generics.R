@@ -4,7 +4,8 @@
 ###############################################################################
 
 # Object building
-setGeneric("filterSNPProbes",function(object) standardGeneric("filterSNPProbes"))
+setGeneric("filterSNPProbes", function(object) standardGeneric("filterSNPProbes"))
+setGeneric("filterVariantProbes", function(object, variance_filter=0.95) standardGeneric("filterVariantProbes"))
 setGeneric("normalize", function(object, sex_cutoff=-3) standardGeneric("normalize"))
 setGeneric("buildSegments", function(object, verbose=T) standardGeneric("buildSegments"))
 setGeneric("createFilters", function(object,  tick.threshold=50, pvalue.threshold=0.01, breakpoints=c(0,0,0,0)) standardGeneric("createFilters"))

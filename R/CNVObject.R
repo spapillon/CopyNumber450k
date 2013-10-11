@@ -47,6 +47,15 @@ setMethod("filterSNPProbes", signature("CNVObject"), function(object) {
 	object
 })
 
+setMethod("filterVariantProbes", signature("CNVObject"), function(object, variance_centile) {
+	if(!is.numeric(variance_centile) | length(variance_centile) != 1 | variance_centile <= 0 | variance_centile >= 1)
+		stop("The variance_centile argument is the % of the most variant sites you want to remove. It should be ]0,1[")
+	probe_variance <- apply(intensityMatrix(object), 1, var, na.rm=T)
+	threshold <- quantile(probe_variance, probs=variance_centile)
+	usedProbes(object) <- usedProbes(object) & probe_variance < threshold
+	object		
+})
+
 setMethod("normalize", signature("CNVObject"), function(object, sex_cutoff) {
 	if(isNormalized(object))
 		stop("This object has already been normalized.")
