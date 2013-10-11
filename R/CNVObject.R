@@ -51,7 +51,7 @@ setMethod("normalize", signature("CNVObject"), function(object, sex_cutoff) {
 	if(isNormalized(object))
 		stop("This object has already been normalized.")
 	sexes <- predictSex(extractedData = RGSetSummary(object), cutoff = sex_cutoff)
-	object@intensity_matrix  <- normalizeFunNorm450kCN(cnMatrix = intensityMatrix(object), 
+	object@intensity_matrix  <- normalizeFunNorm450kCN(cnMatrix = intensityMatrix(object)[usedProbes(object), ], 
 			extractedData = RGSetSummary(object), predictedSex = sexes)
 	object@is_normalized <- TRUE
 	object
