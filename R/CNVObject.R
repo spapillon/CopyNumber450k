@@ -88,7 +88,7 @@ setMethod("buildSegments", signature("CNVObject"), function(object, verbose) {
 	smoothed.CNA.object <- smooth.CNA(CNA.object)
 	segment.smoothed.CNA.object <- segment(smoothed.CNA.object, min.width=5 ,verbose=1, nperm=10000, 
 			alpha=0.01, undo.splits="sdundo", undo.SD=2)
-	browser()
+
 	object@segments <- formatSegments(segment.smoothed.CNA.object, cnMatrix[, sample_groups != "control"], 
 								cnMatrix[, sample_groups == "control"], probesAnnotation(object) , verbose=verbose)
 	object

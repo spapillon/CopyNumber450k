@@ -49,7 +49,7 @@ formatSegments <- function(CNAobject, sample_intensity, control_intensity, site_
 			message(paste("Processed", names(segments_per_sample)[i]))
 		return(result)
 	})
-	browser()
+
 	names(x) <- names(segments_per_sample)
 	return(x)
 }
