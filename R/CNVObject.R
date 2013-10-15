@@ -48,9 +48,10 @@ setMethod("filterSNPProbes", signature("CNVObject"), function(object) {
 })
 
 setMethod("filterVariantProbes", signature("CNVObject"), function(object, variance_centile) {
-	if(!is.numeric(variance_centile) || length(variance_centile) != 1 || variance_centile <= 0 || variance_centile >= 1)
+	if(!is.numeric(variance_centile) || length(variance_centile) != 1 || variance_centile <= 0 | variance_centile >= 1)
 		stop("The variance_centile argument is the % of the most variant sites you want to remove. It should be ]0,1[")
-	probe_variance <- apply(intensityMatrix(object), 1, var, na.rm=T)
+	controls <- sampleGroups(object) == "control"
+	probe_variance <- apply(intensityMatrix(object)[ , controls], 1, var, na.rm=T)
 	threshold <- quantile(probe_variance, probs=variance_centile)
 	usedProbes(object) <- usedProbes(object) & probe_variance < threshold
 	object		
@@ -88,7 +89,6 @@ setMethod("buildSegments", signature("CNVObject"), function(object, verbose) {
 	smoothed.CNA.object <- smooth.CNA(CNA.object)
 	segment.smoothed.CNA.object <- segment(smoothed.CNA.object, min.width=5 ,verbose=1, nperm=10000, 
 			alpha=0.01, undo.splits="sdundo", undo.SD=2)
-
 	object@segments <- formatSegments(segment.smoothed.CNA.object, cnMatrix[, sample_groups != "control"], 
 								cnMatrix[, sample_groups == "control"], probesAnnotation(object) , verbose=verbose)
 	object
