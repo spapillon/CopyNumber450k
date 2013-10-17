@@ -5,8 +5,7 @@
 ## Code in development
 #####################################################
 
-library(fda)
-library(refund)
+
 library(preprocessCore) 
 library(IlluminaHumanMethylation450kmanifest)
 library(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
@@ -30,203 +29,186 @@ predictSex <- function(extractedData, cutoff){
 }   
 #################################################################
 
-### Build the dye bias covariate with the internal normalization probes
-#################################################################
-buildDyebias <- function(extractedData) {
-	
-	greenControls <- extractedData$greenControls
-    redControls <- extractedData$redControls
-	controlNames <- names(greenControls)           
-	 
-	index <- match(c("NORM_A"), controlNames)
-	normA <- colMeans(redControls[[index]])
-	index <- match(c("NORM_T"), controlNames)
-	normT <- colMeans(redControls[[index]])
-	index <- match(c("NORM_C"), controlNames)
-	normC <- colMeans(greenControls[[index]])
-	index <- match(c("NORM_G"), controlNames)
-	normG <- colMeans(greenControls[[index]])
-    
-    dyebias <- log((normC + normG)/(normA+normT))
-          
-    return(dyebias)
-}
-#################################################################
 
-### Build the matrix of control probes intensities for the
-### correction of the quantile distributions 
+
+
+
+
+ ### Build the matrix of control probes intensities for the
+ ### correction of the quantile distributions 
 #################################################################
 ### Extraction of the Control matrix
 buildControlMatrix450k <- function(extractedData) {
 	 
-    greenControls <- extractedData$greenControls
-    redControls <- extractedData$redControls
-	controlNames <- names(greenControls)                                 	
+     greenControls <- extractedData$greenControls
+     redControls <- extractedData$redControls
+	 controlNames <- names(greenControls)          
+	             	
 	 	
-	# Dye bias: (only for Type II probes)
-	index <- match("NEGATIVE",controlNames)
-	greenControls.current <- greenControls[[index]]
-	redControls.current <- redControls[[index]]
+	# Dye bias:               (only for Type II probes)
+	index     <-match("NEGATIVE",controlNames)
+	greenControls.current   <- greenControls[[index]]
+	redControls.current     <- redControls[[index]]
 	dyebiasMatrix <- log2(greenControls.current / redControls.current)
 	dyebias <- apply(dyebiasMatrix, 2, median)
 
 	# Bisulfite conversion extraction for probe type II:
-	index <- match("BISULFITE CONVERSION II",controlNames)
-	redControls.current <- redControls[[index]]
-	bisulfite2 <- colMeans(redControls.current)
+	index <-    match("BISULFITE CONVERSION II",controlNames)
+	redControls.current     <- redControls[[ index ]]
+	bisulfite2 <- apply(redControls.current, 2, mean)
 	
 	# Bisulfite conversion extraction for probe type I:
-	index <- match("BISULFITE CONVERSION I",controlNames)
-	redControls.current <- redControls[[index]][7:9, ]
-	greenControls.current <- redControls[[index]][1:3, ]
-	bisulfite1 <- colMeans( redControls.current + greenControls.current)
-	
+	index <-    match("BISULFITE CONVERSION I",controlNames)
+	redControls.current     <- redControls[[ index ]][7:9,]
+	greenControls.current     <- redControls[[ index ]][1:3,]
+	bisulfite1 <- apply( redControls.current + greenControls.current, 2 ,mean)
+               	
 	# Staining
-	index <- match("STAINING",controlNames)
-	sg <- greenControls[[index]][3, ] 
-	sr <- redControls[[index]][1, ] 
+	index <-    match("STAINING",controlNames)
+	sg  <- greenControls[[ index ]][3, ] 
+	sr   <- redControls[[ index ]][1, ] 
 
 	# Extension
-	index <- match("EXTENSION",controlNames)
-	redControls.current <- redControls[[index]]
-	greenControls.current <- greenControls[[index]]
-	extr <- redControls.current[1:2, ]
-	extg <- greenControls.current[3:4, ]
+	index <-    match("EXTENSION",controlNames)
+	redControls.current     <- redControls[[index]]
+	greenControls.current     <- greenControls[[index]]
+	extr <- redControls.current[1:2,]
+	extg <- greenControls.current[3:4,]
 
 	# Hybridization should be monitored only in the green channel
-	index <- match("HYBRIDIZATION",controlNames)
-	h1 <- greenControls[[index]][1, ]
-	h2 <- greenControls[[index]][2, ]
-	h3 <- greenControls[[index]][3, ]
+	index <-    match("HYBRIDIZATION",controlNames)
+	h1      <-    greenControls[[index]][1, ]
+	h2     <-     greenControls[[index]][2, ]
+	h3     <-     greenControls[[index]][3, ]
 
 	# Target removal should be low compared to hybridization probes
-	index <- match("TARGET REMOVAL",controlNames)
-	tar <- greenControls[[index]]
+	index <-    match("TARGET REMOVAL",controlNames)
+	tar    <- greenControls[[index]]
 	
 	# Non-polymorphic probes
-	index <- match("NON-POLYMORPHIC",controlNames)
+	index <-    match("NON-POLYMORPHIC",controlNames)
 	npr <- redControls[[index]][1:2, ]
 	npg <- greenControls[[index]][3:4, ]
 	
 	# Specificity II
-	index <- match("SPECIFICITY II",controlNames)
-	greenControls.current <- greenControls[[index]]
-	redControls.current <- redControls[[index]]
-	spec2g <- colMeans(greenControls.current)
-	spec2r <- colMeans(redControls.current)
+	index <-    match("SPECIFICITY II",controlNames)
+	greenControls.current     <- greenControls[[index]]
+	redControls.current     <- redControls[[index]]
+	spec2g      <- apply(greenControls.current, 2, mean)
+	spec2r       <- apply(redControls.current, 2, mean)
 	spec2ratio <- spec2g / spec2r
-	spec2g <- greenControls.current
-	spec2r <- redControls.current
+	spec2g      <- greenControls.current
+	spec2r       <- redControls.current
 	
 	# Specificity I
 	index <- match("SPECIFICITY I", controlNames)
-	greenControls.current <- greenControls[[index]][1:3, ]
-	redControls.current <- redControls[[index]][7:9, ]
-	spec1g <- greenControls.current
-	spec1r <- redControls.current
-	greenControls.current <- greenControls[[index]][1:3, ]
-	redControls.current <- redControls[[index]][1:3, ]
-	ratio1 <- colMeans(redControls.current) / colMeans(greenControls.current)
-	greenControls.current <- greenControls[[index]][7:9, ]
-	redControls.current <- redControls[[index]][7:9, ]
-	ratio2 <- colMeans(greenControls.current) / colMeans(redControls.current)
+	greenControls.current     <- greenControls[[index]][1:3,]
+	redControls.current         <- redControls[[index]][7:9,]
+	spec1g  <- greenControls.current
+	spec1r   <- redControls.current
+	greenControls.current     <- greenControls[[index]][1:3,]
+	redControls.current         <- redControls[[index]][1:3,]
+	ratio1 <- apply(redControls.current, 2, mean) /
+	                   apply(greenControls.current, 2, mean)
+	greenControls.current     <- greenControls[[index]][7:9,]
+	redControls.current         <- redControls[[index]][7:9,]
+	ratio2 <- apply(greenControls.current, 2, mean) / 
+	                  apply(redControls.current, 2, mean)
     spec1ratio <- (ratio1 + ratio2) / 2
 	
 	# Normalization probes:
-	index <- match(c("NORM_A"), controlNames)
-	normA <- colMeans(redControls[[index]])
-	index <- match(c("NORM_T"), controlNames)
-	normT <- colMeans(redControls[[index]])
-	index <- match(c("NORM_C"), controlNames)
-	normC <- colMeans(redControls[[index]])
-	index <- match(c("NORM_G"), controlNames)
-	normG <- colMeans(redControls[[index]])
+	index <-    match(c("NORM_A"), controlNames)
+	normA <-	apply(redControls[[index]], 2, mean)
+	index <-    match(c("NORM_T"), controlNames)
+	normT <-   apply(redControls[[index]], 2, mean)
+	index <-    match(c("NORM_C"), controlNames)
+	normC <-apply(greenControls[[index]], 2, mean)
+	index <-    match(c("NORM_G"), controlNames)
+	normG <- 	apply(greenControls[[index]], 2, mean)
+    
     dyebias2 <- (normC + normG)/(normA+normT)
 	
-  	model.matrix <- cbind(bisulfite1, bisulfite2, t(extg), t(extr), h1, h2,h3, sg, sr, t(npg),
-			t(npr), t(tar), t(spec1g), t(spec1r), t(spec2g), t(spec2r),ratio1,
+  	 model.matrix <- cbind(
+   		    bisulfite1, bisulfite2, t(extg), t(extr), h1, h2,h3, sg, sr, t(npg),
+   			t(npr), t(tar), t(spec1g), t(spec1r), t(spec2g), t(spec2r),ratio1,
    			spec1ratio, spec2ratio, ratio2, normA, normC, normT, normG, dyebias2)
    
-    # Imputation
-    for (colindex in 1:ncol(model.matrix)) {
-    	column <- model.matrix[ ,colindex]
+   
+              
+      oobG <- extractedData$oob$greenOOB
+      oobR <- extractedData$oob$redOOB    
+      model.matrix <- cbind(model.matrix, t(oobG[c(1,50,99),]),oobG[50,]/oobR[50,])
+   
+      # Imputation
+      for (colindex in 1:ncol(model.matrix)){
+      	column <- model.matrix[,colindex]
      	column[is.na(column)]<- mean(column, na.rm=T)
      	model.matrix[ ,colindex] <- column
-	}          
+      }          
            
-    # Scaling   
-    model.matrix <- scale(model.matrix)               
-    return(model.matrix)
+           
+      # Scaling   
+      model.matrix <- scale(model.matrix)   
+      
+      # Fixing outliers 
+      model.matrix[model.matrix>3] <- 3
+      model.matrix[model.matrix<-3] <- -3           
+      return(model.matrix)
 }
 #################################################################
+
+
 
 
 ### Return the corrected quantile distributions 
 #################################################################
-returnFit <- function(model.matrix, quantiles, oobQuantiles, nPCs, dyebias = NULL) {
-	library(fda)
-	library(refund)
-	newQuantiles <- quantiles
-	model.matrix <- prcomp(model.matrix)$x[ ,1:nPCs]
+## Assuming the phenoMatrix is a model.matrix
+returnFit <- function(model.matrix, quantiles, nPCs){
+	quantiles[1,] <- 0
+    quantiles[500,] <- quantiles[499,] + 1000
+	newQuantiles<- quantiles
+	model.matrix <- prcomp(model.matrix)$x[,1:nPCs]
 	#model.matrix <- princomp(model.matrix)$scores[,1:nPCs]
 	
-	### If correcting for dyebias (e.g. when normalizing directly on the beta-values)
-	if (!is.null(dyebias)){
-		model.matrix <- cbind(model.matrix,dyebias)
-	}	
-	
-	### The model is: Y(s) = u(s)  + UD(s)  + \int_t OA(s,t)dt + error(s)
+
 	meanFunction <- apply(quantiles,1,mean)
 	res <- quantiles - meanFunction
 	
+	
 	### Estimation of UD(s)
 	for (i in 1:nrow(quantiles)){
-		model <- lm(res[i, ] ~ model.matrix - 1)
-	    res[i, ] <- res[i, ] - model$fitted.values
+		model     <- lm(res[i,] ~ model.matrix-1)
+	    res[i,] <- res[i,] - model$fitted.values
 	} 
-
-	### Function-on-function regression on the residuals (Estimation of \int_t OA(s,t)dt )
-	oobQuantiles <- log(oobQuantiles + 1)
-	oobQuantiles <- t(scale(t(oobQuantiles),scale=FALSE))
-	coeff <- matrix(0,nrow(quantiles),nrow(oobQuantiles))
-	for (r in 1:nrow(quantiles)){
-		for (s in 1:nrow(oobQuantiles)){
-			model <- lm(res[r, ] ~ oobQuantiles[s, ] - 1)
-			coeff[r,s] <- summary(model)$coeff[1,1]
-		}
-	}
-	res <- res - coeff %*% oobQuantiles / nrow(oobQuantiles)
-	newQuantiles <- meanFunction + res
 	
-	newQuantiles[newQuantiles < 0] <- 0
+	newQuantiles <- meanFunction + res
 	return(newQuantiles)
 }
 #################################################################
 
+
 ### Assumes that the predicted sex is 1 and 2. The sex prediction function used by default respects this
 ### Return the corrected quantile distributions for the X-chromosome intensities
 #################################################################
-returnFitX <- function(model.matrix, quantiles, oobQuantiles, nPCs, sex, dyebias = NULL) {
+returnFitX <- function(model.matrix, quantiles, nPCs, sex){
 	
-	quantiles1 <- quantiles[,sex == 1]
+	quantiles1 <- quantiles[, sex == 1]
 	model.matrix1 <- model.matrix[sex == 1, ]
-	dyebias1 <- dyebias[sex == 1]
-	oobQuantiles1 <- oobQuantiles[ ,sex == 1]
 	
-	newQuantiles1 <- returnFit(model.matrix = model.matrix1, quantiles = quantiles1, 
-			oobQuantiles = oobQuantiles1, nPCs = nPCs, dyebias = dyebias1)
+	newQuantiles1 <- returnFit(model.matrix = model.matrix1,
+	                                   quantiles = quantiles1, 
+	                                       nPCs = nPCs)
 	
-	quantiles2 <- quantiles[ ,sex == 2]
+	quantiles2 <- quantiles[, sex == 2]
 	model.matrix2 <- model.matrix[sex == 2, ]
-	dyebias2 <- dyebias[sex == 2]
-	oobQuantiles2 <- oobQuantiles[ ,sex == 2]
 	
-	newQuantiles2 <- returnFit(model.matrix = model.matrix2, quantiles = quantiles2,
-			oobQuantiles = oobQuantiles2, nPCs = nPCs,dyebias = dyebias2)
+	newQuantiles2 <- returnFit(model.matrix = model.matrix2,
+	                                   quantiles = quantiles2, 
+	                                       nPCs = nPCs)
 	
 	newQuantiles <- quantiles
-	newQuantiles[ ,sex==1] <- newQuantiles1
-	newQuantiles[ ,sex==2] <- newQuantiles2
+	newQuantiles[, sex==1] <- newQuantiles1
+	newQuantiles[, sex==2] <- newQuantiles2
 	
 	return(newQuantiles)
 }
@@ -299,17 +281,18 @@ normalizeFunNorm450kCN <- function(cnMatrix, extractedData, nPCs = 4, predictedS
 			extractedData$cnQuantiles$IGrn, extractedData$cnQuantiles$X,extractedData$cnQuantiles$Y )
 	                                            
 	model.matrix <- buildControlMatrix450k(extractedData)
-	dyebias <- buildDyebias(extractedData)
-	dbList <- list(NULL, NULL, dyebias)
-
+	
+	
 	messages <- c("type II", "type I Green", "type I Red")
 	print("Normalization of the autosomal probes...")
 	for (i in 1:3) {
 		print(paste0("Normalization of the ", messages[i], " probes..."))
 		print("Generating the adjusted quantile distributions...")
 					 
-		newQuantiles <- returnFit(model.matrix = model.matrix, quantiles = cnList[[i]], 
-				oobQuantiles = oobQuantiles, nPCs = nPCs, dyebias = dbList[[i]])
+		newQuantiles <- returnFit(model.matrix = model.matrix, 
+		                            quantiles = cnList[[i]], 
+				                     nPCs = nPCs
+				                 )
 				                                                
 		print("Normalizing subset of probes...")                                          
 		cnMatrix[indList[[i]], ] <- normalizeByType(cnMatrix[indList[[i]], ], newQuantiles)
@@ -318,7 +301,7 @@ normalizeFunNorm450kCN <- function(cnMatrix, extractedData, nPCs = 4, predictedS
 	if (length(X) != 0) {
 		print("Normalization of the X-chromosome...")
 		newQuantiles <- returnFitX(model.matrix = model.matrix, quantiles = cnList[[4]],
-				oobQuantiles = oobQuantiles, nPCs=nPCs, sex = predictedSex, dyebias = dyebias)
+				 nPCs=nPCs, sex = predictedSex)
 					                                             
 		cnMatrix[X, ] <- normalizeByType(cnMatrix[X, ], newQuantiles)
 	}
