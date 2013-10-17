@@ -83,6 +83,9 @@ setMethod("buildSegments", signature("CNVObject"), function(object, verbose) {
 	control_medians <- rowMeans(cnMatrix[, sample_groups == "control"])
 	cases_log2 <- log2(cnMatrix[, sample_groups != "control"] / control_medians)
 
+	if(is.vector(cases_log2))
+		cases_log2 <- as.matrix(cases_lo2)
+
 	require(DNAcopy)
 	CNA.object <- CNA(cases_log2, ordered(annotation$CHR), as.numeric(annotation$MAPINFO),
 			data.type="logratio", sampleid=sample_names)
