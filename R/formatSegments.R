@@ -40,7 +40,7 @@ formatSegments <- function(CNAobject, sample_intensity, control_intensity, site_
 
 				window <- range(c(control_int_sum, sample_sum))
 				title <- paste("chr ", cnv['chrom'], " :  ", cnv['loc.start'], "-", cnv['loc.end'], sep="")
-				hist(control_int_sum, main=title, xlim=window)
+				hist(control_int_sum, main=title, xlim=window, breaks=20)
 				abline(v=sample_sum, lty=3, lwd=2, col="red")				
 									
 				# Extract genes in the segment
