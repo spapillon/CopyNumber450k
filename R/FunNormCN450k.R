@@ -243,11 +243,9 @@ normalizeByType <- function(intMatrix, newQuantiles) {
 #################################################################
 
 ### Main function call for normalization
-### Possibility to protect phenotype data from the normalization
 #################################################################
 normalizeFunNorm450kCN <- function(cnMatrix, extractedData, nPCs = 4, predictedSex) {
-	
-	oobQuantiles <- extractedData$oob$greenOOB
+
 	
 	probesI <- getProbeInfo(IlluminaHumanMethylation450kmanifest, type = "I")
 	probesII <- getProbeInfo(IlluminaHumanMethylation450kmanifest, type = "II")

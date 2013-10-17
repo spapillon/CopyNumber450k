@@ -1,0 +1,85 @@
+######################################################
+## Quantile normalization of the 450k array Copy Number
+## Jean-Philippe Fortin 
+## Oct 17 2013
+## Code in development
+#####################################################
+
+
+library(preprocessCore) 
+library(IlluminaHumanMethylation450kmanifest)
+library(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
+
+
+
+### Plot the gender clusters
+#################################################################
+plotSex <- function(extractedData){
+	plot(log2(extractedData$cnQuantiles$Y[250, ]) - 
+	                   log2(extractedData$cnQuantiles$X[250, ]), rep(0,length(extractedData$cnQuantiles$Y[250, ])))
+}
+
+
+### Predict the sex of the samples
+#################################################################
+predictSex <- function(extractedData, cutoff){
+	diffs <- log2(extractedData$cnQuantiles$Y[250, ]) - 
+	                   log2(extractedData$cnQuantiles$X[250, ])
+	predictedSex <- rep(1, length(extractedData$cnQuantiles$Y[250, ]))
+	predictedSex[which(diffs < cutoff)] <- 2
+	return(predictedSex)
+}   
+
+
+
+
+### Main function call for quantile normalization
+#################################################################
+normalizeFunNorm450kCN <- function(cnMatrix, predictedSex=NULL) {
+	
+	
+	probesI <- getProbeInfo(IlluminaHumanMethylation450kmanifest, type = "I")
+	probesII <- getProbeInfo(IlluminaHumanMethylation450kmanifest, type = "II")
+    
+    ### Chr probes:
+	locations <- getLocations(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
+	autosomal <- names(locations[seqnames(locations) %in% paste0("chr", 1:22)])
+	chrY <- names(locations[seqnames(locations) == "chrY"])
+	chrX <- names(locations[seqnames(locations) == "chrX"])
+    
+    probesIGrn <- intersect(probesI$Name[probesI$Color == "Grn"], autosomal)
+	probesIRed <- intersect(probesI$Name[probesI$Color == "Red"], autosomal)
+	probesII <- intersect(probesII$Name, autosomal)
+    
+    uProbeNames <- rownames(cnMatrix)
+    uProbesIGrn <- intersect(uProbeNames, probesIGrn)
+	uProbesIRed <- intersect(uProbeNames, probesIRed)
+	uProbesII <- intersect(uProbeNames, probesII)
+	uProbesX <- intersect(uProbeNames, chrX)
+	uProbesY <- intersect(uProbeNames, chrY)
+    
+	II <- match(uProbesII, uProbeNames)
+	IRed <- match(uProbesIRed, uProbeNames)
+	IGreen <- match(uProbesIGrn, uProbeNames)
+	X <- match(uProbesX, uProbeNames)
+	Y <- match(uProbesY, uProbeNames)
+ 
+	cnMatrix[II,] <- preprocessCore::normalize.quantiles(cnMatrix[II,])	
+	cnMatrix[IRed,] <- preprocessCore::normalize.quantiles(cnMatrix[IRed,])	
+	cnMatrix[IGreen,] <- preprocessCore::normalize.quantiles(cnMatrix[IGreen,])	
+	if (!is.null(predictedSex)){
+		cnMatrix[Y,predictedSex == 1] <- preprocessCore::normalize.quantiles(cnMatrix[Y,predictedSex == 1])
+	    cnMatrix[Y,predictedSex == 2] <- preprocessCore::normalize.quantiles(cnMatrix[Y,predictedSex == 2])
+		cnMatrix[X,predictedSex == 1] <- preprocessCore::normalize.quantiles(cnMatrix[X,predictedSex == 1])
+		cnMatrix[X,predictedSex == 2] <- preprocessCore::normalize.quantiles(cnMatrix[X,predictedSex == 2])
+	}
+    else {
+    	cnMatrix[Y,] <- preprocessCore::normalize.quantiles(cnMatrix[Y,])
+    	cnMatrix[X,] <- preprocessCore::normalize.quantiles(cnMatrix[X,])
+    }
+	
+	print("Quantile Normalization done.")
+	
+	return(cnMatrix)
+}
+#################################################################
