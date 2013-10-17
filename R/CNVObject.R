@@ -63,7 +63,6 @@ setMethod("normalize", signature("CNVObject"), function(object, sex_cutoff) {
 	sexes <- predictSex(extractedData = RGSetSummary(object), cutoff = sex_cutoff)
 	object@intensity_matrix  <- normalizeFunNorm450kCN(cnMatrix = intensityMatrix(object)[usedProbes(object), ], 
 			extractedData = RGSetSummary(object), predictedSex = sexes)
-	
 	# The returned matrix has dropped the FALSE usedProbes, remove other objects accordingly
 	probesAnnotation(object) <- probesAnnotation(object)[usedProbes(object), ]
 	usedProbes(object) <- rep(TRUE, sum(usedProbes(object)))
@@ -79,16 +78,18 @@ setMethod("buildSegments", signature("CNVObject"), function(object, verbose) {
 	cnMatrix <- intensityMatrix(object)[used_probes, ]
 	annotation <- probesAnnotation(object)[used_probes, ]
 	sample_groups <- sampleGroups(object)
-
+	sample_names <- colnames(cnMatrix)[sample_groups != "control"]
+	
 	control_medians <- rowMeans(cnMatrix[, sample_groups == "control"])
 	cases_log2 <- log2(cnMatrix[, sample_groups != "control"] / control_medians)
 
 	require(DNAcopy)
 	CNA.object <- CNA(cases_log2, ordered(annotation$CHR), as.numeric(annotation$MAPINFO),
-			data.type="logratio", sampleid=colnames(cases_log2))
+			data.type="logratio", sampleid=sample_names)
 	smoothed.CNA.object <- smooth.CNA(CNA.object)
 	segment.smoothed.CNA.object <- segment(smoothed.CNA.object, min.width=5 ,verbose=1, nperm=10000, 
 			alpha=0.01, undo.splits="sdundo", undo.SD=2)
+
 	object@segments <- formatSegments(segment.smoothed.CNA.object, cnMatrix[, sample_groups != "control"], 
 								cnMatrix[, sample_groups == "control"], probesAnnotation(object) , verbose=verbose)
 	object
@@ -225,7 +226,7 @@ setMethod("isNormalized", signature("CNVObject"), function(object) object@is_nor
 setReplaceMethod("probesAnnotation", signature("CNVObject"), function(object, value) {
 	if(!is.data.frame(value))
 		stop("Input parameter needs to be of type data.frame")
-	if(setdiff(c("MAPINFO", "CHR", "Probe_SNPs", "Probe_SNPs_10"), colnames(value)) > 0)
+	if(length(setdiff(c("MAPINFO", "CHR", "Probe_SNPs", "Probe_SNPs_10"), colnames(value))) > 0)
 		stop("Colnames of input parameter needs to contain {\"MAPINFO\", \"CHR\", \"Probe_SNPs\", \"Probe_SNPs_10\"}")
 	object@probe_annotation <- value
 	object
