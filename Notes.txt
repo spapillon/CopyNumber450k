@@ -2,6 +2,8 @@ Some notes:
 
 - I need to correct for outliers in the model matrix. Could get potential aberrant normalized quantile distributions otherwise
 
+DONE in the new normalization. 
+
 Questions:
 
 - JP, I usually tend to remove probes which measure a SNP or contain one (a total of 89,678 probes).  Should this be done pre-normalization or
@@ -9,3 +11,10 @@ Questions:
 
 
 Answer: They should clearly be removed before
+
+
+
+SOME ADDITIONAl NOTES:
+
+- Need to write in the documentation for which scenarios FunNorm is preferable to QuantileNorm, and vice-versa.
+- Need to discuss the predictSex() function in more details and how to use it in the FunNorm and QuantileNorm functions. 
