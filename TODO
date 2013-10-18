@@ -1,1 +1,3 @@
-Consider only same sex individuals in formatSegments to infer distribution
+- Consider only same sex individuals in formatSegments to infer distribution
+- Uniformize the probe annotation (use the one from minfi)
+- Fix the "gene" calling, stop using genes nearby probes and focus on genes overlapping genomic segments.
