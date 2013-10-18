@@ -1,4 +1,4 @@
-formatSegments <- function(CNAobject, sample_intensity, control_intensity, site_annotation, p.adjust.method="bonferroni", verbose=T) {
+formatSegments <- function(CNAobject, sample_intensity, control_intensity, site_annotation, p.adjust.method="bonferroni", verbose=T, plotting=T) {
 	all_segments <- CNAobject$output
 
 	segments_per_sample <- lapply(unique(all_segments$ID), function(sample) all_segments[all_segments$ID == sample,-1])
@@ -21,7 +21,8 @@ formatSegments <- function(CNAobject, sample_intensity, control_intensity, site_
 	site_annotation <- site_annotation[rownames(sample_intensity), ]
 
 	x <- lapply(1:length(segments_per_sample), function(i) {
-				pdf(paste(names(segments_per_sample)[i], ".pdf", sep=""))
+		if(plotting)
+			pdf(paste(names(segments_per_sample)[i], ".pdf", sep=""))
 		result <- t(apply(segments_per_sample[[i]], 1, function(cnv) {
 				# Extract probes
 				probes <- site_annotation$CHR == cnv['chrom'] &
@@ -37,11 +38,13 @@ formatSegments <- function(CNAobject, sample_intensity, control_intensity, site_
 				# Compute p-value (2 sided t-test)
 				z_score <- (sample_sum - control_mean) / control_sd
 				p_value <-  2 * pnorm(-abs(z_score))
-
-				window <- range(c(control_int_sum, sample_sum))
-				title <- paste("chr ", cnv['chrom'], " :  ", cnv['loc.start'], "-", cnv['loc.end'], sep="")
-				hist(control_int_sum, main=title, xlim=window, breaks=20)
-				abline(v=sample_sum, lty=3, lwd=2, col="red")				
+				if(plotting)
+				{
+					window <- range(c(control_int_sum, sample_sum))
+					title <- paste("chr ", cnv['chrom'], " :  ", cnv['loc.start'], "-", cnv['loc.end'], sep="")
+					hist(control_int_sum, main=title, xlim=window, breaks=20)
+					abline(v=sample_sum, lty=3, lwd=2, col="red")
+				}
 									
 				# Extract genes in the segment
 				genes <- as.character(site_annotation$UCSC_RefGene_Name[probes])
@@ -51,7 +54,8 @@ formatSegments <- function(CNAobject, sample_intensity, control_intensity, site_
 				return(c(cnv, seg.length=l, pvalue=p_value, genes=genes, ctrl.mean=control_mean, ctrl.sd=control_sd, sample.value=sample_sum ,z=z_score))
 			}))
 
-		dev.off()
+		if(plotting)
+			dev.off()
 		# pvalue correction for multiple testing
 		result <- as.data.frame(result, stringsAsFactors=F)
 		result$adjusted.pvalue <- p.adjust(result$pvalue, method=p.adjust.method)
