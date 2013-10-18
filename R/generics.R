@@ -6,7 +6,7 @@
 # Object building
 setGeneric("filterSNPProbes", function(object) standardGeneric("filterSNPProbes"))
 setGeneric("filterVariantProbes", function(object, variance_centile=0.95) standardGeneric("filterVariantProbes"))
-setGeneric("normalize", function(object) standardGeneric("normalize"))
+setGeneric("normalize", function(object, type=c("default", "quantile")) standardGeneric("normalize"))
 setGeneric("buildSegments", function(object, verbose=T) standardGeneric("buildSegments"))
 setGeneric("createFilters", function(object,  tick.threshold=10, pvalue.threshold=0.01, breakpoints=c(0,0,0,0)) standardGeneric("createFilters"))
 

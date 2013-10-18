@@ -63,19 +63,27 @@ setMethod("predictSex", signature("CNVObject"), function(object, threshold) {
 	return(predicted_sexes)
 })
 
-setMethod("normalize", signature("CNVObject"), function(object) {
+setMethod("normalize", signature("CNVObject"), function(object, type) {
 	if(isNormalized(object))
 		stop("This object has already been normalized.")
-
-	object@intensity_matrix  <- normalizeFunNorm450kCN(cnMatrix = intensityMatrix(object)[usedProbes(object), ], 
-			extractedData = RGSetSummary(object), predictedSex = sampleSexes(object))
+	if(!type %in% c("default", "quantile"))
+		stop("Valid normalization type are {default, quantile}")
+	
+	method <- match.arg(type)
+	if(method == "default") {
+		object@intensity_matrix  <- normalizeFunNorm450kCN(cnMatrix = intensityMatrix(object)[usedProbes(object), ], 
+				extractedData = RGSetSummary(object), predictedSex = sampleSexes(object))
+	} else if(method == "quantile") {
+		object@intensity_matrix  <- quantileNormalization(cnMatrix = intensityMatrix(object)[usedProbes(object), ], 
+				predictedSex = sampleSexes(object))
+	}
+	
 	# The returned matrix has dropped the FALSE usedProbes, remove other objects accordingly
 	probesAnnotation(object) <- probesAnnotation(object)[usedProbes(object), ]
 	usedProbes(object) <- rep(TRUE, sum(usedProbes(object)))
 	object@is_normalized <- TRUE
 	object
 })
-
 
 setMethod("buildSegments", signature("CNVObject"), function(object, verbose) {
 	if(length(segments(object)) > 0)
