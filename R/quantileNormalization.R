@@ -7,8 +7,7 @@
 
 ### Main function call for quantile normalization
 #################################################################
-normalizeFunNorm450kCN <- function(cnMatrix, predictedSex=NULL) {
-	
+quantileNormalization <- function(cnMatrix, predictedSex=NULL) {
 	
 	probesI <- getProbeInfo(IlluminaHumanMethylation450kmanifest, type = "I")
 	probesII <- getProbeInfo(IlluminaHumanMethylation450kmanifest, type = "II")
