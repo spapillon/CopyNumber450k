@@ -125,8 +125,8 @@ setMethod("plot", signature("CNVObject"), function(x,  y="missing", path=".") {
 	lapply((1:length(segments_list)), function(i) {
 		png(paste(path, "/", names(segments_list)[i], ".png", sep=""), height=900, width=1200)				
 		sample <- segments_list[[i]]
-		Ymin <- min(as.numeric(sample[,'logratio']))
-		Ymax <- max(as.numeric(sample[,'logratio']))
+		Ymin <- min(as.numeric(sample[,'seg.mean']))
+		Ymax <- max(as.numeric(sample[,'seg.mean']))
 		plot(range(0, Xmax), range(Ymin, Ymax), type='n', xaxt='n', xlab="", ylab="", main=names(segments_list[i]))
 		xlabs <- sapply(2:length(site_per_chr), function(j) (site_per_chr[j] - site_per_chr[(j-1)]) / 2 + site_per_chr[(j-1)])
 		axis(1, at=xlabs, labels=chromosomes, lty=0)
@@ -137,7 +137,7 @@ setMethod("plot", signature("CNVObject"), function(x,  y="missing", path=".") {
 			colors <- ifelse(filters_list[[i]][used_segments], "red", "black")		
 			starts <- as.numeric(sample[used_segments,'loc.start']) +  offset[j]
 			ends <- as.numeric(sample[used_segments,'loc.end']) + offset[j]
-			y <- as.numeric(sample[used_segments,'logratio'])
+			y <- as.numeric(sample[used_segments,'seg.mean'])
 			graphics::segments(starts, y, ends, y, col=colors, lwd=2, lty=1)
 		})
 		dev.off()
