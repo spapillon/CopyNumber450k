@@ -63,7 +63,7 @@ setMethod("predictSex", signature("CNVObject"), function(object, threshold) {
 	return(predicted_sexes)
 })
 
-setMethod("normalize", signature("CNVObject"), function(object, sex_cutoff) {
+setMethod("normalize", signature("CNVObject"), function(object) {
 	if(isNormalized(object))
 		stop("This object has already been normalized.")
 

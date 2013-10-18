@@ -1,7 +1,7 @@
 setReplaceMethod("probesAnnotation", signature("CNVObject"), function(object, value) {
 	if(!is.data.frame(value))
 		stop("Input parameter needs to be of type data.frame")
-	if(length(setdiff(colnames(value), c("MAPINFO", "CHR", "Probe_SNPs", "Probe_SNPs_10"))) > 0)
+	if(length(setdiff(c("MAPINFO", "CHR", "Probe_SNPs", "Probe_SNPs_10"), colnames(value))) > 0)
 		stop("Colnames of input parameter needs to contain {\"MAPINFO\", \"CHR\", \"Probe_SNPs\", \"Probe_SNPs_10\"}")
 	object@probe_annotation <- value
 	object
