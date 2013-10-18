@@ -45,13 +45,13 @@ formatSegments <- function(CNAobject, sample_intensity, control_intensity, site_
 					hist(control_int_sum, main=title, xlim=window, breaks=20)
 					abline(v=sample_sum, lty=3, lwd=2, col="red")
 				}
-									
+
 				# Extract genes in the segment
 				genes <- as.character(site_annotation$UCSC_RefGene_Name[probes])
 				genes <- unique(unlist(strsplit(x=genes, ";")))
 				genes <- paste(genes, collapse=";")
 				l <- as.numeric(cnv['loc.end']) - as.numeric(cnv['loc.start'])
-				return(c(cnv, seg.length=l, pvalue=p_value, genes=genes, ctrl.mean=control_mean, ctrl.sd=control_sd, sample.value=sample_sum ,z=z_score))
+				return(c(cnv, seg.length=l, pvalue=p_value, genes=genes, ctrl.mean=control_mean, ctrl.sd=control_sd, sample.value=sample_sum, z=z_score))
 			}))
 
 		if(plotting)
