@@ -6,6 +6,11 @@
 
 # load everything (RGSet)
 library(minfi)
+library(IlluminaHumanMethylation450kmanifest)
+library(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
+library(matrixStats)
+library(gmodels)
+
 source('~/git/CopyNumber450k/R/generics.R')
 source('~/git/CopyNumber450k/R/extractFromRGSet450k.R')
 source('~/git/CopyNumber450k/R/CNVObject.R')
@@ -29,4 +34,4 @@ CNVobj <- buildSegments(CNVobj)
 
 CNVobj <- createFilters(CNVobj)
 
-
+plot(CNVobj)

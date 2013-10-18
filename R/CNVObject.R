@@ -24,6 +24,7 @@ setMethod("initialize", signature("CNVObject"), function(.Object, RGset) {
 	.Object@intensity_matrix <- intensity_matrix
 
 	sampleGroups(.Object) <- pData(RGset)$Sample_Group
+	sampleNames(.Object) <- pData(RGset)$Sample_Name
 	
 	message("Loading probe annotation")
 	# This here, sucks
@@ -84,10 +85,13 @@ setMethod("buildSegments", signature("CNVObject"), function(object, verbose) {
 	cnMatrix <- intensityMatrix(object)[used_probes, ]
 	annotation <- probesAnnotation(object)[used_probes, ]
 	sample_groups <- sampleGroups(object)
-	sample_names <- colnames(cnMatrix)[sample_groups != "control"]
+	sample_names <- sampleNames(object)[sample_groups != "control"]
 	
-	control_medians <- rowMeans(cnMatrix[, sample_groups == "control"])
-	cases_log2 <- log2(cnMatrix[, sample_groups != "control"] / control_medians)
+	control_intensity <- cnMatrix[, sample_groups == "control"]
+	case_intensity <- cnMatrix[, sample_groups != "control"]
+	
+	control_medians <- apply(control_intensity, 1, median, na.rm=T)
+	cases_log2 <- log2(case_intensity / control_medians)
 
 	if(is.vector(cases_log2))
 		cases_log2 <- as.matrix(cases_log2)
@@ -99,8 +103,8 @@ setMethod("buildSegments", signature("CNVObject"), function(object, verbose) {
 	segment.smoothed.CNA.object <- segment(smoothed.CNA.object, min.width=5 ,verbose=1, nperm=10000, 
 			alpha=0.01, undo.splits="sdundo", undo.SD=2)
 
-	object@segments <- formatSegments(segment.smoothed.CNA.object, cnMatrix[, sample_groups != "control"], 
-								cnMatrix[, sample_groups == "control"], probesAnnotation(object) , verbose=verbose)
+	object@segments <- formatSegments(segment.smoothed.CNA.object, case_intensity, control_intensity, 
+			probesAnnotation(object) , verbose=verbose)
 	object
 })
 
