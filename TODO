@@ -2,3 +2,4 @@
 - Uniformize the probe annotation (use the one from minfi)
 - Fix the "gene" calling, stop using genes nearby probes and focus on genes overlapping genomic segments.
 - Add band calls in formatSegments
+- Remove hardcoded sexes, names and groups from object init.  Not having the columns named this exact way will cause object creation failure. No good!
