@@ -4,7 +4,7 @@
 ###############################################################################
 
 
-setClass("CNVObject", representation(RGSetSummary = "list", segments = "list", filters = "list", sample_groups = "character", samples_sexes = "numeric",
+setClass("CNVObject", representation(RGSetSummary = "list", segments = "list", filters = "list", sample_groups = "character", sample_sexes = "numeric",
 				sample_names = "character" ,used_probes = "logical", probe_annotation = "data.frame", intensity_matrix = "matrix", is_normalized = "logical"),
 				contains=c("RGChannelSet"))
 
