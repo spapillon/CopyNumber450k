@@ -66,10 +66,11 @@ setMethod("predictSex", signature("CNVObject"), function(object, threshold) {
 setMethod("normalize", signature("CNVObject"), function(object, type) {
 	if(isNormalized(object))
 		stop("This object has already been normalized.")
-	if(!type %in% c("default", "quantile"))
-		stop("Valid normalization type are {default, quantile}")
 	
 	method <- match.arg(type)
+	if(!method %in% c("default", "quantile"))
+		stop("Valid normalization type are {default, quantile}")
+
 	if(method == "default") {
 		object@intensity_matrix  <- normalizeFunNorm450kCN(cnMatrix = intensityMatrix(object)[usedProbes(object), ], 
 				extractedData = RGSetSummary(object), predictedSex = sampleSexes(object))
