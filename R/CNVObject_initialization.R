@@ -20,11 +20,7 @@ setMethod("initialize", signature("CNVObject"), function(.Object, RGset) {
 
 	message("Building intensity matrix")
 	intensity_matrix <- getMeth(mset) + getUnmeth(mset)
-	colnames(intensity_matrix) <- pData(RGset)$Sample_Name
 	.Object@intensity_matrix <- intensity_matrix
-
-	sampleGroups(.Object) <- pData(RGset)$Sample_Group
-	sampleNames(.Object) <- pData(RGset)$Sample_Name
 	
 	message("Loading probe annotation")
 	# This here, sucks
