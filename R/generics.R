@@ -8,7 +8,7 @@ setGeneric("filterSNPProbes", function(object) standardGeneric("filterSNPProbes"
 setGeneric("filterVariantProbes", function(object, variance_centile=0.95) standardGeneric("filterVariantProbes"))
 setGeneric("normalize", function(object, sex_cutoff=-3) standardGeneric("normalize"))
 setGeneric("buildSegments", function(object, verbose=T) standardGeneric("buildSegments"))
-setGeneric("createFilters", function(object,  tick.threshold=50, pvalue.threshold=0.01, breakpoints=c(0,0,0,0)) standardGeneric("createFilters"))
+setGeneric("createFilters", function(object,  tick.threshold=10, pvalue.threshold=0.01, breakpoints=c(0,0,0,0)) standardGeneric("createFilters"))
 
 # Workable methods
 setGeneric("findCNV", function(object, CNVs, type="both") standardGeneric("findCNV"))
