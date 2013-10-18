@@ -155,19 +155,19 @@ returnFit <- function(model.matrix, quantiles, nPCs){
 #################################################################
 returnFitX <- function(model.matrix, quantiles, nPCs, sex){
 	
-	quantiles1 <- quantiles[, sex == 1]
-	model.matrix1 <- model.matrix[sex == 1, ]
+	quantiles1 <- quantiles[, sex == "Male"]
+	model.matrix1 <- model.matrix[sex == "Male", ]
 	
 	newQuantiles1 <- returnFit(model.matrix = model.matrix1, quantiles = quantiles1, nPCs = nPCs)
 	
-	quantiles2 <- quantiles[, sex == 2]
-	model.matrix2 <- model.matrix[sex == 2, ]
+	quantiles2 <- quantiles[, sex == "Female"]
+	model.matrix2 <- model.matrix[sex == "Female", ]
 	
 	newQuantiles2 <- returnFit(model.matrix = model.matrix2, quantiles = quantiles2, nPCs = nPCs)
 	
 	newQuantiles <- quantiles
-	newQuantiles[, sex==1] <- newQuantiles1
-	newQuantiles[, sex==2] <- newQuantiles2
+	newQuantiles[, sex == "Male"] <- newQuantiles1
+	newQuantiles[, sex == "Female"] <- newQuantiles2
 	
 	return(newQuantiles)
 }
@@ -260,8 +260,8 @@ normalizeFunNorm450kCN <- function(cnMatrix, extractedData, nPCs = 4, predictedS
 	
 	if (length(Y) != 0) {
 		print("Quantile normalization of the Y-chromosome...")
-		cnMatrix[Y,predictedSex == 1] <- preprocessCore::normalize.quantiles(cnMatrix[Y,predictedSex == 1])
-		cnMatrix[Y,predictedSex == 2] <- preprocessCore::normalize.quantiles(cnMatrix[Y,predictedSex == 2])
+		cnMatrix[Y,predictedSex == "Male"] <- preprocessCore::normalize.quantiles(cnMatrix[Y,predictedSex == "Male"])
+		cnMatrix[Y,predictedSex == "Female"] <- preprocessCore::normalize.quantiles(cnMatrix[Y,predictedSex == "Female"])
 	}
 
 	print("Normalization done.")

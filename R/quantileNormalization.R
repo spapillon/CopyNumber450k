@@ -39,10 +39,10 @@ quantileNormalization <- function(cnMatrix, predictedSex=NULL) {
 	cnMatrix[IRed,] <- preprocessCore::normalize.quantiles(cnMatrix[IRed,])	
 	cnMatrix[IGreen,] <- preprocessCore::normalize.quantiles(cnMatrix[IGreen,])	
 	if (!is.null(predictedSex)){
-		cnMatrix[Y,predictedSex == 1] <- preprocessCore::normalize.quantiles(cnMatrix[Y,predictedSex == 1])
-	    cnMatrix[Y,predictedSex == 2] <- preprocessCore::normalize.quantiles(cnMatrix[Y,predictedSex == 2])
-		cnMatrix[X,predictedSex == 1] <- preprocessCore::normalize.quantiles(cnMatrix[X,predictedSex == 1])
-		cnMatrix[X,predictedSex == 2] <- preprocessCore::normalize.quantiles(cnMatrix[X,predictedSex == 2])
+		cnMatrix[Y,predictedSex == "Male"] <- preprocessCore::normalize.quantiles(cnMatrix[Y,predictedSex == "Male"])
+	    cnMatrix[Y,predictedSex == "Female"] <- preprocessCore::normalize.quantiles(cnMatrix[Y,predictedSex == "Female"])
+		cnMatrix[X,predictedSex == "Male"] <- preprocessCore::normalize.quantiles(cnMatrix[X,predictedSex == "Male"])
+		cnMatrix[X,predictedSex == "Female"] <- preprocessCore::normalize.quantiles(cnMatrix[X,predictedSex == "Female"])
 	}
     else {
     	cnMatrix[Y,] <- preprocessCore::normalize.quantiles(cnMatrix[Y,])
