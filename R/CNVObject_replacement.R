@@ -8,7 +8,7 @@ setReplaceMethod("probesAnnotation", signature("CNVObject"), function(object, va
 })
 
 setReplaceMethod("sampleGroups", signature("CNVObject"), function(object, value) {
-	if(!is.character(value) || length(value) != ncol(intensityMatrix(object)) || any(value == "control"))
+	if(!is.character(value) || length(value) != ncol(intensityMatrix(object)) || !any(value == "control"))
 		stop("Input parameter needs to be a character vector of length ncol(intensity_matrix) with at least one \"control\" entry")
 	object@sample_groups <- value
 	object
