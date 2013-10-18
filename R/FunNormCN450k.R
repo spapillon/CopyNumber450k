@@ -145,7 +145,7 @@ buildControlMatrix450k <- function(extractedData) {
       
     # Fixing outliers 
     model.matrix[model.matrix > 3] <- 3
-    model.matrix[model.matrix <= 3] <- -3           
+    model.matrix[model.matrix < (-3)] <- -3           
     return(model.matrix)
 }
 #################################################################
