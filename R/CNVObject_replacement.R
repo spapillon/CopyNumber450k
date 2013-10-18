@@ -8,7 +8,7 @@ setReplaceMethod("probesAnnotation", signature("CNVObject"), function(object, va
 })
 
 setReplaceMethod("sampleGroups", signature("CNVObject"), function(object, value) {
-	if(!is.character(value) || length(value) != ncol(intensityMatrix(object)) || length(setdiff(value, c("control"))) > 0)
+	if(!is.character(value) || length(value) != ncol(intensityMatrix(object)) || any(value == "control"))
 		stop("Input parameter needs to be a character vector of length ncol(intensity_matrix) with at least one \"control\" entry")
 	object@sample_groups <- value
 	object
@@ -17,7 +17,7 @@ setReplaceMethod("sampleGroups", signature("CNVObject"), function(object, value)
 setReplaceMethod("sampleSexes", signature("CNVObject"), function(object, value) {
 	if(!is.numeric(value) || length(value) != ncol(intensityMatrix(object)) || length(setdiff(value, c("Male","Female"))) > 0)
 		stop("Input parameter needs to be a character vector of length ncol(intensity_matrix) containing values {\"Male\",\"Female\"}")
-	predicted_values <- predictSex(object@RGSetSummary, -3)
+	predicted_values <- predictSex(object@RGSetSummary)
 	if(sum(predicted_values != value))
 	{
 		warning(paste("According to the X and Y chromosome intensities, it seems you have entered the wrong sex for samples", 
