@@ -14,6 +14,9 @@ setGeneric("createFilters", function(object,  tick.threshold=10, pvalue.threshol
 setGeneric("findCNV", function(object, CNVs, type="both") standardGeneric("findCNV"))
 setGeneric("intersectCNV", function(object, sample_indices, type="both") standardGeneric("intersectCNV"))
 setGeneric("subgroupDifference", function(object, group1_indices, group2_indices) standardGeneric("subgroupDifference"))
+setGeneric("plotSex", function(object) standardGeneric("plotSex"))
+setGeneric("predictSex", function(object) standardGeneric("predictSex"))
+
 
 # Accession methods
 setGeneric("intensityMatrix", function(object) standardGeneric("intensityMatrix"))
@@ -22,7 +25,7 @@ setGeneric("probesAnnotation", function(object) standardGeneric("probesAnnotatio
 setGeneric("segments", function(object) standardGeneric("segments"))
 setGeneric("filters", function(object) standardGeneric("filters"))
 setGeneric("sampleGroups",  function(object) standardGeneric("sampleGroups"))
-setGeneric("sampleSex", function(object) standardGeneric("sampleSex"))
+setGeneric("sampleSexes", function(object) standardGeneric("sampleSexes"))
 
 setGeneric("usedProbes", function(object) standardGeneric("usedProbes"))
 setGeneric("isNormalized", function(object) standardGeneric("isNormalized"))
@@ -30,6 +33,6 @@ setGeneric("isNormalized", function(object) standardGeneric("isNormalized"))
 # Replacement methods
 setGeneric("probesAnnotation<-", function(object, value) standardGeneric("probesAnnotation<-"))
 setGeneric("sampleGroups<-", function(object, value) standardGeneric("sampleGroups<-"))
-setGeneric("sampleSex<-", function(object, value) standardGeneric("sampleSex<-"))
+setGeneric("sampleSexes<-", function(object, value) standardGeneric("sampleSexes<-"))
 
 setGeneric("usedProbes<-",  function(object, value) standardGeneric("usedProbes<-"))

@@ -6,34 +6,6 @@
 #####################################################
 
 
-library(preprocessCore) 
-library(IlluminaHumanMethylation450kmanifest)
-library(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
-
-### Plot the gender clusters
-#################################################################
-plotSex <- function(extractedData){
-	plot(log2(extractedData$cnQuantiles$Y[250, ]) - 
-	                   log2(extractedData$cnQuantiles$X[250, ]), rep(0,length(extractedData$cnQuantiles$Y[250, ])))
-}
-#################################################################
-
-### Predict the sex of the samples
-#################################################################
-predictSex <- function(extractedData, cutoff){
-	diffs <- log2(extractedData$cnQuantiles$Y[250, ]) - 
-	                   log2(extractedData$cnQuantiles$X[250, ])
-	predictedSex <- rep(1, length(extractedData$cnQuantiles$Y[250, ]))
-	predictedSex[which(diffs < cutoff)] <- 2
-	return(predictedSex)
-}   
-#################################################################
-
-
-
-
-
-
  ### Build the matrix of control probes intensities for the
  ### correction of the quantile distributions 
 #################################################################

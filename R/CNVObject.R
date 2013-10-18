@@ -60,8 +60,18 @@ setMethod("filterVariantProbes", signature("CNVObject"), function(object, varian
 })
 
 setMethod("plotSex", signature("CNVObject"), function(object) {
-	cnQuantiles <- RGSetSummary$cnQuantiles
+	cnQuantiles <- object@RGSetSummary$cnQuantiles
 	plot(log2(cnQuantiles$Y[250, ]) - log2(cnQuantiles$X[250, ]), rep(0,length(cnQuantiles$Y[250, ])))
+	abline(v=-3, lty=3, col="red")
+	text(x=-4, y=0.5, label="Female", col="red")
+	text(x=-1, y=0.5, label="Male", col="red")
+})
+
+setMethod("predictSex", signature("CNVObject"), function(object, threshold) {
+	cnQuantiles <- object@RGSetSummary$cnQuantiles
+	diffs <- log2(cnQuantiles$Y[250, ]) - log2(cnQuantiles$X[250, ])
+	predicted_sexes <- ifelse(diffs <= threshold, "Female", "Male")
+	return(predicted_sexes)
 })
 
 setMethod("normalize", signature("CNVObject"), function(object, sex_cutoff) {
@@ -69,7 +79,7 @@ setMethod("normalize", signature("CNVObject"), function(object, sex_cutoff) {
 		stop("This object has already been normalized.")
 
 	object@intensity_matrix  <- normalizeFunNorm450kCN(cnMatrix = intensityMatrix(object)[usedProbes(object), ], 
-			extractedData = RGSetSummary(object), predictedSex = sampleSex(object))
+			extractedData = RGSetSummary(object), predictedSex = sampleSexes(object))
 	# The returned matrix has dropped the FALSE usedProbes, remove other objects accordingly
 	probesAnnotation(object) <- probesAnnotation(object)[usedProbes(object), ]
 	usedProbes(object) <- rep(TRUE, sum(usedProbes(object)))
