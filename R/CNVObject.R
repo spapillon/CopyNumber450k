@@ -4,8 +4,9 @@
 ###############################################################################
 
 
-setClass("CNVObject", representation(RGSetSummary = "list", segments = "list", filters = "list", sample_groups = "character", 
-				used_probes = "logical", probe_annotation = "data.frame", intensity_matrix = "matrix", is_normalized = "logical"), contains=c("RGChannelSet"))
+setClass("CNVObject", representation(RGSetSummary = "list", segments = "list", filters = "list", sample_groups = "character", samples_sexes = "numeric",
+				sample_names = "character" ,used_probes = "logical", probe_annotation = "data.frame", intensity_matrix = "matrix", is_normalized = "logical"),
+				contains=c("RGChannelSet"))
 
 CNVObject <- function(RGset) {
 	return(new("CNVObject", RGset))
@@ -57,12 +58,17 @@ setMethod("filterVariantProbes", signature("CNVObject"), function(object, varian
 	object		
 })
 
+setMethod("plotSex", signature("CNVObject"), function(object) {
+	cnQuantiles <- RGSetSummary$cnQuantiles
+	plot(log2(cnQuantiles$Y[250, ]) - log2(cnQuantiles$X[250, ]), rep(0,length(cnQuantiles$Y[250, ])))
+})
+
 setMethod("normalize", signature("CNVObject"), function(object, sex_cutoff) {
 	if(isNormalized(object))
 		stop("This object has already been normalized.")
-	sexes <- predictSex(extractedData = RGSetSummary(object), cutoff = sex_cutoff)
+
 	object@intensity_matrix  <- normalizeFunNorm450kCN(cnMatrix = intensityMatrix(object)[usedProbes(object), ], 
-			extractedData = RGSetSummary(object), predictedSex = sexes)
+			extractedData = RGSetSummary(object), predictedSex = sampleSex(object))
 	# The returned matrix has dropped the FALSE usedProbes, remove other objects accordingly
 	probesAnnotation(object) <- probesAnnotation(object)[usedProbes(object), ]
 	usedProbes(object) <- rep(TRUE, sum(usedProbes(object)))
@@ -222,6 +228,8 @@ setMethod("probesAnnotation", signature("CNVObject"), function(object) object@pr
 setMethod("segments", signature("CNVObject"), function(object) object@segments)
 setMethod("filters", signature("CNVObject"), function(object) object@filters)
 setMethod("sampleGroups", signature("CNVObject"), function(object) object@sample_groups)
+setMethod("sampleSexes", signature("CNVObject"), function(object) object@sample_sexes)
+setMethod("sampleNames", signature("CNVObject"), function(object) object@sample_names)
 setMethod("usedProbes", signature("CNVObject"), function(object) object@used_probes)
 setMethod("isNormalized", signature("CNVObject"), function(object) object@is_normalized)
 
@@ -239,6 +247,26 @@ setReplaceMethod("sampleGroups", signature("CNVObject"), function(object, value)
 	if(!is.character(value) || length(value) != ncol(intensityMatrix(object)) || length(setdiff(c("control"), value)) > 0)
 		stop("Input parameter needs to be a character vector of length ncol(intensity_matrix) with at least one \"control\" entry")
 	object@sample_groups <- value
+	object
+})
+
+setReplaceMethod("sampleSexes", signature("CNVObject"), function(object, value) {
+	if(!is.numeric(value) || length(value) != ncol(intensityMatrix(object)) || length(setdiff(c(1,2), value)) > 0)
+		stop("Input parameter needs to be a numerci vector of length ncol(intensity_matrix) containing values {1,2} (male, female)")
+	predicted_values <- predictSex(object@RGSetSummary, -3)
+	if(sum(predicted_values != value))
+	{
+		warning(paste("According to the X and Y chromosome intensities, it seems you have entered the wrong sex for samples", 
+						paste(sampleNames[predicted_values != value], sep=" ,"), sep=""))
+	}
+	object@sample_sexes <- value
+	object
+})
+
+setReplaceMethod("sampleNames", signature("CNVObject"), function(object, value) {
+	if(!is.character(value) || length(value) != ncol(intensityMatrix(object)))
+		stop("Input parameter needs to be a character vector of length ncol(intensity_matrix)")
+	object@sample_names <- value
 	object
 })
 

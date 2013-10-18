@@ -22,10 +22,14 @@ setGeneric("probesAnnotation", function(object) standardGeneric("probesAnnotatio
 setGeneric("segments", function(object) standardGeneric("segments"))
 setGeneric("filters", function(object) standardGeneric("filters"))
 setGeneric("sampleGroups",  function(object) standardGeneric("sampleGroups"))
+setGeneric("sampleSex", function(object) standardGeneric("sampleSex"))
+
 setGeneric("usedProbes", function(object) standardGeneric("usedProbes"))
 setGeneric("isNormalized", function(object) standardGeneric("isNormalized"))
 
 # Replacement methods
 setGeneric("probesAnnotation<-", function(object, value) standardGeneric("probesAnnotation<-"))
 setGeneric("sampleGroups<-", function(object, value) standardGeneric("sampleGroups<-"))
+setGeneric("sampleSex<-", function(object, value) standardGeneric("sampleSex<-"))
+
 setGeneric("usedProbes<-",  function(object, value) standardGeneric("usedProbes<-"))
