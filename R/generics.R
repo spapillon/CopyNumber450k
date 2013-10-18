@@ -15,7 +15,7 @@ setGeneric("findCNV", function(object, CNVs, type="both") standardGeneric("findC
 setGeneric("intersectCNV", function(object, sample_indices, type="both") standardGeneric("intersectCNV"))
 setGeneric("subgroupDifference", function(object, group1_indices, group2_indices) standardGeneric("subgroupDifference"))
 setGeneric("plotSex", function(object) standardGeneric("plotSex"))
-setGeneric("predictSex", function(object) standardGeneric("predictSex"))
+setGeneric("predictSex", function(object, threshold=-3) standardGeneric("predictSex"))
 
 
 # Accession methods
