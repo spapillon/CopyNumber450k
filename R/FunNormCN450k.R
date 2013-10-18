@@ -155,7 +155,6 @@ buildControlMatrix450k <- function(extractedData) {
 
 ### Return the corrected quantile distributions 
 #################################################################
-## Assuming the phenoMatrix is a model.matrix
 returnFit <- function(model.matrix, quantiles, nPCs){
 	quantiles[1,] <- 0
     quantiles[500,] <- quantiles[499,] + 1000
