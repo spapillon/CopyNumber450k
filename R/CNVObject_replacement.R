@@ -18,11 +18,9 @@ setReplaceMethod("sampleSexes", signature("CNVObject"), function(object, value) 
 	if(!is.character(value) || length(value) != ncol(intensityMatrix(object)) || length(setdiff(value, c("Male","Female"))) > 0)
 		stop("Input parameter needs to be a character vector of length ncol(intensity_matrix) containing values {\"Male\",\"Female\"}")
 	predicted_values <- predictSex(object)
-	if(sum(predicted_values != value))
-	{
+	if(sum(predicted_values != value) > 0)
 		warning(paste("According to the X and Y chromosome intensities, it seems you have entered the wrong sex for samples", 
-						paste(sampleNames[predicted_values != value], sep=" ,"), sep=""))
-	}
+						paste(sampleNames(object)[predicted_values != value], collapse=", "), sep=": "))
 	object@sample_sexes <- value
 	object
 })
