@@ -51,7 +51,10 @@ CNVobj <- buildSegments(CNVobj)
 CNVobj_norm <- buildSegments(CNVobj_norm)
 CNVobj_norm2 <- buildSegments(CNVobj_norm2)
 
-
 CNVobj <- createFilters(CNVobj)
+CNVobj_norm <- createFilters(CNVobj_norm)
+CNVobj_norm2 <- createFilters(CNVobj_norm2)
+plot(CNVobj, path='raw/')
+plot(CNVobj_norm, path='funnorm/')
+plot(CNVobj_norm2, path='quannorm/')
 
-plot(CNVobj)

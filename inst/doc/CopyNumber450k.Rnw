@@ -1,0 +1,13 @@
+% 
+\documentclass[a4paper]{article}
+\usepackage{Sweave}
+
+\title{}
+\author{spapillo}
+
+\begin{document}
+
+\maketitle
+
+
+\end{document}
