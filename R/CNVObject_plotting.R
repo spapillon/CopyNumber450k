@@ -19,8 +19,8 @@ setMethod("plot", signature("CNVObject"), function(x,  y="missing", path=".") {
 	lapply((1:length(segments_list)), function(i) {
 				png(paste(path, "/", names(segments_list)[i], ".png", sep=""), height=900, width=1200)				
 				sample <- segments_list[[i]]
-				Ymin <- min(as.numeric(sample[,'seg.mean']))
-				Ymax <- max(as.numeric(sample[,'seg.mean']))
+				Ymin <- min(c(-1, as.numeric(sample[filters_list[[i]],'seg.mean'])))
+				Ymax <- max(c(1, as.numeric(sample[filters_list[[i]],'seg.mean'])))
 				plot(range(0, Xmax), range(Ymin, Ymax), type='n', xaxt='n', xlab="", ylab="", main=names(segments_list[i]))
 				xlabs <- sapply(2:length(site_per_chr), function(j) (site_per_chr[j] - site_per_chr[(j-1)]) / 2 + site_per_chr[(j-1)])
 				axis(1, at=xlabs, labels=chromosomes, lty=0)
