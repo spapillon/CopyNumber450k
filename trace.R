@@ -23,7 +23,7 @@ source('~/git/CopyNumber450k/R/CNVObject_comparison.R')
 source('~/git/CopyNumber450k/R/CNVObject_plotting.R')
 
 source('~/git/CopyNumber450k/R/formatSegments.R')
-source('~/git/CopyNumber450k/R/funNormCN450k.R')
+source('~/git/CopyNumber450k/R/functionalNormalization.R')
 source('~/git/CopyNumber450k/R/quantileNormalization.R')
 source('~/git/CopyNumber450k/R/subgroupDifferenceCNVByType.R')
 
@@ -45,8 +45,12 @@ sampleNames(CNVobj) <- pData(RGset)$Sample_Name
 CNVobj <- filterSNPProbes(CNVobj)
 
 CNVobj_norm <- normalize(CNVobj)
+CNVobj_norm2 <- normalize(CNVojb, "quantile")
 
 CNVobj <- buildSegments(CNVobj)
+CNVobj_norm <- buildSegments(CNVobj_norm)
+CNVobj_norm2 <- buildSegments(CNVobj_norm2)
+
 
 CNVobj <- createFilters(CNVobj)
 

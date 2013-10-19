@@ -203,7 +203,7 @@ normalizeByType <- function(intMatrix, newQuantiles) {
 
 ### Main function call for normalization
 #################################################################
-normalizeFunNorm450kCN <- function(cnMatrix, extractedData, nPCs = 4, predictedSex) {
+functionalNormalization <- function(cnMatrix, extractedData, nPCs = 4, predictedSex) {
 
 	
 	probesI <- getProbeInfo(IlluminaHumanMethylation450kmanifest, type = "I")
