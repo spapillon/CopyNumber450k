@@ -31,7 +31,7 @@ setMethod("initialize", signature("CNVObject"), function(.Object, RGset) {
 	annotation <- annotation[as.character(rownames(intensityMatrix(.Object))),]
 	.Object@probe_annotation <- annotation
 	.Object@used_probes <- rep(TRUE, nrow(annotation))
-	
+	sampleSexes(.Object) <- predictSex(.Object)
 	.Object@is_normalized <- FALSE
 
 	.Object
