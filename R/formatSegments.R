@@ -1,4 +1,4 @@
-formatSegments <- function(CNAobject, sample_intensity, control_intensity, site_annotation, p.adjust.method="bonferroni", verbose=T, plotting=T) {
+formatSegments <- function(CNAobject, sample_intensity, control_intensity, site_annotation, p.adjust.method="bonferroni", verbose=T, plotting=T, path="./") {
 	all_segments <- CNAobject$output
 
 	segments_per_sample <- lapply(unique(all_segments$ID), function(sample) all_segments[all_segments$ID == sample,-1])
@@ -22,7 +22,7 @@ formatSegments <- function(CNAobject, sample_intensity, control_intensity, site_
 
 	x <- lapply(1:length(segments_per_sample), function(i) {
 		if(plotting)
-			pdf(paste(names(segments_per_sample)[i], ".pdf", sep=""))
+			pdf(paste(path, "/", names(segments_per_sample)[i], ".pdf", sep=""))
 		result <- t(apply(segments_per_sample[[i]], 1, function(cnv) {
 				# Extract probes
 				probes <- site_annotation$CHR == cnv['chrom'] &
