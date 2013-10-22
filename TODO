@@ -2,3 +2,12 @@
 - Uniformize the probe annotation (use the one from minfi)
 - Fix the "gene" calling, stop using genes nearby probes and focus on genes overlapping genomic segments.
 - Add band calls in formatSegments
+
+
+Nic:
+- Consider merging formatSegments() into buildSegments(). Is it a good idea? Or maybe change formatSegments() to a CNVobject method. But this should be hidden from the user since this method is mendatory.
+- Add sexes in formatSegments().  For chr X and Y, we have to compare to the distributions of same-sex individuals.
+- Rename subgroupsDifferenceCNVByType.  Also, this method method should not be seen by user (internal).
+- Consider internalizing normalization methods.  Everything should be CNVobject centric.
+- Internalize extractFromRGset450k ??
+- Currently, the plot() and plotRegion() take a path in parameter and generates pngs with hardcoded dims.  I don't like to force that, but those methods generate 1 plot per sample. How to do this user-friendly? Also, I want to avoid having 23234234 params in the function.
