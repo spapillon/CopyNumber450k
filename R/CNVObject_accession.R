@@ -1,3 +1,7 @@
+#
+# Accession methods
+#
+
 setMethod("intensityMatrix",
           signature("CNVObject"),
           function(object) object@intensity_matrix)

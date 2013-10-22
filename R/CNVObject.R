@@ -49,6 +49,37 @@ setGeneric("createFilters",
            })
 
 #
+# Accession methods
+#
+       
+setGeneric("intensityMatrix",
+           function(object) standardGeneric("intensityMatrix"))
+ 
+setGeneric("RGSetSummary",
+           function(object) standardGeneric("RGSetSummary"))
+ 
+setGeneric("probesAnnotation",
+           function(object) standardGeneric("probesAnnotation"))
+ 
+setGeneric("segments",
+           function(object) standardGeneric("segments"))
+ 
+setGeneric("filters",
+           function(object) standardGeneric("filters"))
+ 
+setGeneric("sampleGroups",
+           function(object) standardGeneric("sampleGroups"))
+ 
+setGeneric("sampleSexes",
+           function(object) standardGeneric("sampleSexes"))
+ 
+setGeneric("usedProbes",
+           function(object) standardGeneric("usedProbes"))
+ 
+setGeneric("isNormalized",
+           function(object) standardGeneric("isNormalized"))
+       
+#
 # Workable methods
 #
 
@@ -80,37 +111,6 @@ setGeneric("plotSample",
 setGeneric("predictSex",
            function(object,
                     threshold = -3) standardGeneric("predictSex"))
-
-#
-# Accession methods
-#
-
-setGeneric("intensityMatrix",
-           function(object) standardGeneric("intensityMatrix"))
-
-setGeneric("RGSetSummary",
-           function(object) standardGeneric("RGSetSummary"))
-
-setGeneric("probesAnnotation",
-           function(object) standardGeneric("probesAnnotation"))
-
-setGeneric("segments",
-           function(object) standardGeneric("segments"))
-
-setGeneric("filters",
-           function(object) standardGeneric("filters"))
-
-setGeneric("sampleGroups",
-           function(object) standardGeneric("sampleGroups"))
-
-setGeneric("sampleSexes",
-           function(object) standardGeneric("sampleSexes"))
-
-setGeneric("usedProbes",
-           function(object) standardGeneric("usedProbes"))
-
-setGeneric("isNormalized",
-           function(object) standardGeneric("isNormalized"))
 
 #
 # Replacement methods
