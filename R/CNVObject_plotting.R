@@ -45,3 +45,34 @@ setMethod("plotSex", signature("CNVObject"), function(object) {
 	text(x=-4, y=0.5, label="Female", col="red")
 	text(x=-1, y=0.5, label="Male", col="red")
 })
+
+
+setMethod("plotRegion", signature("CNVObject"), function(object,  chr, start, end, path=".") {
+	segments_list <- segments(object)
+	filters_list <- filters(object)
+	template_sample <- segments_list[[1]]
+
+	if(missing(chr))
+		stop("The argument \"chr\" is missing")
+	if(missing(start))
+		start <- 0
+	if(missing(end))
+		end <- max(template_sample[template_sample[,'chrom'] == chr, 'loc.end'])
+	lapply((1:length(segments_list)), function(i) {
+
+		sample <- segments_list[[i]]		
+		png(paste(path, "/", names(segments_list)[i], ".png", sep=""), height=900, width=1200)				
+		
+		Ymin <- min(c(-1, as.numeric(sample[filters_list[[i]],'seg.mean'])))
+		Ymax <- max(c(1, as.numeric(sample[filters_list[[i]],'seg.mean'])))
+		plot(range(start, end), range(Ymin, Ymax), type='n', xlab="", ylab="", main=names(segments_list)[i])
+				
+		used_segments <- sample[,'chrom'] == chr
+		colors <- ifelse(filters_list[[i]][used_segments], "red", "black")		
+		starts <- as.numeric(sample[used_segments,'loc.start'])
+		ends <- as.numeric(sample[used_segments,'loc.end'])
+		y <- as.numeric(sample[used_segments,'seg.mean'])
+		graphics::segments(starts, y, ends, y, col=colors, lwd=2, lty=1)
+		dev.off()
+	})
+})
