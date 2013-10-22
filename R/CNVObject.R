@@ -70,16 +70,6 @@ setGeneric("subgroupDifference",
 setGeneric("plotSex",
            function(object) standardGeneric("plotSex"))
 
-setGeneric("plotRegion",
-           function(object,
-                    chr,
-                    start,
-                    end,
-                    path = ".") standardGeneric("plotRegion"))
-
-setGeneric("plotSex",
-           function(object) standardGeneric("plotSex"))
-
 setGeneric("plotSample",
            function(object,
                     index,
