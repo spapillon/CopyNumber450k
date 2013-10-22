@@ -77,6 +77,16 @@ setGeneric("plotRegion",
                     end,
                     path = ".") standardGeneric("plotRegion"))
 
+setGeneric("plotSex",
+           function(object) standardGeneric("plotSex"))
+
+setGeneric("plotSample",
+           function(object,
+                    index,
+                    chr,
+                    start,
+                    end) standardGeneric("plotSample"))
+            
 setGeneric("predictSex",
            function(object,
                     threshold = -3) standardGeneric("predictSex"))
