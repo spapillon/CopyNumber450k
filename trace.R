@@ -15,7 +15,7 @@ library(preprocessCore)
 
 source('~/git/CopyNumber450k/R/extractFromRGSet450k.R')
 
-source('~/git/CopyNumber450k/R/generics.R')
+source('~/git/CopyNumber450k/R/CNVObject.R')
 source('~/git/CopyNumber450k/R/CNVObject_initialization.R')
 source('~/git/CopyNumber450k/R/CNVObject_accession.R')
 source('~/git/CopyNumber450k/R/CNVObject_replacement.R')
@@ -30,8 +30,14 @@ source('~/git/CopyNumber450k/R/subgroupDifferenceCNVByType.R')
 
 path <- '~/Documents/iChange/data_ETMR'
 load('~/git/CopyNumber450k/data/control_RGset.RData')
-case_RGset <- read.450k.exp(base = path, targets = read.450k.sheet(path))
-RGset <- combine(control_RGset, case_RGset)
+
+#spapillon-specific
+#case_RGset <- read.450k.exp(base = path, targets = read.450k.sheet(path))
+#RGset <- combine(control_RGset, case_RGset)
+
+#ndejay-specific
+pData(control_RGset)$Sample_Group[1:10] <- "case"
+RGset <- control_RGset
 
 CNVobj <- CNVObject(RGset)
 sampleSexes(CNVobj) <- predictSex(CNVobj)
@@ -45,7 +51,7 @@ sampleNames(CNVobj) <- pData(RGset)$Sample_Name
 CNVobj <- filterSNPProbes(CNVobj)
 
 CNVobj_norm <- normalize(CNVobj)
-CNVobj_norm2 <- normalize(CNVojb, "quantile")
+CNVobj_norm2 <- normalize(CNVobj, "quantile")
 
 CNVobj <- buildSegments(CNVobj)
 CNVobj_norm <- buildSegments(CNVobj_norm)

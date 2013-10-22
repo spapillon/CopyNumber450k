@@ -10,5 +10,14 @@ License: Artistic-2.0
 Imports: IlluminaHumanMethylation450kmanifest, IlluminaHumanMethylation450kannotation.ilmn.v1.2, matrixStats, gmodels, preprocessCore
 Depends: methods, minfi
 LinkingTo:
-Collate: generics.R CNVObject_initialization.R CNVObject_accession.R CNVObject_replacement.R CNVObject_comparison.R CNVObject_plotting.R
-		 quantileNormalization.R functionalNormalization.R subgroupDifferenceCNVByType.R formatSegments.R extractFromRGSet450k.R
+Collate: CNVObject.R
+  CNVObject_initialization.R
+  CNVObject_accession.R
+  CNVObject_replacement.R
+  CNVObject_comparison.R
+  CNVObject_plotting.R
+  quantileNormalization.R
+  functionalNormalization.R
+  subgroupDifferenceCNVByType.R
+  formatSegments.R
+  extractFromRGSet450k.R
