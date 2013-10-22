@@ -63,7 +63,7 @@ setMethod("filterVariantProbes",
   # to remove.
   if (!is.numeric(variance_centile) || length(variance_centile) != 1 ||
       variance_centile <= 0 | variance_centile >= 1) {
-    stop("Expected variance_centile to be ]0, 1[.")
+    stop("Expected argument variance_centile to be ]0, 1[.")
   }
 
   controls <- sampleGroups(object) == "control"
@@ -97,7 +97,7 @@ setMethod("normalize",
   
   method <- match.arg(type)
   if (!method %in% c("functional", "quantile"))
-    stop("Expected normalization type to be {default, quantile}.")
+    stop("Expected argument [normalization] type to be {default, quantile}.")
 
   if (method == "functional") {
     object@intensity_matrix  <-

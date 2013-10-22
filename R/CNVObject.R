@@ -80,7 +80,7 @@ setGeneric("isNormalized",
            function(object) standardGeneric("isNormalized"))
        
 #
-# Workable methods
+# Comparison Methods
 #
 
 setGeneric("findCNV",
@@ -97,6 +97,10 @@ setGeneric("subgroupDifference",
            function(object,
                     group1_indices,
                     group2_indices) standardGeneric("subgroupDifference"))
+
+#
+# Plotting Methods
+#
 
 setGeneric("plotSex",
            function(object) standardGeneric("plotSex"))
