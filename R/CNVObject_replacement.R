@@ -31,9 +31,7 @@ setReplaceMethod("sampleGroups",
     stop("Expected parameter value to be a character vector.")
   }
   else if (length(value) != ncol(intensityMatrix(object))) {
-    # TODO: Use more informative names; ncol(intensity_matrix) = number of features?
-    stop("Expected parameter value to be of length ncol(intensity_matrix).")
-    # ---
+    stop("Expected parameter value to be of length equal to the number of samples.")
   }
   else if (!any(value == "control")) {
     # TODO: Use more informative desc
@@ -56,9 +54,7 @@ setReplaceMethod("sampleSexes",
     stop("Expected parameter value to be a character vector.")
   }
   else if (length(value) != ncol(intensityMatrix(object))) {
-    # TODO: Use more informative names; ncol(intensity_matrix) = number of features?
-    stop("Expected parameter value to be of length ncol(intensity_matrix).")
-    # ---
+    stop("Expected parameter value to be of length equal to the number of samples.")
   }
   else if (length(setdiff(value, c("Male","Female"))) > 0) {
     # TODO: More descriptive
@@ -87,9 +83,7 @@ setReplaceMethod("sampleNames",
     stop("Expected parameter value to be a character vector.")
   }
   else if (length(value) != ncol(intensityMatrix(object))) {
-    # TODO: Use more informative names; ncol(intensity_matrix) = number of features?
-    stop("Expected parameter value to be of length ncol(intensity_matrix).")
-    # ---
+    stop("Expected parameter value to be of length equal to the number of samples.")
   }
 
   object@sample_names <- value
@@ -107,9 +101,7 @@ setReplaceMethod("usedProbes",
     stop("Expected parameter value to be a logical vector.")
   }
   else if (length(value) != nrow(intensityMatrix(object))) {
-    # TODO: More informative... sample ?
-    stop("Expected parameter value to be of length nrow(intensity_matrix).")
-    # ---
+    stop("Expected parameter value to be of length equal to the number of probes.")
   }
 
   object@used_probes <- value
@@ -136,7 +128,7 @@ setReplaceMethod("sampleChipColumns",
 
 setReplaceMethod("sampleChipIDs",
                  signature("CNVObject"),
-                function(object,
+                 function(object,
                          value) {
       
   object@sample_chip_ids <- as.character(value)
