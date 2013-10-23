@@ -88,12 +88,12 @@ setMethod("subgroupDifference",
 	sample_count <- length(segments(object))
   
 	if (!is.numeric(group1_indices) ||
-      length(setdiff(group1_indices, 1:sample_count)) > 0 ) {
+      length(setdiff(group1_indices, 1:sample_count)) > 0) {
 		stop("Expected group1_indices argument to be a integer vector with values corresponding to existing samples indices.")
   }
   
 	if(!is.numeric(group2_indices) ||
-      length(setdiff(group1_indices, 1:sample_count)) > 0 ) {
+      length(setdiff(group1_indices, 1:sample_count)) > 0) {
     stop("Expected group2_indices argument to be a integer vector with values corresponding to existing samples indices.")
   }
 
