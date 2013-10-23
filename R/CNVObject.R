@@ -16,7 +16,9 @@ setClass("CNVObject",
          contains = c("RGChannelSet"))
 
 CNVObject <- function(RGset) new("CNVObject", RGset)
-     
+
+
+
 #
 # Initialization methods
 #
@@ -47,6 +49,8 @@ setGeneric("createFilters",
                     breakpoints      = c(0, 0, 0, 0)) {
              standardGeneric("createFilters")
            })
+
+
 
 #
 # Accession methods
@@ -79,6 +83,8 @@ setGeneric("usedProbes",
 setGeneric("isNormalized",
            function(object) standardGeneric("isNormalized"))
        
+
+
 #
 # Comparison Methods
 #
@@ -98,6 +104,8 @@ setGeneric("subgroupDifference",
                     group1_indices,
                     group2_indices) standardGeneric("subgroupDifference"))
 
+
+
 #
 # Plotting Methods
 #
@@ -115,6 +123,8 @@ setGeneric("plotSample",
 setGeneric("predictSex",
            function(object,
                     threshold = -3) standardGeneric("predictSex"))
+
+
 
 #
 # Replacement methods
