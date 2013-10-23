@@ -18,6 +18,8 @@ setGeneric("filterVariantProbes", function(object, variance_centile = 0.95) {
     standardGeneric("filterVariantProbes")
 })
 
+setGeneric("predictSex", function(object, threshold = -3) standardGeneric("predictSex"))
+
 setGeneric("normalize", function(object, type = c("functional", "quantile")) {
     standardGeneric("normalize")
 })
@@ -75,8 +77,6 @@ setGeneric("subgroupDifference", function(object, group1_indices, group2_indices
 setGeneric("plotSex", function(object) standardGeneric("plotSex"))
 
 setGeneric("plotSample", function(object, index, chr, start, end) standardGeneric("plotSample"))
-
-setGeneric("predictSex", function(object, threshold = -3) standardGeneric("predictSex"))
 
 setGeneric("plotDensity", function(object, color.by = c("sentrix.row", "sentrix.col", 
     "sample.group", "chip.id"), color.function = rainbow, legend.position = "topright") standardGeneric("plotDensity"))

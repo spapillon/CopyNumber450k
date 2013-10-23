@@ -38,11 +38,10 @@ setMethod("filterSNPProbes", signature("CNVObject"), function(object) {
 })
 
 setMethod("filterVariantProbes", signature("CNVObject"), function(object, variance_centile) {
-    # The variance_centile argument is the % of the most variant sites you want to
-    # remove.
+    # The variance_centile argument is the % of the most variant sites you want to remove.
     if (!is.numeric(variance_centile) || length(variance_centile) != 1 || variance_centile <= 
         0 | variance_centile >= 1) {
-        stop("Expected argument variance_centile to be ]0, 1[.")
+        stop("Expected argument `variance_centile` to be a numerical element between ]0, 1[.")
     }
     
     controls <- sampleGroups(object) == "control"
@@ -59,13 +58,14 @@ setMethod("predictSex", signature("CNVObject"), function(object, threshold) {
 })
 
 setMethod("normalize", signature("CNVObject"), function(object, type) {
-    if (isNormalized(object)) 
-        stop("CNVObject has already been normalized.")
-    
     method <- match.arg(type)
-    if (!method %in% c("functional", "quantile")) 
-        stop("Expected argument [normalization] type to be {default, quantile}.")
-    
+            
+    if (isNormalized(object)) {
+        stop("CNVObject has already been normalized.")
+    } else if (!method %in% c("functional", "quantile")) {
+        stop("Expected argument [normalization] `type` to be {default, quantile}.")
+    }
+
     if (method == "functional") {
         object@intensity_matrix <- functionalNormalization(cnMatrix = intensityMatrix(object)[usedProbes(object), 
             ], extractedData = RGSetSummary(object), predictedSex = sampleSexes(object))
@@ -74,8 +74,7 @@ setMethod("normalize", signature("CNVObject"), function(object, type) {
             ], predictedSex = sampleSexes(object))
     }
     
-    # The returned matrix has dropped the FALSE usedProbes, remove other objects
-    # accordingly
+    # The returned matrix has dropped the FALSE usedProbes, remove other objects accordingly.
     probesAnnotation(object) <- probesAnnotation(object)[usedProbes(object), ]
     usedProbes(object) <- rep(TRUE, sum(usedProbes(object)))
     object@is_normalized <- TRUE
@@ -87,6 +86,7 @@ setMethod("segmentize", signature("CNVObject"), function(object, verbose, p.adju
     if (length(segments(object)) > 0) {
         stop("CNVObject has already been segmented.")
     }
+    
     used_probes <- usedProbes(object)
     cnMatrix <- intensityMatrix(object)[used_probes, ]
     annotation <- probesAnnotation(object)[used_probes, ]
@@ -102,10 +102,13 @@ setMethod("segmentize", signature("CNVObject"), function(object, verbose, p.adju
     control_medians <- apply(control_intensity, 1, median, na.rm = T)
     cases_log2 <- log2(case_intensity/control_medians)
     
-    if (is.vector(cases_log2)) 
+    if (is.vector(cases_log2)) {
         cases_log2 <- as.matrix(cases_log2)
+    }
     
+    ## TODO: Send this to the DESCRIPTION file ?
     require(DNAcopy)
+    ## ---
     CNA.object <- CNA(cases_log2, ordered(annotation$CHR), as.numeric(annotation$MAPINFO), 
         data.type = "logratio", sampleid = sample_names)
     smoothed.CNA.object <- smooth.CNA(CNA.object)
@@ -120,13 +123,18 @@ setMethod("segmentize", signature("CNVObject"), function(object, verbose, p.adju
     names(segments_per_sample) <- unique(all_segments$ID)
     
     x <- lapply(1:length(segments_per_sample), function(i) {
-        if (plotting) 
+        if (plotting) {
             pdf(paste(path, "/", names(segments_per_sample)[i], ".pdf", sep = ""))
+        }
+        
         result <- t(apply(segments_per_sample[[i]], 1, function(cnv) {
-            # When assessing sexual chromosomes, consider controls of the same sex as the
-            # sample.
-            if (cnv["chrom"] %in% c("X", "Y")) 
-                used_controls <- control_sexes == case_sexes[i] else used_controls <- rep(TRUE, ncol(control_intensity))
+            # When assessing sexual chromosomes, only consider controls of the same sex as the sample.
+            if (cnv["chrom"] %in% c("X", "Y")) {
+                used_controls <- control_sexes == case_sexes[i]
+            } else {
+                used_controls <- rep(TRUE, ncol(control_intensity))
+            }
+            
             # Extract probes
             probes <- probesAnnotation(object)$CHR == cnv["chrom"] & as.numeric(probesAnnotation(object)$MAPINFO) >= 
                 as.numeric(cnv["loc.start"]) & as.numeric(probesAnnotation(object)$MAPINFO) <= 
@@ -154,19 +162,23 @@ setMethod("segmentize", signature("CNVObject"), function(object, verbose, p.adju
             genes <- unique(unlist(strsplit(x = genes, ";")))
             genes <- paste(genes, collapse = ";")
             l <- as.numeric(cnv["loc.end"]) - as.numeric(cnv["loc.start"])
-            return(c(cnv, seg.length = l, pvalue = p_value, genes = genes, ctrl.mean = control_mean, 
-                ctrl.sd = control_sd, sample.value = sample_sum, z = z_score))
+            c(cnv, seg.length = l, pvalue = p_value, genes = genes, ctrl.mean = control_mean, 
+                ctrl.sd = control_sd, sample.value = sample_sum, z = z_score)
         }))
         
-        if (plotting) 
+        if (plotting) {
             dev.off()
+        }
+        
         # pvalue correction for multiple testing
         result <- as.data.frame(result, stringsAsFactors = F)
         result$adjusted.pvalue <- p.adjust(result$pvalue, method = p.adjust.method)
         
-        if (verbose) 
+        if (verbose) {
             message(paste("Processed", names(segments_per_sample)[i]))
-        return(result)
+        }
+        
+        result
     })
     
     names(x) <- names(segments_per_sample)
@@ -179,6 +191,7 @@ setMethod("createFilters", signature("CNVObject"), function(object, tick.thresho
     if (length(filters(object)) > 0) {
         warning("Filters already generated for the CNVObject; overwriting them.")
     }
+    
     filters <- lapply(segments(object), function(sample) as.numeric(sample[, "num.mark"]) >= 
         tick.threshold & as.numeric(sample[, "adjusted.pvalue"]) <= pvalue.threshold)
     object@filters <- filters
