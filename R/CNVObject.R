@@ -166,10 +166,10 @@ setGeneric("usedProbes<-",
            function(object, value) standardGeneric("usedProbes<-"))
        
 setGeneric("sampleChipRows<-",
-           function(object, value) standardGeneric("sampleChipRows"))
+           function(object, value) standardGeneric("sampleChipRows<-"))
        
 setGeneric("sampleChipColumns<-",
-           function(object, value) standardGeneric("sampleChipColumns"))
+           function(object, value) standardGeneric("sampleChipColumns<-"))
        
 setGeneric("sampleChipIDs<-",
-           function(object, value) standardGeneric("sampleChipIDs"))
+           function(object, value) standardGeneric("sampleChipIDs<-"))
