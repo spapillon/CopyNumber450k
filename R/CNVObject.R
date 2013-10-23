@@ -74,9 +74,9 @@ setGeneric("subgroupDifference", function(object, group1_indices, group2_indices
 
 # Plotting Methods
 
-setGeneric("plotSex", function(object) standardGeneric("plotSex"))
-
 setGeneric("plotSample", function(object, index, chr, start, end) standardGeneric("plotSample"))
+
+setGeneric("plotSex", function(object) standardGeneric("plotSex"))
 
 setGeneric("plotDensity", function(object, color.by = c("sentrix.row", "sentrix.col", 
     "sample.group", "chip.id"), color.function = rainbow, legend.position = "topright") standardGeneric("plotDensity"))
