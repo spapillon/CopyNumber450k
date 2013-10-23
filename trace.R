@@ -43,7 +43,9 @@ CNVobj <- CNVObject(RGset)
 sampleSexes(CNVobj) <- predictSex(CNVobj)
 sampleGroups(CNVobj) <- pData(RGset)$Sample_Group
 sampleNames(CNVobj) <- pData(RGset)$Sample_Name
-
+sampleChipIDs(CNVobj) <- pData(RGset)$Slide
+sampleChipRows(CNVobj) <- substr(pData(RGset)$Array, 1,3)
+sampleChipColumns(CNVobj) <- substr(pData(RGset)$Array, 4,6)
 
 
 #rm(RGset, control_RGset, case_RGset)
