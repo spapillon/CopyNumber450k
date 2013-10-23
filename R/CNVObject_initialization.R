@@ -16,10 +16,10 @@ setMethod("initialize", signature("CNVObject"), function(.Object, RGset) {
     # TODO: Find a more elegant solution for this
     require(GEOquery)
     annotation <- Table(getGEO("GPL13534"))
-    # ---
-    
     rownames(annotation) <- as.character(annotation$ID)
     annotation <- annotation[as.character(rownames(intensityMatrix(.Object))), ]
+    # ---
+    
     .Object@probe_annotation <- annotation
     .Object@used_probes <- rep(TRUE, nrow(annotation))
     sampleSexes(.Object) <- predictSex(.Object)

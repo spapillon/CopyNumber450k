@@ -1,17 +1,4 @@
 - Uniformize the probe annotation (use the one from minfi)
-- Fix the "gene" calling, stop using genes nearby probes and focus on genes overlapping genomic segments.
+- Fix the "gene" calling, stop using genes nearby probes and focus on genes
+  overlapping genomic segments.
 - Add band calls in formatSegments
-
-
-Nic:
-- Rename subgroupsDifferenceCNVByType.  Also, this method method should not be seen by user (internal).
-- Consider internalizing normalization methods.  Everything should be CNVobject centric.
-- Internalize extractFromRGset450k ??
-> If you do not export these methods/functions no one will see them. The normalization
-> methods should NOT be visible (we won't document it) but power users can give it a shot.
-> I am assuming that the input is not CNVObject so it's going to be fine.  I really think
-> it's a good idea to HIDE it, but keep the functions on their own -- we will create a new
-> .R document containing the "general" functions we hide but use internally.
-
-Question to YOU now:
-> Do you remember if we had to document both generics AND methods back in the mRMRe project?
