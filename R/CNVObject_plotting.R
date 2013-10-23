@@ -87,7 +87,7 @@ setMethod("plotSex",
 setMethod("plotDensity",
           signature("CNVObject"),
           function(object, color.by, color.function, legend.position) {
-  int_matrix <- intensityMatrix(object)
+  int_matrix <- intensityMatrix(object)[usedProbes(object), ]          
 	coloring <- getColors(object, color.by, color.function)
   myPlot <- plot(density(int_matrix), col=coloring$sample.colors[1], ylim=c(0,9e-5), main=match.arg(color.by))
 	sapply(2:ncol(int_matrix), function(i) lines(density(int_matrix[,i]), col=coloring$sample.colors[i]))
@@ -101,7 +101,7 @@ setMethod("plotDensity",
 setMethod("plotPCA",
           signature("CNVObject"),
           function(object, color.by, color.function, legend.position) {
-  int_matrix <- intensityMatrix(object)
+  int_matrix <- intensityMatrix(object)[usedProbes(object), ]
   coloring <- getColors(object, color.by, color.function)
   pca <- prcomp(t(int_matrix))
   myPlot <- plot(pca$x, col=coloring$sample.colors, main=match.arg(color.by))
