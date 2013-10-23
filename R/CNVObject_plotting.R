@@ -105,7 +105,7 @@ setMethod("getColors",
   } else if(coloring == "sample.group") {
     samples <- sampleGroups(object)
   } else if(coloring == "chip.id") {
-    samples <- sampleChipID(object)
+    samples <- sampleChipIDs(object)
   }
   
   cols <- color.function(length(unique(samples)))

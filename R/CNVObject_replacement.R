@@ -137,7 +137,7 @@ setReplaceMethod("sampleChipIDs",
                 function(object,
                          value) {
       
-  object@sample_chip_id <- value
+  object@sample_chip_ids <- value
  })
 
 

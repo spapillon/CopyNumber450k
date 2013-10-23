@@ -12,7 +12,10 @@ setClass("CNVObject",
                         used_probes      = "logical",
                         probe_annotation = "data.frame",
                         intensity_matrix = "matrix",
-                        is_normalized    = "logical"),
+                        is_normalized    = "logical",
+                        sample_chip_ids = "character",
+                        sample_chip_rows = "character",
+                        sample_chip_columns = "character"),
          contains = c("RGChannelSet"))
 
 CNVObject <- function(RGset) new("CNVObject", RGset)
@@ -93,7 +96,7 @@ setGeneric("sampleChipColumns",
            function(object) standardGeneric("sampleChipColumns"))
        
 setGeneric("sampleChipIDs",
-           function(object) standardGeneric("sampleChipID"))
+           function(object) standardGeneric("sampleChipIDs"))
 
 
 #
@@ -169,4 +172,4 @@ setGeneric("sampleChipColumns<-",
            function(object, value) standardGeneric("sampleChipColumns"))
        
 setGeneric("sampleChipIDs<-",
-           function(object, value) standardGeneric("sampleChipID"))
+           function(object, value) standardGeneric("sampleChipIDs"))

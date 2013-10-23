@@ -43,10 +43,13 @@ setMethod("isNormalized",
           function(object) object@is_normalized)
       
 setMethod("sampleChipRows",
+          signature("CNVObject"),
           function(object) object@sample_chip_rows)
       
 setMethod("sampleChipColumns",
+          signature("CNVObject"),
           function(object) object@sample_chip_columns)
       
 setMethod("sampleChipIDs",
-          function(object) object@sample_chip_id)
+          signature("CNVObject"),
+          function(object) object@sample_chip_ids)
