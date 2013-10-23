@@ -121,15 +121,17 @@ setReplaceMethod("sampleChipRows",
                  function(object,
                           value) {
                         
-  object@sample_chip_rows <- value
+  object@sample_chip_rows <- as.character(value)
+  object
 })
 
 setReplaceMethod("sampleChipColumns",
                  signature("CNVObject"),
                  function(object,
-                 value) {
+                          value) {
                
-  object@sample_chip_columns <- value
+  object@sample_chip_columns <- as.character(value)
+  object
 })
 
 setReplaceMethod("sampleChipIDs",
@@ -137,7 +139,8 @@ setReplaceMethod("sampleChipIDs",
                 function(object,
                          value) {
       
-  object@sample_chip_ids <- value
+  object@sample_chip_ids <- as.character(value)
+  object
  })
 
 
