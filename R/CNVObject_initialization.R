@@ -86,7 +86,7 @@ setMethod("normalize", signature("CNVObject"), function(object, type) {
 	object
 })
 
-setMethod("buildSegments", signature("CNVObject"), function(object, verbose) {
+setMethod("segmentize", signature("CNVObject"), function(object, verbose) {
 	if(length(segments(object)) > 0)
 		stop("This object has already been segmented")
 	used_probes <- usedProbes(object)

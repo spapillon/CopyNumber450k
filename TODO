@@ -1,15 +1,9 @@
-- Consider only same sex individuals in formatSegments to infer distribution
 - Uniformize the probe annotation (use the one from minfi)
 - Fix the "gene" calling, stop using genes nearby probes and focus on genes overlapping genomic segments.
 - Add band calls in formatSegments
 
 
 Nic:
-- Consider merging formatSegments() into buildSegments(). Is it a good idea? Or maybe change formatSegments() to a CNVobject method. But this should be hidden from the user since this method is mendatory.
-> YES, Agreed. Rename to SEGMENTIZE?
-
-- Add sexes in formatSegments().  For chr X and Y, we have to compare to the distributions of same-sex individuals.
-
 - Rename subgroupsDifferenceCNVByType.  Also, this method method should not be seen by user (internal).
 - Consider internalizing normalization methods.  Everything should be CNVobject centric.
 - Internalize extractFromRGset450k ??
@@ -18,11 +12,6 @@ Nic:
 > I am assuming that the input is not CNVObject so it's going to be fine.  I really think
 > it's a good idea to HIDE it, but keep the functions on their own -- we will create a new
 > .R document containing the "general" functions we hide but use internally.
-
-- Currently, the plot() and plotRegion() take a path in parameter and generates pngs with hardcoded dims.  I don't like to force that, but those methods generate 1 plot per sample. How to do this user-friendly? Also, I want to avoid having 23234234 params in the function.
-> One plot per sample is the cleanest way.  In the documentation we give an example
-> whereby plots are generated iteratively for all samples.  We might even create a wrapper
-> for the users. 
 
 Question to YOU now:
 > Do you remember if we had to document both generics AND methods back in the mRMRe project?
