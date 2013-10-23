@@ -85,13 +85,33 @@ setMethod("plotSex",
 })
 
 setMethod("plotDensity",
-    signature("CNVObject"),
-    function(object, color.by, color.function) {
+          signature("CNVObject"),
+          function(object, color.by, color.function, legend.position) {
+  int_matrix <- intensityMatrix(object)
+	coloring <- getColors(object, color.by, color.function)
+  myPlot <- plot(density(int_matrix), col=coloring$sample.colors[1], ylim=c(0,9e-5), main=match.arg(color.by))
+	sapply(2:ncol(int_matrix), function(i) lines(density(int_matrix[,i]), col=coloring$sample.colors[i]))
   
-	col_vec <- getColors(object, color.by, color.function)
-  plot(density(int_matrix), col=col_vec[1], ylim=c(0,9e-5))
-	sapply(2:ncol(int_matrix), function(i) lines(density(int_matrix[,i]), col=col_vec[i]))	
+  if(!is.null(legend.position))
+    legend(legend.position, legend=coloring$groups, fill=coloring$group.colors)
+  
+  myPlot
 })
+
+setMethod("plotPCA",
+          signature("CNVObject"),
+          function(object, color.by, color.function, legend.position) {
+  int_matrix <- intensityMatrix(object)
+  coloring <- getColors(object, color.by, color.function)
+  pca <- prcomp(t(int_matrix))
+  myPlot <- plot(pca$x, col=coloring$sample.colors, main=match.arg(color.by))
+	      
+  if(!is.null(legend.position))
+    legend(legend.position, legend=coloring$groups, fill=coloring$group.colors)
+  
+  myPlot
+ })
+
 
 setMethod("getColors",
     signature("CNVObject"),
@@ -110,6 +130,5 @@ setMethod("getColors",
   
   cols <- color.function(length(unique(samples)))
 	col_vec <- cols[match(samples, unique(samples))]
+  return(list(sample.colors = col_vec, groups = unique(samples), group.colors = cols))
 })
-
-

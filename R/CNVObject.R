@@ -141,7 +141,14 @@ setGeneric("predictSex",
 setGeneric("plotDensity",
            function(object,
                     color.by = c("sentrix.row", "sentrix.col", "sample.group", "chip.id"),
-                    color.function = rainbow) standardGeneric("plotDensity"))
+                    color.function = rainbow,
+                    legend.position = "topright") standardGeneric("plotDensity"))
+            
+setGeneric("plotPCA",
+           function(object,
+                    color.by = c("sentrix.row", "sentrix.col", "sample.group", "chip.id"),
+                    color.function = rainbow,
+                    legend.position = "topright") standardGeneric("plotPCA"))
             
 setGeneric("getColors",
            function(object,
