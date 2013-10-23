@@ -18,6 +18,4 @@ Collate: CNVObject.R
   CNVObject_plotting.R
   quantileNormalization.R
   functionalNormalization.R
-  subgroupDifferenceCNVByType.R
-  formatSegments.R
   extractFromRGSet450k.R

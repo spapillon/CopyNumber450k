@@ -22,11 +22,8 @@ source('~/git/CopyNumber450k/R/CNVObject_replacement.R')
 source('~/git/CopyNumber450k/R/CNVObject_comparison.R')
 source('~/git/CopyNumber450k/R/CNVObject_plotting.R')
 
-source('~/git/CopyNumber450k/R/formatSegments.R')
 source('~/git/CopyNumber450k/R/functionalNormalization.R')
 source('~/git/CopyNumber450k/R/quantileNormalization.R')
-source('~/git/CopyNumber450k/R/subgroupDifferenceCNVByType.R')
-
 
 path <- '~/Documents/iChange/data_ETMR'
 load('~/git/CopyNumber450k/data/control_RGset.RData')
