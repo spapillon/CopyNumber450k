@@ -91,16 +91,18 @@ setGeneric("getColors", function(object, color.by = c("sentrix.row", "sentrix.co
 
 # Replacement methods
 
-setGeneric("probesAnnotation<-", function(object, value) standardGeneric("probesAnnotation<-"))
+setGeneric("probesAnnotation<-", function(object, annotation) standardGeneric("probesAnnotation<-"))
 
-setGeneric("sampleGroups<-", function(object, value) standardGeneric("sampleGroups<-"))
+setGeneric("usedProbes<-", function(object, probes) standardGeneric("usedProbes<-"))
 
-setGeneric("sampleSexes<-", function(object, value) standardGeneric("sampleSexes<-"))
+setGeneric("sampleGroups<-", function(object, groups) standardGeneric("sampleGroups<-"))
 
-setGeneric("usedProbes<-", function(object, value) standardGeneric("usedProbes<-"))
+setGeneric("sampleSexes<-", function(object, sexes) standardGeneric("sampleSexes<-"))
 
-setGeneric("sampleChipRows<-", function(object, value) standardGeneric("sampleChipRows<-"))
+setGeneric("sampleNames<-", function(object, names) standardGeneric("standardNames<-"))
 
-setGeneric("sampleChipColumns<-", function(object, value) standardGeneric("sampleChipColumns<-"))
+setGeneric("sampleChipRows<-", function(object, chipRows) standardGeneric("sampleChipRows<-"))
 
-setGeneric("sampleChipIDs<-", function(object, value) standardGeneric("sampleChipIDs<-")) 
+setGeneric("sampleChipColumns<-", function(object, chipColumns) standardGeneric("sampleChipColumns<-"))
+
+setGeneric("sampleChipIDs<-", function(object, chipIDs) standardGeneric("sampleChipIDs<-")) 
