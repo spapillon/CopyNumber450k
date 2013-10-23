@@ -115,3 +115,29 @@ setReplaceMethod("usedProbes",
   object@used_probes <- value
   object
 })
+
+setReplaceMethod("sampleChipRows",
+                 signature("CNVObject"),
+                 function(object,
+                          value) {
+                        
+  object@sample_chip_rows <- value
+})
+
+setReplaceMethod("sampleChipColumns",
+                 signature("CNVObject"),
+                 function(object,
+                 value) {
+               
+  object@sample_chip_columns <- value
+})
+
+setReplaceMethod("sampleChipIDs",
+                 signature("CNVObject"),
+                function(object,
+                         value) {
+      
+  object@sample_chip_id <- value
+ })
+
+

@@ -41,3 +41,12 @@ setMethod("usedProbes",
 setMethod("isNormalized",
           signature("CNVObject"),
           function(object) object@is_normalized)
+      
+setMethod("sampleChipRows",
+          function(object) object@sample_chip_rows)
+      
+setMethod("sampleChipColumns",
+          function(object) object@sample_chip_columns)
+      
+setMethod("sampleChipIDs",
+          function(object) object@sample_chip_id)

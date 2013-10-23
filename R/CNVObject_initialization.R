@@ -5,7 +5,8 @@
 
 
 setClass("CNVObject", representation(RGSetSummary = "list", segments = "list", filters = "list", sample_groups = "character", sample_sexes = "character",
-				sample_names = "character" ,used_probes = "logical", probe_annotation = "data.frame", intensity_matrix = "matrix", is_normalized = "logical"),
+				sample_names = "character" ,used_probes = "logical", probe_annotation = "data.frame", intensity_matrix = "matrix", is_normalized = "logical", 
+        sample_chip_ids = "character", sample_chip_rows = "character", sample_chip_columns = "character"),
 				contains=c("RGChannelSet"))
 
 CNVObject <- function(RGset) {

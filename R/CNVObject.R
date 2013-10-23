@@ -43,7 +43,7 @@ setGeneric("segmentize",
                     verbose = T,
                     p.adjust.method = "bonferroni",
                     plotting = F)
-            standardGeneric("buildSegments"))
+            standardGeneric("segmentize"))
 
 setGeneric("createFilters",
            function(object,
@@ -86,6 +86,14 @@ setGeneric("usedProbes",
 setGeneric("isNormalized",
            function(object) standardGeneric("isNormalized"))
        
+setGeneric("sampleChipRows",
+           function(object) standardGeneric("sampleChipRows"))
+       
+setGeneric("sampleChipColumns",
+           function(object) standardGeneric("sampleChipColumns"))
+       
+setGeneric("sampleChipIDs",
+           function(object) standardGeneric("sampleChipID"))
 
 
 #
@@ -126,7 +134,16 @@ setGeneric("plotSample",
 setGeneric("predictSex",
            function(object,
                     threshold = -3) standardGeneric("predictSex"))
-
+            
+setGeneric("plotDensity",
+           function(object,
+                    color.by = c("sentrix.row", "sentrix.col", "sample.group", "chip.id"),
+                    color.function = rainbow) standardGeneric("plotDensity"))
+            
+setGeneric("getColors",
+           function(object,
+                    color.by = c("sentrix.row", "sentrix.col", "sample.group", "chip.id"),
+                    color.function = rainbow) standardGeneric("getColors"))
 
 
 #
@@ -144,3 +161,12 @@ setGeneric("sampleSexes<-",
 
 setGeneric("usedProbes<-",
            function(object, value) standardGeneric("usedProbes<-"))
+       
+setGeneric("sampleChipRows<-",
+           function(object, value) standardGeneric("sampleChipRows"))
+       
+setGeneric("sampleChipColumns<-",
+           function(object, value) standardGeneric("sampleChipColumns"))
+       
+setGeneric("sampleChipIDs<-",
+           function(object, value) standardGeneric("sampleChipID"))

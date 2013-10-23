@@ -84,3 +84,32 @@ setMethod("plotSex",
 	text(x = -1, y = 0.5, label = "Male", col = "red")
 })
 
+setMethod("plotDensity",
+    signature("CNVObject"),
+    function(object, color.by, color.function) {
+  
+	col_vec <- getColors(object, color.by, color.function)
+  plot(density(int_matrix), col=col_vec[1], ylim=c(0,9e-5))
+	sapply(2:ncol(int_matrix), function(i) lines(density(int_matrix[,i]), col=col_vec[i]))	
+})
+
+setMethod("getColors",
+    signature("CNVObject"),
+    function(object, color.by, color.function) {
+
+  coloring <- match.arg(color.by)
+  if(coloring == "sentrix.row") {
+    samples <- sampleChipRows(object)
+	} else if(coloring == "sentrix.col") {
+    samples <- sampleChipColumns(object)
+  } else if(coloring == "sample.group") {
+    samples <- sampleGroups(object)
+  } else if(coloring == "chip.id") {
+    samples <- sampleChipID(object)
+  }
+  
+  cols <- color.function(length(unique(samples)))
+	col_vec <- cols[match(samples, unique(samples))]
+})
+
+
