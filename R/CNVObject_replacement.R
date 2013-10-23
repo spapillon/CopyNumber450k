@@ -82,5 +82,5 @@ setReplaceMethod("sampleChipColumns", signature("CNVObject"), function(object, c
 setReplaceMethod("sampleChipIDs", signature("CNVObject"), function(object, chipIDs) {
     object@sample_chip_ids <- as.character(chipIDs)
     object
-}) 
-
+})
+ 

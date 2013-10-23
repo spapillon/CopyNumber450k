@@ -11,7 +11,7 @@ setMethod("plotSample", signature("CNVObject"), function(object, index, chr, sta
         chromosomes <- unique(sample_segments[, "chrom"])
         idx <- which(chromosomes %in% c("X", "Y"))
         chromosomes <- sort(as.numeric(chromosomes[-idx]))
-
+        
         site_per_chr <- cumsum(c(0, sapply(chromosomes, function(chr) max(as.numeric(sample_segments[sample_segments[, 
             "chrom"] == chr, "loc.end"])))))
         offset <- site_per_chr - min(as.numeric(sample_segments[sample_segments[, 
@@ -60,8 +60,8 @@ setMethod("plotSample", signature("CNVObject"), function(object, index, chr, sta
 
 setMethod("plotSex", signature("CNVObject"), function(object) {
     cnQuantiles <- object@RGSetSummary$cnQuantiles
-    myPlot <- plot(log2(cnQuantiles$Y[250, ]) - log2(cnQuantiles$X[250, ]), rep(0, length(cnQuantiles$Y[250, 
-        ])))
+    myPlot <- plot(log2(cnQuantiles$Y[250, ]) - log2(cnQuantiles$X[250, ]), rep(0, 
+        length(cnQuantiles$Y[250, ])))
     abline(v = -3, lty = 3, col = "red")
     text(x = -4, y = 0.5, label = "Female", col = "red")
     text(x = -1, y = 0.5, label = "Male", col = "red")

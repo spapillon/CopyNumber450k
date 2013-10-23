@@ -38,7 +38,8 @@ setMethod("filterSNPProbes", signature("CNVObject"), function(object) {
 })
 
 setMethod("filterVariantProbes", signature("CNVObject"), function(object, variance_centile) {
-    # The variance_centile argument is the % of the most variant sites you want to remove.
+    # The variance_centile argument is the % of the most variant sites you want to
+    # remove.
     if (!is.numeric(variance_centile) || length(variance_centile) != 1 || variance_centile <= 
         0 | variance_centile >= 1) {
         stop("Expected argument `variance_centile` to be a numerical element between ]0, 1[.")
@@ -59,13 +60,13 @@ setMethod("predictSex", signature("CNVObject"), function(object, threshold) {
 
 setMethod("normalize", signature("CNVObject"), function(object, type) {
     method <- match.arg(type)
-            
+    
     if (isNormalized(object)) {
         stop("CNVObject has already been normalized.")
     } else if (!method %in% c("functional", "quantile")) {
         stop("Expected argument [normalization] `type` to be {default, quantile}.")
     }
-
+    
     if (method == "functional") {
         object@intensity_matrix <- functionalNormalization(cnMatrix = intensityMatrix(object)[usedProbes(object), 
             ], extractedData = RGSetSummary(object), predictedSex = sampleSexes(object))
@@ -74,7 +75,8 @@ setMethod("normalize", signature("CNVObject"), function(object, type) {
             ], predictedSex = sampleSexes(object))
     }
     
-    # The returned matrix has dropped the FALSE usedProbes, remove other objects accordingly.
+    # The returned matrix has dropped the FALSE usedProbes, remove other objects
+    # accordingly.
     probesAnnotation(object) <- probesAnnotation(object)[usedProbes(object), ]
     usedProbes(object) <- rep(TRUE, sum(usedProbes(object)))
     object@is_normalized <- TRUE
@@ -128,7 +130,8 @@ setMethod("segmentize", signature("CNVObject"), function(object, verbose, p.adju
         }
         
         result <- t(apply(segments_per_sample[[i]], 1, function(cnv) {
-            # When assessing sexual chromosomes, only consider controls of the same sex as the sample.
+            # When assessing sexual chromosomes, only consider controls of the same sex as
+            # the sample.
             if (cnv["chrom"] %in% c("X", "Y")) {
                 used_controls <- control_sexes == case_sexes[i]
             } else {
