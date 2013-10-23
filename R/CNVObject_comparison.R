@@ -2,28 +2,29 @@
 
 setMethod("findCNV", signature("CNVObject"), function(object, CNVs, type) {
     if (!is.character(CNVs)) {
-        stop("Expected argument CNVs to be a character vector.")
+        stop("Expected argument `CNVs` to be a character vector.")
+    } else if (!gain %in% c("gain", "loss", "both")) {
+        stop("Expected argument [CNV] `type` to be {gain, loss, both}.")
     }
     
     segments_list <- segments(object)
     filters_list <- filters(object)
     
-    # TODO: Highly inefficient loop because static variable 'type' is evaluated every
-    # iteration Suggestion define three functions and pass them by parameter if (type
-    # == 'both') op <- function (i) filters_list[[i]] else if (type == 'gain') op <-
-    # ...  else if (type == 'loss') op <- ...  else stop('Expected argument type to
-    # be {both, gain, loss}.') x <- sapply(..., function(i) { used_CNVs <- op(i); ...
-    # }
+    if (type == "both") {
+        op <- function(a) TRUE
+    } else if (type == "gain") {
+        op <- function(a) a[, "logratio"] > 0
+    } else if (type == "loss") {
+        op <- function(a) a[, "logratio"] < 0
+    }
+    
     x <- sapply(1:length(segments_list), function(i) {
-        if (type == "both") 
-            used_CNVs <- filters_list[[i]] else if (type == "gain") 
-            used_CNVs <- segments_list[[i]][, "logratio"] > 0 & filters_list[[i]] else if (type == "loss") 
-            used_CNVs <- segments_list[[i]][, "logratio"] < 0 & filters_list[[i]]
-        
+        used_CNVs <- op(segments_list[[i]]) & filters_list[[i]]
         genes <- unique(unlist(strsplit(x = segments_list[[i]][used_CNVs, "genes"], 
             ";")))
-        return(CNVs %in% genes)
+        CNVs %in% genes
     })
+    
     ifelse(is.matrix(x), x <- t(x), x <- as.matrix(x))
     rownames(x) <- names(segments_list)
     colnames(x) <- CNVs
@@ -38,56 +39,73 @@ setMethod("intersectCNV", signature("CNVObject"), function(object, sample_indice
         sample_indices <- 1:sample_count
     }
     
-    if (!is.numeric(sample_indices) || length(setdiff(sample_indices, 1:sample_count)) > 
-        0) {
-        stop("Expected argument sample_indices to be a integer vector with values corresponding to existing samples indices.")
+    if (!is.integer(sample_indices)) {
+        stop("Expected argument `sample_indices` to be a integer vector.")
+    } else if (length(setdiff(sample_indices, 1:sample_count)) > 0) {
+        stop("Expected argument `sample_indices` elements must exist in CNVObject.")
+    } else if (!gain %in% c("gain", "loss", "both")) {
+        stop("Expected argument [CNV] `type` to be {gain, loss, both}.")
     }
     
     segments_list <- segments(object)[sample_indices]
     filters_list <- filters(object)[sample_indices]
     
-    # TODO: See above function (findCNV)
+    if (type == "both") {
+        op <- function(a) TRUE
+    } else if (type == "gain") {
+        op <- function(a) a[, "logratio"] > 0
+    } else if (type == "loss") {
+        op <- function(a) a[, "logratio"] < 0
+    }
+    
     x <- unlist(sapply(1:length(segments_list), function(i) {
-        if (type == "both") 
-            used_CNVs <- filters_list[[i]] else if (type == "gain") 
-            used_CNVs <- segments_list[[i]][, "logratio"] > 0 & filters_list[[i]] else if (type == "loss") 
-            used_CNVs <- segments_list[[i]][, "logratio"] < 0 & filters_list[[i]]
+        used_CNVs <- op(segments_list[[i]]) & filters_list[[i]]
         unique(unlist(strsplit(x = segments_list[[i]][used_CNVs, "genes"], ";")))
     }))
     
     sort(table(x), decreasing = TRUE)
 })
 
-# Private 'method' for use in 'subgroupDifference'
+# Internal method for CNVObject::subgroupDifference
 subgroupDifferenceCNVByType <- function(group1_CNVs, group2_CNVs, group1_size, group2_size) {
     target_CNVs <- unique(c(names(group1_CNVs), names(group2_CNVs)))
     x <- t(sapply(target_CNVs, function(cnv) {
-        if (cnv %in% names(group1_CNVs)) 
-            group1_hit <- group1_CNVs[cnv] else group1_hit <- 0
+        if (cnv %in% names(group1_CNVs)) {
+            group1_hit <- group1_CNVs[cnv]
+        } else {
+            group1_hit <- 0
+        }
         group1_fail <- group1_size - group1_hit
-        if (cnv %in% names(group2_CNVs)) 
-            group2_hit <- group2_CNVs[cnv] else group2_hit <- 0
+        
+        if (cnv %in% names(group2_CNVs)) {
+            group2_hit <- group2_CNVs[cnv]
+        } else {
+            group2_hit <- 0
+        }
         group2_fail <- group2_size - group2_hit
+        
         pvalue <- fisher.test(matrix(c(group1_hit, group2_hit, group1_fail, group2_fail), 
             2))$p.value
-        return(c(group1_hit, group2_hit, pvalue))
+        c(group1_hit, group2_hit, pvalue)
     }))
+    
     x <- x[order(x[, 3]), ]
-    return(x)
 }
 
 setMethod("subgroupDifference", signature("CNVObject"), function(object, group1_indices, 
     group2_indices) {
     sample_count <- length(segments(object))
     
-    if (!is.numeric(group1_indices) || length(setdiff(group1_indices, 1:sample_count)) > 
-        0) {
-        stop("Expected group1_indices argument to be a integer vector with values corresponding to existing samples indices.")
+    if (!is.integer(group1_indices)) {
+        stop("Expected argument `group1_indices` to be a integer vector.")
+    } else if (length(setdiff(group1_indices, 1:sample_count)) > 0) {
+        stop("Expected argument `group1_indices` elements must exist in CNVObject.")
     }
     
-    if (!is.numeric(group2_indices) || length(setdiff(group1_indices, 1:sample_count)) > 
-        0) {
-        stop("Expected group2_indices argument to be a integer vector with values corresponding to existing samples indices.")
+    if (!is.integer(group2_indices)) {
+        stop("Expected argument `group2_indices` to be a integer vector.")
+    } else if (length(setdiff(group2_indices, 1:sample_count)) > 0) {
+        stop("Expected argument `group2_indices` elements must exist in CNVObject.")
     }
     
     if (length(intersect(group1_indices, group2_indices)) > 0) {
