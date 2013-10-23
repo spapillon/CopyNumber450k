@@ -86,7 +86,7 @@ setMethod("normalize", signature("CNVObject"), function(object, type) {
 	object
 })
 
-setMethod("segmentize", signature("CNVObject"), function(object, verbose) {
+setMethod("segmentize", signature("CNVObject"), function(object, verbose, p.adjust.method, plotting) {
 	if(length(segments(object)) > 0)
 		stop("This object has already been segmented")
 	used_probes <- usedProbes(object)
@@ -119,8 +119,7 @@ setMethod("segmentize", signature("CNVObject"), function(object, verbose) {
   
   segments_per_sample <- lapply(unique(all_segments$ID), function(sample) all_segments[all_segments$ID == sample,-1])
   names(segments_per_sample) <- unique(all_segments$ID)
-  plotting <- TRUE
-  p.adjust.method <- "bonferroni"
+
   x <- lapply(1:length(segments_per_sample), function(i) {
         if(plotting)
           pdf(paste(path, "/", names(segments_per_sample)[i], ".pdf", sep=""))

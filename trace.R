@@ -36,7 +36,7 @@ load('~/git/CopyNumber450k/data/control_RGset.RData')
 #RGset <- combine(control_RGset, case_RGset)
 
 #ndejay-specific
-pData(control_RGset)$Sample_Group[1:10] <- "case"
+pData(control_RGset)$Sample_Group[1] <- "case"
 RGset <- control_RGset
 
 CNVobj <- CNVObject(RGset)
@@ -53,9 +53,9 @@ CNVobj <- filterSNPProbes(CNVobj)
 CNVobj_norm <- normalize(CNVobj)
 CNVobj_norm2 <- normalize(CNVobj, "quantile")
 
-CNVobj <- buildSegments(CNVobj)
-CNVobj_norm <- buildSegments(CNVobj_norm)
-CNVobj_norm2 <- buildSegments(CNVobj_norm2)
+CNVobj <- segmentize(CNVobj)
+CNVobj_norm <- segmentize(CNVobj_norm)
+CNVobj_norm2 <- segmentize(CNVobj_norm2)
 
 CNVobj <- createFilters(CNVobj)
 CNVobj_norm <- createFilters(CNVobj_norm)

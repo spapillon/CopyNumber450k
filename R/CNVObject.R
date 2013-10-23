@@ -38,9 +38,12 @@ setGeneric("normalize",
              standardGeneric("normalize")
            })
 
-setGeneric("buildSegments",
+setGeneric("segmentize",
            function(object,
-                    verbose = T) standardGeneric("buildSegments"))
+                    verbose = T,
+                    p.adjust.method = "bonferroni",
+                    plotting = F)
+            standardGeneric("buildSegments"))
 
 setGeneric("createFilters",
            function(object,
