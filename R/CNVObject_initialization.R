@@ -3,11 +3,6 @@
 # Author: spapillo
 ###############################################################################
 
-
-CNVObject <- function(RGset) {
-	return(new("CNVObject", RGset))
-}
-
 setMethod("initialize", signature("CNVObject"), function(.Object, RGset) {
 	
 	message("Extracting RGset data")
