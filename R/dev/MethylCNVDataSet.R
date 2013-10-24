@@ -1,8 +1,13 @@
-setClass("MethylCNVDataSet", representation(summary = "list"), contains = "eSet")
+setClass("MethylCNVDataSet", representation(summary = "list", segments = "list"), 
+    contains = "eSet")
+
+
 
 setMethod("initialize", signature("MethylCNVDataSet"), function(.Object, ...) {
     .Object <- callNextMethod(.Object, ...)
 })
+
+
 
 MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     if (!is(RGChannelSet, "RGChannelSet")) {
@@ -30,7 +35,7 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     }
     
     phenoData <- AnnotatedDataFrame(data.frame(sex = sexes, group = groups[sampleNames], 
-                    row.names = sampleNames))
+        row.names = sampleNames))
     
     # Feature covariates
     featuresUsed <- rep(TRUE, length(featureNames))
@@ -46,8 +51,10 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     ### (AnnotatedDataFrame-class): protocolData
     
     new("MethylCNVDataSet", summary = summary, assayData = assayData, phenoData = phenoData, 
-            featureData = featureData, annotation = annotation)
+        featureData = featureData, annotation = annotation)
 }
+
+
 
 setGeneric("predictSampleSexes", function(object, threshold = -3) standardGeneric("predictSampleSexes"))
 

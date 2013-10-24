@@ -1,0 +1,16 @@
+findCNV
+intersectCNV
+subgroupDifference
+
+plotSample
+plotSex
+plotDensity
+plotPCA
+getColors
+
+segmentize
+normalize
+
+createFilters
+filterSNPProbes
+filterVariantProbes

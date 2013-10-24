@@ -10,6 +10,7 @@ source("~/git/CopyNumber450k/R/dev/normalization.functional.R")
 source("~/git/CopyNumber450k/R/dev/normalization.quantile.R")
 
 source("~/git/CopyNumber450k/R/dev/MethylCNVDataSet.R")
+source("~/git/CopyNumber450k/R/dev/MethylCNVDataSet.transformation.R")
 
 
 mcds <- MethylCNVDataSetFromRGChannelSet(control_RGset) 
