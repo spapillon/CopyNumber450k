@@ -59,7 +59,7 @@ extractFromRGSet450k <- function(RGSet) {
     probesII <- getProbeInfo(IlluminaHumanMethylation450kmanifest, type = "II")
     
     ### Chr probes:
-    locations <- getLocations(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
+    locations <- getLocations(RGSet)
     autosomal <- names(locations[seqnames(locations) %in% paste0("chr", 1:22)])
     chrY <- names(locations[seqnames(locations) == "chrY"])
     chrX <- names(locations[seqnames(locations) == "chrX"])
