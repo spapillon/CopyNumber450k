@@ -152,8 +152,8 @@ summarizeRGChannelSet <- function(RGChannelSet) {
     probs <- seq(0, 1, 1/(nq - 1))
     
     for (i in 1:5) {
-        mQuantiles[[i]] <- apply(mValues[indList[[i]], ], 2, function(x) quantile(x, probs = probs, 
-            na.rm = T))
+        mQuantiles[[i]] <- apply(mValues[indList[[i]], ], 2, function(x) quantile(x, 
+            probs = probs, na.rm = T))
         betaQuantiles[[i]] <- apply(betaValues[indList[[i]], ], 2, function(x) quantile(x, 
             probs = probs, na.rm = T))
         methQuantiles[[i]] <- apply(methylated[indList[[i]], ], 2, function(x) quantile(x, 
