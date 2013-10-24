@@ -9,12 +9,14 @@ setMethod("initialize", signature("MethylCNVDataSet"), function(.Object, RGSet) 
     mSet <- preprocessRaw(RGSet)
     assayData <- assayDataNew(storage.mode = "lockedEnvironment", intensity = getMeth(mSet) + 
         getUnmeth(mSet))
+    featureNames <- featureNames(assayData)
     
     ### Sample covariates (AnnotatedDataFrame-class): phenoData
+    phenoData <- AnnotatedDataFrame(data.frame(sex = rep(NA, ncol(assayData$intensity))))
     
     # Feature covariates (AnnotatedDataFrame-class)
-    featureData <- AnnotatedDataFrame(data.frame(isUsed = rep(TRUE, nrow(assayData$intensity))))
-    ### fvarMetadata / fvarLabels
+    featureData <- AnnotatedDataFrame(data.frame(isUsed = rep(TRUE, length(featureNames)), 
+        row.names = featureNames))
     
     ### Experimental description (MIAxE): experimentData
     
@@ -25,5 +27,5 @@ setMethod("initialize", signature("MethylCNVDataSet"), function(.Object, RGSet) 
     ### (AnnotatedDataFrame-class): protocolData
     
     .Object <- callNextMethod(.Object, assayData = assayData, featureData = featureData, 
-        annotation)
+        annotation = annotation)
 }) 
