@@ -4,12 +4,9 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     }
     
     # Summary of methylation data
-    
-    # summary <- summarizeRGChannelSet(RGChannelSet)
-    summary <- list()
+    summary <- summarizeRGChannelSet(RGChannelSet)
     
     # High-throughput data
-    
     MSet <- preprocessRaw(RGSet)
     intensities <- getMeth(MSet) + getUnmeth(MSet)
     assayData <- assayDataNew(storage.mode = "lockedEnvironment", intensity = intensities)
@@ -17,7 +14,6 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     featureNames <- featureNames(assayData)
     
     # Sample covariates
-    
     sexes <- rep(NA, ncol(assayData$intensity))
     names(sexes) <- sampleNames
     
@@ -31,7 +27,6 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
         row.names = sampleNames))
     
     # Feature covariates
-    
     featuresUsed <- rep(TRUE, length(featureNames))
     
     featureData <- AnnotatedDataFrame(data.frame(isUsed = featuresUsed, row.names = featureNames))
@@ -39,7 +34,6 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     ### Experimental description (MIAxE): experimentData
     
     # Assay description
-    
     annotation <- annotation(RGSet)
     
     ### Equipment-generated variables describing sample phenotypes
@@ -68,7 +62,6 @@ summarizeRGChannelSet <- function(RGChannelSet) {
     intensities <- methylated + unmethylated
     
     # Extraction of the controls
-    
     greenControls = vector("list", length(controlType))
     redControls = vector("list", length(controlType))
     names(greenControls) <- controlType
@@ -86,7 +79,6 @@ summarizeRGChannelSet <- function(RGChannelSet) {
     }
     
     # Extraction of undefined negative control probes
-    
     locusNames <- getManifestInfo(RGChannelSet, "locusNames")
     TypeI.Red <- getProbeInfo(RGChannelSet, type = "I-Red")
     TypeI.Green <- getProbeInfo(RGChannelSet, type = "I-Green")
@@ -104,14 +96,11 @@ summarizeRGChannelSet <- function(RGChannelSet) {
     oob <- list(greenOOB = greenOOB, redOOB = redOOB)
     
     # Defining the Type I, II Green and II Red probes;
-    
     probesI <- getProbeInfo(IlluminaHumanMethylation450kmanifest, type = "I")
     probesII <- getProbeInfo(IlluminaHumanMethylation450kmanifest, type = "II")
     
     # Chr probes.
-    
-    # TODO: getLocation(RGSet) does not work
-    locations <- getLocations(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
+    locations <- getLocations(IlluminaHumanMethylation450kannotation.ilmn.v1.2) # TODO: getLocation(RGSet) does not work
     autosomal <- names(locations[seqnames(locations) %in% paste0("chr", 1:22)])
     chrY <- names(locations[seqnames(locations) == "chrY"])
     chrX <- names(locations[seqnames(locations) == "chrX"])
@@ -136,7 +125,6 @@ summarizeRGChannelSet <- function(RGChannelSet) {
     names(indList) <- c("IGrn", "IRed", "II", "X", "Y")
     
     # Quantile extraction
-    
     mQuantiles <- vector("list", 5)
     betaQuantiles <- vector("list", 5)
     methQuantiles <- vector("list", 5)
