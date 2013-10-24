@@ -58,13 +58,13 @@ summarizeRGChannelSet <- function(RGChannelSet) {
         "HYBRIDIZATION", "NEGATIVE", "NON-POLYMORPHIC", "NORM_A", "NORM_C", "NORM_G", 
         "NORM_T", "SPECIFICITY I", "SPECIFICITY II", "TARGET REMOVAL", "STAINING")
     
-    MSet.raw <- preprocessRaw(RGChannelSet)
+    MSet <- preprocessRaw(RGChannelSet)
     intensityRed <- getRed(RGChannelSet)
     intensityGreen <- getGreen(RGChannelSet)
-    methylated <- getMeth(MSet.raw)
-    unmethylated <- getUnmeth(MSet.raw)
-    betaValues <- getBeta(MSet.raw)
-    mValues <- getM(MSet.raw)
+    methylated <- getMeth(MSet)
+    unmethylated <- getUnmeth(MSet)
+    betaValues <- getBeta(MSet)
+    mValues <- getM(MSet)
     intensities <- methylated + unmethylated
     
     # Extraction of the controls
@@ -110,7 +110,8 @@ summarizeRGChannelSet <- function(RGChannelSet) {
     
     # Chr probes.
     
-    locations <- getLocations(RGChannelSet)
+    # TODO: getLocation(RGSet) does not work
+    locations <- getLocations(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
     autosomal <- names(locations[seqnames(locations) %in% paste0("chr", 1:22)])
     chrY <- names(locations[seqnames(locations) == "chrY"])
     chrX <- names(locations[seqnames(locations) == "chrX"])
