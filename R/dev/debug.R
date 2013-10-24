@@ -7,5 +7,7 @@ library(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
 
 source("~/git/CopyNumber450k/R/dev/MethylCNVDataSet.R")
 source("~/git/CopyNumber450k/R/dev/FromRGChannelSet.R")
+source("~/git/CopyNumber450k/R/dev/normalization.functional.R")
+source("~/git/CopyNumber450k/R/dev/normalization.quantile.R")
 
 mcds <- MethylCNVDataSetFromRGChannelSet(control_RGset) 
