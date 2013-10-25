@@ -13,6 +13,23 @@ setMethod("predictSampleSexes", signature("MethylCNVDataSet"), function(object, 
 
 ################################################################################ 
 
+setGeneric("dropSNPprobes", function(object, maf_threshold = 0) standardGeneric("dropSNPprobes"))
+
+setMethod("dropSNPprobes", signature("MethylCNVDataSet"), function(object, maf_threshold) {
+    annotation <- fData(object)
+    #c("Probe_rs", "Probe_maf", "CpG_rs", "CpG_maf", "SBE_rs", "SBE_maf")
+    good_probes <- (is.na(annotation[,"Probe_rs"]) | as.numeric(annotation[,"Probe_maf"]) <= maf_threshold) &
+            (is.na(annotation[,"CpG_rs"]) | as.numeric(annotation[,"CpG_maf"]) <= maf_threshold) &
+            (is.na(annotation[,"SBE_rs"]) | as.numeric(annotation[,"SBE_maf"]) <= maf_threshold)
+    
+    fData(object) <- fData(object)[good_probes, ]
+    new_intensities <- assayData(object)$intensity[good_probes, ]
+    assayData(object) <- assayDataNew(storage.mode = "lockedEnvironment", intensity = new_intensities)
+    return(object)
+})
+
+################################################################################ 
+
 setGeneric("normalize", function(object, type = c("functional", "quantile")) {
     standardGeneric("normalize")
 })
