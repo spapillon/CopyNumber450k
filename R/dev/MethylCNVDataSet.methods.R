@@ -225,7 +225,7 @@ setMethod("plotSex", signature("MethylCNVDataSet"), function(object) {
     cnQuantiles <- object@summary$cnQuantiles
     # ---
     myPlot <- plot(log2(cnQuantiles$Y[250, ]) - log2(cnQuantiles$X[250, ]), 
-            1:length(cnQuantiles$Y[250, ]))
+            1:length(cnQuantiles$Y[250, ]), main="Sex Prediction", xlab="Sex", ylab="Index")
     abline(v = -2.5, lty = 3, col = "red")
     text(x = -4, y = 0.5, label = "Female", col = "red")
     text(x = -1, y = 0.5, label = "Male", col = "red")
@@ -235,19 +235,21 @@ setMethod("plotSex", signature("MethylCNVDataSet"), function(object) {
 
 ################################################################################  
 
-setGeneric("getColoring", function(object, color.by = c("sentrix.row", "sentrix.col", 
-                            "sample.group", "chip.id"), color.function = rainbow) standardGeneric("getColoring"))
+setGeneric("getColoring", function(object, color.by = c("slide.row", "slide.col", 
+                            "sample.group", "array", "origin"), color.function = rainbow) standardGeneric("getColoring"))
 setMethod("getColoring", signature("MethylCNVDataSet"), function(object, color.by, color.function) {
     coloring <- match.arg(color.by)
-    # TODO: Use the proper calls using phenoData or pData            
-    if (coloring == "sentrix.row") {
-        samples <- sampleChipRows(object)
-    } else if (coloring == "sentrix.col") {
-        samples <- sampleChipColumns(object)
+    # TODO: Add verification if column exist???
+    if (coloring == "slide.row") {
+        samples <- substr(pData(object)$Slide, 1, 3)
+    } else if (coloring == "slide.col") {
+        samples <- substr(pData(object)$Slide, 4, 6)
     } else if (coloring == "sample.group") {
-        samples <- sampleGroups(object)
-    } else if (coloring == "chip.id") {
-        samples <- sampleChipIDs(object)
+        samples <- pData(object)$Sample_Group
+    } else if (coloring == "array") {
+        samples <- pData(object)$Array
+    } else if (coloring == "origin") {
+        samples <- pData(object)$Origin
     }
     # ---            
     cols <- color.function(length(unique(samples)))
@@ -258,11 +260,11 @@ setMethod("getColoring", signature("MethylCNVDataSet"), function(object, color.b
 
 ################################################################################  
 
-setGeneric("plotDensity", function(object, color.by = c("sentrix.row", "sentrix.col", 
-                            "sample.group", "chip.id"), color.function = rainbow, legend.position = "topright") 
+setGeneric("plotDensity", function(object, color.by =  c("slide.row", "slide.col", 
+                        "sample.group", "array", "origin"), color.function = rainbow, legend.position = "topright") 
                 standardGeneric("plotDensity"))
 
-setMethod("plotDensity", signature("CNVObject"), function(object, color.by, color.function, 
+setMethod("plotDensity", signature("MethylCNVDataSet"), function(object, color.by, color.function, 
                     legend.position) {
     # TODO: This assumes that bad probes have been dropped
     intensities <- assayData(object)$intensity
@@ -281,11 +283,11 @@ setMethod("plotDensity", signature("CNVObject"), function(object, color.by, colo
 
 ################################################################################  
 
-setGeneric("plotPCA", function(object, color.by = c("sentrix.row", "sentrix.col", 
-                            "sample.group", "chip.id"), color.function = rainbow, legend.position = "topright")
+setGeneric("plotPCA", function(object, color.by =  c("slide.row", "slide.col", 
+                        "sample.group", "array", "origin"), color.function = rainbow, legend.position = "topright")
                  standardGeneric("plotPCA"))
 
-setMethod("plotPCA", signature("CNVObject"), function(object, color.by, color.function, 
+setMethod("plotPCA", signature("MethylCNVDataSet"), function(object, color.by, color.function, 
                     legend.position) {
     # TODO: This assumes that bad probes have been dropped
     intensities <- assayData(object)$intensity
