@@ -47,20 +47,15 @@ setGeneric("segmentize", function(object, verbose = TRUE, p.adjust.method = "bon
 # Returns a new MethylCNVDataSet object. TODO: Fix this lol
 setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose, 
     p.adjust.method, plotting) {
-    if (length(segments(object)) > 0) {
-        stop("Object has already been segmented.")
-    }
     
-    featuresUsed <- fData(object)$isUsed
-    intensities <- assayData(object)$intensity[featuresUsed, ]
+    intensities <- assayData(object)$intensity
     
     groups <- pData(object)$groups
     sexes <- pData(object)$sex
     sampleNames <- sampleNames(object)[groups != "control"]
     
     # TODO: Annotation?
-    filteredAnnotations <- probesAnnotation(object)[featuresUsed, ]
-    allAnnotations <- probesAnnotation(object)
+    annotation <- fData(object)
     
     control_intensity <- intensities[, groups == "control"]
     case_intensity <- as.matrix(intensities[, groups != "control"])
@@ -74,12 +69,11 @@ setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose,
     if (is.vector(cases_log2)) {
         cases_log2 <- as.matrix(cases_log2)
     }
-    
     # TODO: Send this to the DESCRIPTION file ?
     require(DNAcopy)
     # ---
     
-    CNA.object <- CNA(cases_log2, ordered(filteredAnnotations$CHR), as.numeric(filteredAnnotations$MAPINFO), 
+    CNA.object <- CNA(cases_log2, ordered(annotation$chr), as.numeric(annotation$pos), 
         data.type = "logratio", sampleid = sampleNames)
     smoothed.CNA.object <- smooth.CNA(CNA.object)
     segment.smoothed.CNA.object <- segment(smoothed.CNA.object, min.width = 5, verbose = 1, 
@@ -94,21 +88,21 @@ setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose,
     
     x <- lapply(1:length(segments_per_sample), function(i) {
         if (plotting) {
-            pdf(paste(path, "/", names(segments_per_sample)[i], ".pdf", sep = ""))
+            pdf(paste(names(segments_per_sample)[i], ".pdf", sep = ""))
         }
         
         result <- t(apply(segments_per_sample[[i]], 1, function(cnv) {
             # When assessing sexual chromosomes, only consider controls of the same sex as
             # the sample.
-            if (cnv["chrom"] %in% c("X", "Y")) {
+            if (cnv["chrom"] %in% c("chrX", "chrY")) {
                 used_controls <- control_sexes == case_sexes[i]
             } else {
                 used_controls <- rep(TRUE, ncol(control_intensity))
             }
             
             # Extract probes
-            probes <- allAnnotations$CHR == cnv["chrom"] & as.numeric(allAnnotations$MAPINFO) >= 
-                as.numeric(cnv["loc.start"]) & as.numeric(allAnnotations$MAPINFO) <= 
+            probes <- annotation$chr == cnv["chrom"] & as.numeric(annotation$pos) >= 
+                as.numeric(cnv["loc.start"]) & as.numeric(annotation$pos) <= 
                 as.numeric(cnv["loc.end"])
             
             # Compute segment values
@@ -129,12 +123,14 @@ setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose,
             }
             
             # Extract genes in the segment
-            genes <- as.character(allAnnotations$UCSC_RefGene_Name[probes])
-            genes <- unique(unlist(strsplit(x = genes, ";")))
-            genes <- paste(genes, collapse = ";")
+            #genes <- as.character(allAnnotations$UCSC_RefGene_Name[probes])
+            #genes <- unique(unlist(strsplit(x = genes, ";")))
+            #genes <- paste(genes, collapse = ";")
             l <- as.numeric(cnv["loc.end"]) - as.numeric(cnv["loc.start"])
-            c(cnv, seg.length = l, pvalue = p_value, genes = genes, ctrl.mean = control_mean, 
-                ctrl.sd = control_sd, sample.value = sample_sum, z = z_score)
+            #c(cnv, seg.length = l, pvalue = p_value, genes = genes, ctrl.mean = control_mean, 
+            #    ctrl.sd = control_sd, sample.value = sample_sum, z = z_score)
+            c(cnv, seg.length = l, pvalue = p_value, ctrl.mean = control_mean, 
+              ctrl.sd = control_sd, sample.value = sample_sum, z = z_score)
         }))
         
         if (plotting) {
