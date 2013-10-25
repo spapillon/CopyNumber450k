@@ -18,3 +18,22 @@ SOME ADDITIONAl NOTES:
 
 - Need to write in the documentation for which scenarios FunNorm is preferable to QuantileNorm, and vice-versa.
 - Need to discuss the predictSex() function in more details and how to use it in the FunNorm and QuantileNorm functions. 
+
+
+450kCNV
+CNV450k
+
+450kCNA
+CNA450k
+
+methCNV
+methylationCNV
+
+CopyNumberMethylation
+MethylationCopyNumber
+
+CopyNumberMeth
+methCopyNumber
+
+CopyNumber450k
+CopyNumber450

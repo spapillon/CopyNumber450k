@@ -74,8 +74,8 @@ setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose,
     require(DNAcopy)
     # ---
     
-    CNA.object <- CNA(cases_log2, ordered(annotation$chr), as.numeric(annotation$pos), 
-        data.type = "logratio", sampleid = sampleNames)
+    CNA.object <- CNA(cases_log2, ordered(annotation$chr, levels=c(paste("chr", 1:22, sep=""), "chrX", "chrY"))
+            , as.numeric(annotation$pos), data.type = "logratio", sampleid = sampleNames)
     smoothed.CNA.object <- smooth.CNA(CNA.object)
     segment.smoothed.CNA.object <- segment(smoothed.CNA.object, min.width = 5, verbose = 1, 
         nperm = 10000, alpha = 0.01, undo.splits = "sdundo", undo.SD = 2)
@@ -105,7 +105,7 @@ setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose,
             probes <- annotation$chr == cnv["chrom"] & as.numeric(annotation$pos) >= 
                 as.numeric(cnv["loc.start"]) & as.numeric(annotation$pos) <= 
                 as.numeric(cnv["loc.end"])
-            
+
             # Compute segment values
             control_int_sum <- colSums(control_intensity[probes, used_controls])
             control_mean <- mean(control_int_sum)
