@@ -33,11 +33,11 @@ setMethod("normalize", signature("MethylCNVDataSet"), function(object, type) {
     manifest <- object@manifest
     # --- 
     if (method == "functional") {
-        fData(object)$intensity <- functionalNormalization(cnMatrix = intensities, 
+        assayData(object)$intensity <- functionalNormalization(cnMatrix = intensities, 
             extractedData = object@summary, annotation = annotation, manifest = manifest,
             predictedSex = sexes)
     } else if (method == "quantile") {
-        fData(object)$intensity <- quantileNormalization(cnMatrix = intensities, 
+        assayData(object)$intensity <- quantileNormalization(cnMatrix = intensities, 
                 annotation = annotation, manifest = manifest, predictedSex = sexes)
     }
     
