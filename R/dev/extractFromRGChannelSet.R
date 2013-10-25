@@ -15,7 +15,7 @@ extractFromRGChannelSet450k <- function(RGset) {
     betaValues <- getBeta(MSet)
     mValues <- getM(MSet)
     intensities <- methylated + unmethylated
-       
+    
     # Extraction of the controls
     greenControls = vector("list", length(controlType))
     redControls = vector("list", length(controlType))
@@ -55,7 +55,7 @@ extractFromRGChannelSet450k <- function(RGset) {
     probesII <- getProbeInfo(RGset, type = "II")
     
     # Chr probes.
-
+    
     locations <- getLocations(RGset)  # TODO: getLocation(RGSet) does not work
     autosomal <- names(locations[seqnames(locations) %in% paste0("chr", 1:22)])
     chrY <- names(locations[seqnames(locations) == "chrY"])

@@ -5,7 +5,7 @@ setGeneric("predictSampleSexes", function(object, threshold = -3) standardGeneri
 # Returns list containing the sex of each sample via sex chromosome methylation
 # intensity-based prediction.
 setMethod("predictSampleSexes", signature("MethylCNVDataSet"), function(object, threshold) {
-    cnQuantiles <- object@summary$cnQuantiles
+    cnQuantiles <- getSummary(object)$cnQuantiles
     diffs <- log2(cnQuantiles$Y[250, ]) - log2(cnQuantiles$X[250, ])
     predicted_sexes <- ifelse(diffs <= threshold, "Female", "Male")
     predicted_sexes
@@ -17,15 +17,17 @@ setGeneric("dropSNPprobes", function(object, maf_threshold = 0) standardGeneric(
 
 setMethod("dropSNPprobes", signature("MethylCNVDataSet"), function(object, maf_threshold) {
     annotation <- fData(object)
-    #c("Probe_rs", "Probe_maf", "CpG_rs", "CpG_maf", "SBE_rs", "SBE_maf")
-    good_probes <- (is.na(annotation[,"Probe_rs"]) | as.numeric(annotation[,"Probe_maf"]) <= maf_threshold) &
-            (is.na(annotation[,"CpG_rs"]) | as.numeric(annotation[,"CpG_maf"]) <= maf_threshold) &
-            (is.na(annotation[,"SBE_rs"]) | as.numeric(annotation[,"SBE_maf"]) <= maf_threshold)
     
-    fData(object) <- fData(object)[good_probes, ]
-    new_intensities <- assayData(object)$intensity[good_probes, ]
-    assayData(object) <- assayDataNew(storage.mode = "lockedEnvironment", intensity = new_intensities)
-    return(object)
+    # c('Probe_rs', 'Probe_maf', 'CpG_rs', 'CpG_maf', 'SBE_rs', 'SBE_maf')
+    usedProbes <- (is.na(annotation[, "Probe_rs"]) | as.numeric(annotation[, "Probe_maf"]) <= 
+        maf_threshold) & (is.na(annotation[, "CpG_rs"]) | as.numeric(annotation[, 
+        "CpG_maf"]) <= maf_threshold) & (is.na(annotation[, "SBE_rs"]) | as.numeric(annotation[, 
+        "SBE_maf"]) <= maf_threshold)
+    
+    fData(object) <- fData(object)[usedProbes, ]
+    intensities <- assayData(object)$intensity[usedProbes, ]
+    assayData(object) <- assayDataNew(storage.mode = "lockedEnvironment", intensity = intensities)
+    object
 })
 
 ################################################################################ 
@@ -43,20 +45,19 @@ setMethod("normalize", signature("MethylCNVDataSet"), function(object, type) {
         stop("Argument [normalization] type must be {default, quantile}.")
     }
     
-    sexes <- pData(object)$sex
+    sexes <- pData(object)$Sample_Sex
     intensities <- assayData(object)$intensity
     annotation <- annotation(object)
-    # TODO: Avoid "@" operator
-    manifest <- object@manifest
-    # --- 
+    manifest <- getManifest(object)
+    
     if (method == "functional") {
-        new_intensities <- functionalNormalization(cnMatrix = intensities, 
-            extractedData = object@summary, annotation = annotation, manifest = manifest,
-            predictedSex = sexes)
+        new_intensities <- functionalNormalization(cnMatrix = intensities, extractedData = getSummary(object), 
+            annotation = annotation, manifest = manifest, predictedSex = sexes)
     } else if (method == "quantile") {
-        new_intensities <- quantileNormalization(cnMatrix = intensities, 
-                annotation = annotation, manifest = manifest, predictedSex = sexes)
+        new_intensities <- quantileNormalization(cnMatrix = intensities, annotation = annotation, 
+            manifest = manifest, predictedSex = sexes)
     }
+    
     assayData(object) <- assayDataNew(storage.mode = "lockedEnvironment", intensity = new_intensities)
     object
 })
@@ -66,7 +67,7 @@ setMethod("normalize", signature("MethylCNVDataSet"), function(object, type) {
 setGeneric("segmentize", function(object, verbose = TRUE, p.adjust.method = "bonferroni", 
     plotting = FALSE) standardGeneric("segmentize"))
 
-# Returns a new MethylCNVDataSet object. TODO: Fix this lol
+# Returns a new MethylCNVDataSet object.
 setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose, 
     p.adjust.method, plotting) {
     
@@ -84,17 +85,20 @@ setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose,
     control_sexes <- sexes[groups == "control"]
     case_sexes <- sexes[groups != "control"]
     
-    control_medians <- apply(control_intensity, 1, median, na.rm = T)
+    control_medians <- apply(control_intensity, 1, median, na.rm = TRUE)
     cases_log2 <- log2(case_intensity/control_medians)
     
     if (is.vector(cases_log2)) {
         cases_log2 <- as.matrix(cases_log2)
     }
+    
     # TODO: Send this to the DESCRIPTION file ?
     require(DNAcopy)
     # ---
-    CNA.object <- CNA(cases_log2, ordered(annotation$chr, levels=c(paste("chr", 1:22, sep=""), "chrX", "chrY"))
-            , as.numeric(annotation$pos), data.type = "logratio", sampleid = sampleNames)
+    
+    CNA.object <- CNA(cases_log2, ordered(annotation$chr, levels = c(paste("chr", 
+        1:22, sep = ""), "chrX", "chrY")), as.numeric(annotation$pos), data.type = "logratio", 
+        sampleid = sampleNames)
     smoothed.CNA.object <- smooth.CNA(CNA.object)
     segment.smoothed.CNA.object <- segment(smoothed.CNA.object, min.width = 5, verbose = 1, 
         nperm = 10000, alpha = 0.01, undo.splits = "sdundo", undo.SD = 2)
@@ -122,9 +126,8 @@ setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose,
             
             # Extract probes
             probes <- annotation$chr == cnv["chrom"] & as.numeric(annotation$pos) >= 
-                as.numeric(cnv["loc.start"]) & as.numeric(annotation$pos) <= 
-                as.numeric(cnv["loc.end"])
-
+                as.numeric(cnv["loc.start"]) & as.numeric(annotation$pos) <= as.numeric(cnv["loc.end"])
+            
             # Compute segment values
             control_int_sum <- colSums(control_intensity[probes, used_controls])
             control_mean <- mean(control_int_sum)
@@ -171,29 +174,34 @@ setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose,
     object
 })
 
-################################################################################  
+################################################################################ 
 
 setGeneric("plotSample", function(object, index, chr, start, end) standardGeneric("plotSample"))
 
-setMethod("plotSample", signature("MethylCNVDataSet"), function(object, index, chr, start, 
-            end) {
-    # TODO: Avoid the use of "@" and use the filters
+setMethod("plotSample", signature("MethylCNVDataSet"), function(object, index, chr, 
+    start, end) {
+    if (length(object@segments) == 0) {
+        stop("Object has not been segmentized yet.")
+    }
+    
+    # TODO: Avoid the use of '@' and use the filters
     sample_segments <- object@segments[[index]]
     sample_filters <- rep(FALSE, nrow(sample_segments))
     sample_name <- sampleNames(object)[index]
-    # ---      
-    if (missing(chr)) {# Plotting the whole genome
-
-        chromosomes <- unique(sample_segments[, "chrom"])   
+    # ---
+    
+    if (missing(chr)) {
+        # Plotting the whole genome
+        chromosomes <- unique(sample_segments[, "chrom"])
         site_per_chr <- cumsum(c(0, sapply(chromosomes, function(chr) max(as.numeric(sample_segments[sample_segments[, 
-                                                  "chrom"] == chr, "loc.end"])))))
+            "chrom"] == chr, "loc.end"])))))
         offset <- site_per_chr - min(as.numeric(sample_segments[sample_segments[, 
-                                    "chrom"] == 'chr1', "loc.start"]))
+            "chrom"] == "chr1", "loc.start"]))
         start <- 0
         end <- max(site_per_chr)
-        x_axis_type <- 'n'
-    } else {  # Plotting a region
-   
+        x_axis_type <- "n"
+    } else {
+        # Plotting a region
         if (missing(start)) {
             start <- 0
         }
@@ -206,21 +214,21 @@ setMethod("plotSample", signature("MethylCNVDataSet"), function(object, index, c
         offset <- 0
         x_axis_type <- NULL
     }
-          
+    
     yMin <- min(c(-1, as.numeric(sample_segments[sample_filters, "seg.mean"])))
     yMax <- max(c(1, as.numeric(sample_segments[sample_filters, "seg.mean"])))
     myPlot <- plot(range(start, end), range(yMin, yMax), type = "n", xaxt = x_axis_type, 
         xlab = "", ylab = "", main = sample_name)
-          
+    
     if (missing(chr)) {
         xlabs <- sapply(2:length(site_per_chr), function(j) {
-                          ((site_per_chr[j] - site_per_chr[j - 1])/2) + site_per_chr[j - 1]
-                    })
+            ((site_per_chr[j] - site_per_chr[j - 1])/2) + site_per_chr[j - 1]
+        })
         
         axis(1, at = xlabs, labels = chromosomes, lty = 0)
         abline(v = site_per_chr, lty = 3)
     }
-          
+    
     lapply(1:length(chromosomes), function(i) {
         used_segments <- sample_segments[, "chrom"] == chromosomes[i]
         colors <- ifelse(sample_filters[used_segments], "red", "black")
@@ -229,93 +237,117 @@ setMethod("plotSample", signature("MethylCNVDataSet"), function(object, index, c
         y <- as.numeric(sample_segments[used_segments, "seg.mean"])
         graphics::segments(starts, y, ends, y, col = colors, lwd = 2, lty = 1)
     })
-          
+    
     myPlot
 })
 
-################################################################################  
+################################################################################ 
 
 setGeneric("plotSex", function(object, index, chr, start, end) standardGeneric("plotSex"))
 
 setMethod("plotSex", signature("MethylCNVDataSet"), function(object) {
-    # TODO: Avoid the use of "@" operator
-    cnQuantiles <- object@summary$cnQuantiles
-    # ---
-    myPlot <- plot(log2(cnQuantiles$Y[250, ]) - log2(cnQuantiles$X[250, ]), 
-            1:length(cnQuantiles$Y[250, ]), main="Sex Prediction", xlab="Sex", ylab="Index")
+    cnQuantiles <- getSummary(object)$cnQuantiles
+    myPlot <- plot(log2(cnQuantiles$Y[250, ]) - log2(cnQuantiles$X[250, ]), 1:length(cnQuantiles$Y[250, 
+        ]), main = "Sex Prediction", xlab = "Sex", ylab = "Index")
     abline(v = -2.5, lty = 3, col = "red")
     text(x = -4, y = 0.5, label = "Female", col = "red")
     text(x = -1, y = 0.5, label = "Male", col = "red")
-
+    
     myPlot
 })
 
-################################################################################  
+################################################################################ 
 
 setGeneric("getColoring", function(object, color.by = c("array.row", "array.col", 
-                            "sample.group", "slide", "origin"), color.function = rainbow) standardGeneric("getColoring"))
-setMethod("getColoring", signature("MethylCNVDataSet"), function(object, color.by, color.function) {
+    "sample.group", "slide", "origin"), color.function = rainbow) standardGeneric("getColoring"))
+
+setMethod("getColoring", signature("MethylCNVDataSet"), function(object, color.by, 
+    color.function) {
     coloring <- match.arg(color.by)
-    # TODO: Add verification if column exist???
+    
     if (coloring == "array.row") {
+        if ("Array" %in% colnames(pData(object))) {
+            stop("Column \"Array\" must be present in pData(object) in order for coloring = \"array.row\" to be used.")
+        }
+        
         samples <- substr(pData(object)$Array, 1, 3)
     } else if (coloring == "array.col") {
+        if ("Array" %in% colnames(pData(object))) {
+            stop("Column \"Array\" must be present in pData(object) in order for coloring = \"array.col\" to be used.")
+        }
+        
         samples <- substr(pData(object)$Array, 4, 6)
     } else if (coloring == "sample.group") {
+        if ("Sample_Group" %in% colnames(pData(object))) {
+            stop("Column \"Sample_Group\" must be present in pData(object) in order for coloring = \"sample.group\" to be used.")
+        }
+        
         samples <- pData(object)$Sample_Group
     } else if (coloring == "slide") {
+        if ("Slide" %in% colnames(pData(object))) {
+            stop("Column \"Slide\" must be present in pData(object) in order for coloring = \"slide\" to be used.")
+        }
+        
         samples <- pData(object)$Slide
     } else if (coloring == "origin") {
+        if ("Origin" %in% colnames(pData(object))) {
+            stop("Column \"Origin\" must be present in pData(object) in order for coloring = \"origin\" to be used.")
+        }
+        
         samples <- pData(object)$Origin
+    } else {
+        stop("Argument color.by must be {\"array.row\", \"array.col\", \"sample.group\", \"slide\", \"origin\"}.")
     }
-    # ---            
+    
     cols <- color.function(length(unique(samples)))
     col_vec <- cols[match(samples, unique(samples))]
-
+    
     list(sample.colors = col_vec, groups = unique(samples), group.colors = cols)
-}) 
+})
 
-################################################################################  
+################################################################################ 
 
 setGeneric("plotDensity", function(object, color.by = c("array.row", "array.col", 
-                        "sample.group", "slide", "origin"), color.function = rainbow, legend.position = "topright") 
-                standardGeneric("plotDensity"))
+    "sample.group", "slide", "origin"), color.function = rainbow, legend.position = "topright") standardGeneric("plotDensity"))
 
-setMethod("plotDensity", signature("MethylCNVDataSet"), function(object, color.by, color.function, 
-                    legend.position) {
+setMethod("plotDensity", signature("MethylCNVDataSet"), function(object, color.by, 
+    color.function, legend.position) {
     # TODO: This assumes that bad probes have been dropped
     intensities <- assayData(object)$intensity
     # ---
+    
     coloring <- getColoring(object, color.by, color.function)
     myPlot <- plot(density(intensities), col = coloring$sample.colors[1], ylim = c(0, 
-                    9e-05), main = match.arg(color.by))
+        9e-05), main = match.arg(color.by))
     sapply(2:ncol(intensities), function(i) lines(density(intensities[, i]), col = coloring$sample.colors[i]))
-                
+    
     if (!is.null(legend.position)) {
         legend(legend.position, legend = coloring$groups, fill = coloring$group.colors)
     }
-
+    
     myPlot
 })
 
-################################################################################  
+################################################################################ 
 
-setGeneric("plotPCA", function(object, color.by = c("array.row", "array.col", 
-                        "sample.group", "slide", "origin"), color.function = rainbow, legend.position = "topright")
-                 standardGeneric("plotPCA"))
+setGeneric("plotPCA", function(object, color.by = c("array.row", "array.col", "sample.group", 
+    "slide", "origin"), color.function = rainbow, legend.position = "topright") standardGeneric("plotPCA"))
 
 setMethod("plotPCA", signature("MethylCNVDataSet"), function(object, color.by, color.function, 
-                    legend.position) {
+    legend.position) {
     # TODO: This assumes that bad probes have been dropped
     intensities <- assayData(object)$intensity
     # ---
+    
     coloring <- getColoring(object, color.by, color.function)
     pca <- prcomp(t(intensities))
     myPlot <- plot(pca$x, col = coloring$sample.colors, main = match.arg(color.by))
-                
+    
     if (!is.null(legend.position)) {
         legend(legend.position, legend = coloring$groups, fill = coloring$group.colors)
     }
-                
+    
     myPlot
- })
+})
+
+################################################################################  

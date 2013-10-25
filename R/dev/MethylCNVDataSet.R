@@ -1,8 +1,7 @@
 ################################################################################ 
 
-setClass("MethylCNVDataSet", representation(summary = "list", segments = "list",
-                manifest = "IlluminaMethylationManifest"), 
-    contains = "eSet")
+setClass("MethylCNVDataSet", representation(summary = "list", segments = "list", 
+    manifest = "IlluminaMethylationManifest"), contains = "eSet")
 
 ################################################################################ 
 
@@ -12,11 +11,25 @@ setMethod("initialize", signature("MethylCNVDataSet"), function(.Object, ...) {
 
 ################################################################################ 
 
+setMethod("getManifest", signature("MethylCNVDataSet"), function(object) {
+    object@manifest
+})
+
+################################################################################ 
+
+setGeneric("getSummary", function(object) standardGeneric("getSummary"))
+
+setMethod("getSummary", signature("MethylCNVDataSet"), function(object) {
+    object@summary
+})
+
+################################################################################ 
+
 MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     if (!is(RGChannelSet, "RGChannelSet")) {
         stop("Argument RGChannelSet must be of type minfi::RGChannelSet-class.")
     }
-    browser()
+    
     # Summary of methylation data
     summary <- extractFromRGChannelSet450k(RGChannelSet)
     
@@ -26,8 +39,10 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     assayData <- assayDataNew(storage.mode = "lockedEnvironment", intensity = intensities)
     sampleNames <- sampleNames(assayData)
     featureNames <- featureNames(assayData)
-
+    
+    # Sample covariates - daisy chain the columns
     pheno <- data.frame(row.names = sampleNames)
+    
     if (!"Sample_Group" %in% colnames(pData(RGChannelSet))) {
         stop("Argument RGChannelSet must be presented such that phenoData(RGChannelSet)$Sample_Group exists.")
     } else {
@@ -35,7 +50,7 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     }
     
     if ("Array" %in% colnames(pData(RGChannelSet))) {
-        pheno <- data.frame(pheno, Array= pData(RGChannelSet)$Array)
+        pheno <- data.frame(pheno, Array = pData(RGChannelSet)$Array)
     }
     
     if ("Slide" %in% colnames(pData(RGChannelSet))) {
@@ -49,27 +64,27 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     if ("Sample_Sex" %in% colnames(pData(RGChannelSet))) {
         sexes <- pData(RGChannelSet)$Sample_Sex
     } else {
-        #TODO: use predict sex
         sexes <- rep(NA, ncol(assayData$intensity))
-        # ---
     }
+    
     pheno <- data.frame(pheno, Sample_Sex = sexes)
     phenoData <- AnnotatedDataFrame(pheno)
     
     # Feature covariates
-    featureData <- AnnotatedDataFrame(data.frame(getAnnotation(RGChannelSet, what=c("Locations", "SNPs.137CommonSingle", "Other"))))
-    # featureData <- AnnotatedDataFrame(data.frame(isUsed = featuresUsed, row.names =
-    # featureNames))
+    featureData <- AnnotatedDataFrame(data.frame(getAnnotation(RGChannelSet, what = c("Locations", 
+        "SNPs.137CommonSingle", "Other"))))
     
-    ### Experimental description (MIAxE): experimentData
+    # TODO: Experimental description (MIAxE): experimentData
     
     # Assay description
     annotation <- annotation(RGChannelSet)
     manifest <- getManifest(RGChannelSet)
-    ### Equipment-generated variables describing sample phenotypes
-    ### (AnnotatedDataFrame-class): protocolData
-    new("MethylCNVDataSet", summary = summary, assayData = assayData, phenoData = phenoData,
-            featureData = featureData, annotation = annotation,  manifest = manifest)
+    
+    # TODO: Equipment-generated variables describing sample phenotypes
+    # (AnnotatedDataFrame-class): protocolData
+    
+    new("MethylCNVDataSet", summary = summary, assayData = assayData, phenoData = phenoData, 
+        featureData = featureData, annotation = annotation, manifest = manifest)
 }
 
 ################################################################################  

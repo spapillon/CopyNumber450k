@@ -189,7 +189,8 @@ normalizeByType <- function(intMatrix, newQuantiles) {
 ################################################################################ 
 
 # Main function call for normalization
-functionalNormalization <- function(cnMatrix, extractedData, annotation, manifest, nPCs = 4, predictedSex) {
+functionalNormalization <- function(cnMatrix, extractedData, annotation, manifest, 
+    nPCs = 4, predictedSex) {
     probesI <- getProbeInfo(manifest, type = "I")
     probesII <- getProbeInfo(manifest, type = "II")
     

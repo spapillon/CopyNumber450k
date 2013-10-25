@@ -1,12 +1,12 @@
-# Comparison Methods
+################################################################################ 
 
 setGeneric("findCNV", function(object, CNVs, type = "both") standardGeneric("findCNV"))
 
 setMethod("findCNV", signature("MethylCNVDataSet"), function(object, CNVs, type) {
     if (!is.character(CNVs)) {
-        stop("Expected argument `CNVs` to be a character vector.")
+        stop("Argument CNVs must be a character vector.")
     } else if (!gain %in% c("gain", "loss", "both")) {
-        stop("Expected argument [CNV] `type` to be {gain, loss, both}.")
+        stop("Argument [CNV] type must be {gain, loss, both}.")
     }
     
     segments_list <- object@segments
@@ -32,6 +32,8 @@ setMethod("findCNV", signature("MethylCNVDataSet"), function(object, CNVs, type)
     x
 })
 
+################################################################################ 
+
 setGeneric("intersectCNV", function(object, sample_indices, type = "both") standardGeneric("intersectCNV"))
 
 setMethod("intersectCNV", signature("CNVObject"), function(object, sample_indices, 
@@ -43,11 +45,11 @@ setMethod("intersectCNV", signature("CNVObject"), function(object, sample_indice
     }
     
     if (!is.integer(sample_indices)) {
-        stop("Expected argument `sample_indices` to be a integer vector.")
+        stop("Argument sample_indices must be a integer vector.")
     } else if (length(setdiff(sample_indices, 1:sample_count)) > 0) {
-        stop("Expected argument `sample_indices` elements must exist in CNVObject.")
+        stop("Argument sample_indices elements must exist in object.")
     } else if (!gain %in% c("gain", "loss", "both")) {
-        stop("Expected argument [CNV] `type` to be {gain, loss, both}.")
+        stop("Argument [CNV] type must be {gain, loss, both}.")
     }
     
     segments_list <- object@segments[sample_indices]
@@ -67,6 +69,8 @@ setMethod("intersectCNV", signature("CNVObject"), function(object, sample_indice
     
     sort(table(x), decreasing = TRUE)
 })
+
+################################################################################ 
 
 # Internal method for CNVObject::subgroupDifference
 subgroupDifferenceCNVByType <- function(group1_CNVs, group2_CNVs, group1_size, group2_size) {
@@ -94,6 +98,8 @@ subgroupDifferenceCNVByType <- function(group1_CNVs, group2_CNVs, group1_size, g
     x <- x[order(x[, 3]), ]
 }
 
+################################################################################ 
+
 setGeneric("subgroupDifference", function(object, group1_indices, group2_indices) standardGeneric("subgroupDifference"))
 
 setMethod("subgroupDifference", signature("CNVObject"), function(object, group1_indices, 
@@ -101,15 +107,15 @@ setMethod("subgroupDifference", signature("CNVObject"), function(object, group1_
     sample_count <- length(segments(object))
     
     if (!is.integer(group1_indices)) {
-        stop("Expected argument `group1_indices` to be a integer vector.")
+        stop("Argument group1_indices must be a integer vector.")
     } else if (length(setdiff(group1_indices, 1:sample_count)) > 0) {
-        stop("Expected argument `group1_indices` elements must exist in CNVObject.")
+        stop("Argument group1_indices' elements must exist in object.")
     }
     
     if (!is.integer(group2_indices)) {
-        stop("Expected argument `group2_indices` to be a integer vector.")
+        stop("Argument group2_indices must be a integer vector.")
     } else if (length(setdiff(group2_indices, 1:sample_count)) > 0) {
-        stop("Expected argument `group2_indices` elements must exist in CNVObject.")
+        stop("Argument group2_indices' elements must exist in object.")
     }
     
     if (length(intersect(group1_indices, group2_indices)) > 0) {
@@ -133,4 +139,6 @@ setMethod("subgroupDifference", signature("CNVObject"), function(object, group1_
     colnames(losses) <- c("Group 1", "Group 2", "pvalue")
     
     list(gains = gains, losses = losses)
-}) 
+})
+
+################################################################################  
