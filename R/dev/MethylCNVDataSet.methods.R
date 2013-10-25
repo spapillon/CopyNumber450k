@@ -36,17 +36,6 @@ setMethod("normalize", signature("MethylCNVDataSet"), function(object, type) {
             predictedSex = sexes)
     }
     
-    # The returned matrix has dropped the FALSE usedProbes, remove other objects
-    # accordingly.
-    
-    # TODO: Annotation? What happens to these? lol
-    
-    # probesAnnotation(object) <- probesAnnotation(object)[usedProbes(object), ]
-    
-    # usedProbes(object) <- rep(TRUE, sum(usedProbes(object)))
-    
-    # object@is_normalized <- TRUE
-    
     object
 })
 
