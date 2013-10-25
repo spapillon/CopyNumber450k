@@ -13,4 +13,8 @@ source("~/git/CopyNumber450k/R/dev/MethylCNVDataSet.R")
 source("~/git/CopyNumber450k/R/dev/MethylCNVDataSet.transformation.R")
 
 
-mcds <- MethylCNVDataSetFromRGChannelSet(control_RGset) 
+mcds <- MethylCNVDataSetFromRGChannelSet(control_RGset)
+pData(mcds)$sex <- predictSampleSexes(mcds)
+
+mcds.f <- normalize(mcds, "functional")
+mcds.q <- normalize(mcds, "quantile") 

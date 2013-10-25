@@ -2,7 +2,7 @@ setGeneric("normalize", function(object, type = c("functional", "quantile")) {
     standardGeneric("normalize")
 })
 
-setMethod("normalize", signature("CNVObject"), function(object, type) {
+setMethod("normalize", signature("MethylCNVDataSet"), function(object, type) {
     method <- match.arg(type)
     
     if (!method %in% c("functional", "quantile")) {
@@ -10,15 +10,15 @@ setMethod("normalize", signature("CNVObject"), function(object, type) {
     }
     
     sexes <- pData(object)$sex
-    intensities <- assayData(object)$intensity
     featuresUsed <- fData(object)$isUsed
+    intensities <- assayData(object)$intensity[featuresUsed, ]
     
     if (method == "functional") {
-        fData(object)$intensity <- functionalNormalization(cnMatrix = intensities[featuresUsed, 
-            ], extractedData = object@summary, predictedSex = sexes)
+        fData(object)$intensity <- functionalNormalization(cnMatrix = intensities, 
+            extractedData = object@summary, predictedSex = sexes)
     } else if (method == "quantile") {
-        fData(object)$intensity <- quantileNormalization(cnMatrix = intensities[featureUsed, 
-            ], predictedSex = sexes)
+        fData(object)$intensity <- quantileNormalization(cnMatrix = intensities, 
+            predictedSex = sexes)
     }
     
     # The returned matrix has dropped the FALSE usedProbes, remove other objects
@@ -40,10 +40,10 @@ setMethod("normalize", signature("CNVObject"), function(object, type) {
 setGeneric("segmentize", function(object, verbose = TRUE, p.adjust.method = "bonferroni", 
     plotting = F) standardGeneric("segmentize"))
 
-setMethod("segmentize", signature("CNVObject"), function(object, verbose, p.adjust.method, 
-    plotting) {
+setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose, 
+    p.adjust.method, plotting) {
     if (length(segments(object)) > 0) {
-        stop("CNVObject has already been segmented.")
+        stop("Object has already been segmented.")
     }
     
     featuresUsed <- fData(object)$isUsed
