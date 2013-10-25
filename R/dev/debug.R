@@ -12,7 +12,7 @@
 
 # pData(control_RGset)$Sample_Group[1] <- 'case'
 
-# updateObject(control_RGset)
+# control_RGset <- updateObject(control_RGset)
 
 ################################################################################ 
 
@@ -28,7 +28,7 @@ source("~/git/CopyNumber450k/R/dev/plots.R")
 ################################################################################ 
 
 mcds <- MethylCNVDataSetFromRGChannelSet(control_RGset)
-pData(mcds)$sex <- predictSampleSexes(mcds)
+pData(mcds)$Sample_Sex <- predictSampleSexes(mcds)
 
 mcds.f <- normalize(mcds, "functional")
 mcds.q <- normalize(mcds, "quantile")

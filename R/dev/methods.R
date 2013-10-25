@@ -70,6 +70,9 @@ setGeneric("segmentize", function(object, verbose = TRUE, p.adjust.method = "bon
 # Returns a new MethylCNVDataSet object.
 setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose, 
     p.adjust.method, plotting) {
+    if (length(segments(object)) == 0 && verbose) {
+        warning("Object has already been segmentized.")
+    }
     
     intensities <- assayData(object)$intensity
     

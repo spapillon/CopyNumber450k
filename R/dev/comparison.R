@@ -36,7 +36,7 @@ setMethod("findCNV", signature("MethylCNVDataSet"), function(object, CNVs, type)
 
 setGeneric("intersectCNV", function(object, sample_indices, type = "both") standardGeneric("intersectCNV"))
 
-setMethod("intersectCNV", signature("CNVObject"), function(object, sample_indices, 
+setMethod("intersectCNV", signature("MethylCNVDataSet"), function(object, sample_indices, 
     type) {
     sample_count <- length(segments(object))
     
@@ -102,7 +102,7 @@ subgroupDifferenceCNVByType <- function(group1_CNVs, group2_CNVs, group1_size, g
 
 setGeneric("subgroupDifference", function(object, group1_indices, group2_indices) standardGeneric("subgroupDifference"))
 
-setMethod("subgroupDifference", signature("CNVObject"), function(object, group1_indices, 
+setMethod("subgroupDifference", signature("MethylCNVDataSet"), function(object, group1_indices, 
     group2_indices) {
     sample_count <- length(segments(object))
     

@@ -49,38 +49,39 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     featureNames <- featureNames(assayData)
     
     # Sample covariates - daisy chain the columns
-    pheno <- data.frame(row.names = sampleNames)
-    
-    if (!"Sample_Group" %in% colnames(pData(RGChannelSet))) {
-        stop("Argument RGChannelSet must be presented such that phenoData(RGChannelSet)$Sample_Group exists.")
-    } else {
-        pheno <- data.frame(pheno, Sample_Group = pData(RGChannelSet)$Sample_Group)
-    }
-    
-    if ("Array" %in% colnames(pData(RGChannelSet))) {
-        pheno <- data.frame(pheno, Array = pData(RGChannelSet)$Array)
-    }
-    
-    if ("Slide" %in% colnames(pData(RGChannelSet))) {
-        pheno <- data.frame(pheno, Slide = pData(RGChannelSet)$Slide)
-    }
-    
-    if ("Origin" %in% colnames(pData(RGChannelSet))) {
-        pheno <- data.frame(pheno, Origin = pData(RGChannelSet)$Origin)
-    }
-    
     if ("Sample_Sex" %in% colnames(pData(RGChannelSet))) {
         sexes <- pData(RGChannelSet)$Sample_Sex
     } else {
         sexes <- rep(NA, ncol(assayData$intensity))
     }
     
-    pheno <- data.frame(pheno, Sample_Sex = sexes)
-    phenoData <- AnnotatedDataFrame(pheno)
+    phenoData <- data.frame(Sample_Sex = sexes, row.names = sampleNames)
+    
+    if (!"Sample_Group" %in% colnames(pData(RGChannelSet))) {
+        stop("Argument RGChannelSet must be presented such that phenoData(RGChannelSet)$Sample_Group exists.")
+    } else {
+        phenoData <- data.frame(phenoData, Sample_Group = pData(RGChannelSet)$Sample_Group)
+    }
+    
+    if ("Array" %in% colnames(pData(RGChannelSet))) {
+        phenoData <- data.frame(phenoData, Array = pData(RGChannelSet)$Array)
+    }
+    
+    if ("Slide" %in% colnames(pData(RGChannelSet))) {
+        phenoData <- data.frame(phenoData, Slide = pData(RGChannelSet)$Slide)
+    }
+    
+    if ("Origin" %in% colnames(pData(RGChannelSet))) {
+        phenoData <- data.frame(phenoData, Origin = pData(RGChannelSet)$Origin)
+    }
+    
+    phenoData <- AnnotatedDataFrame(phenoData)
     
     # Feature covariates
-    featureData <- AnnotatedDataFrame(as.data.frame(getAnnotation(RGChannelSet, what = c("Locations", 
-        "SNPs.137CommonSingle", "Other"))))
+    featureData <- as.data.frame(getAnnotation(RGChannelSet, what = c("Locations", 
+        "SNPs.137CommonSingle", "Other")))
+    rownames(featureData) <- featureNames
+    featureData <- AnnotatedDataFrame(featureData)
     
     # TODO: Experimental description (MIAxE): experimentData
     
@@ -90,6 +91,8 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     
     # TODO: Equipment-generated variables describing sample phenotypes
     # (AnnotatedDataFrame-class): protocolData
+    
+    browser()
     
     new("MethylCNVDataSet", summary = summary, assayData = assayData, phenoData = phenoData, 
         featureData = featureData, annotation = annotation, manifest = manifest, 
