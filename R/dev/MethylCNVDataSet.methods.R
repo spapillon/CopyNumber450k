@@ -1,6 +1,7 @@
 setGeneric("predictSampleSexes", function(object, threshold = -3) standardGeneric("predictSampleSexes"))
 
-# Returns list containing the sex of each sample via sex chromosome methylation intensity-based prediction.
+# Returns list containing the sex of each sample via sex chromosome methylation
+# intensity-based prediction.
 setMethod("predictSampleSexes", signature("MethylCNVDataSet"), function(object, threshold) {
     cnQuantiles <- object@summary$cnQuantiles
     diffs <- log2(cnQuantiles$Y[250, ]) - log2(cnQuantiles$X[250, ])
@@ -13,7 +14,8 @@ setGeneric("normalize", function(object, type = c("functional", "quantile")) {
     standardGeneric("normalize")
 })
 
-# Returns a new MethylCNVDataSet object whose intensities have been normalized to the user-specified method.
+# Returns a new MethylCNVDataSet object whose intensities have been normalized to
+# the user-specified method.
 setMethod("normalize", signature("MethylCNVDataSet"), function(object, type) {
     method <- match.arg(type)
     

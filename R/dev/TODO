@@ -1,3 +1,8 @@
+figure out how annotation works
+
+segmentize
+normalize
+
 findCNV
 intersectCNV
 subgroupDifference
@@ -8,9 +13,19 @@ plotDensity
 plotPCA
 getColors
 
-segmentize
-normalize
-
 createFilters
 filterSNPProbes
 filterVariantProbes
+
+then
+
+document
+
+then
+
+package vignette
+package manual
+
+then
+
+paper
