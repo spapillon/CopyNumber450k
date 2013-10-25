@@ -55,11 +55,10 @@ setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose,
     
     intensities <- assayData(object)$intensity
     
-    groups <- pData(object)$groups
-    sexes <- pData(object)$sex
+    groups <- pData(object)$Sample_Group
+    sexes <- pData(object)$Sample_Sex
     sampleNames <- sampleNames(object)[groups != "control"]
     
-    # TODO: Annotation?
     annotation <- fData(object)
     
     control_intensity <- intensities[, groups == "control"]
@@ -77,7 +76,6 @@ setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose,
     # TODO: Send this to the DESCRIPTION file ?
     require(DNAcopy)
     # ---
-    
     CNA.object <- CNA(cases_log2, ordered(annotation$chr, levels=c(paste("chr", 1:22, sep=""), "chrX", "chrY"))
             , as.numeric(annotation$pos), data.type = "logratio", sampleid = sampleNames)
     smoothed.CNA.object <- smooth.CNA(CNA.object)
@@ -128,14 +126,12 @@ setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose,
             }
             
             # Extract genes in the segment
-            #genes <- as.character(allAnnotations$UCSC_RefGene_Name[probes])
-            #genes <- unique(unlist(strsplit(x = genes, ";")))
-            #genes <- paste(genes, collapse = ";")
+            genes <- as.character(annotation$UCSC_RefGene_Name[probes])
+            genes <- unique(unlist(strsplit(x = genes, ";")))
+            genes <- paste(genes, collapse = ";")
             l <- as.numeric(cnv["loc.end"]) - as.numeric(cnv["loc.start"])
-            #c(cnv, seg.length = l, pvalue = p_value, genes = genes, ctrl.mean = control_mean, 
-            #    ctrl.sd = control_sd, sample.value = sample_sum, z = z_score)
-            c(cnv, seg.length = l, pvalue = p_value, ctrl.mean = control_mean, 
-              ctrl.sd = control_sd, sample.value = sample_sum, z = z_score)
+            c(cnv, seg.length = l, pvalue = p_value, genes = genes, ctrl.mean = control_mean, 
+                ctrl.sd = control_sd, sample.value = sample_sum, z = z_score)
         }))
         
         if (plotting) {
