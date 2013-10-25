@@ -14,7 +14,8 @@ The only solution is to RGChannelSet in MethylCNVDataSet (I'm positive there's a
 place in hell for doing something this dirty) or directly extending RGChannelSet
 as you have done previously.  However, we need RGChannelSet as well as MethylSet so
 this won't quite cut it, unless MethylSet extends RGChannelSet as opposed to containing
-only the "meth" and "unmeth".  This needs need to be addressed.
+only the "meth" and "unmeth".  But MethylSet does not extend RGChannelSet.  This
+needs need to be addressed.
 
 * Not an issue with quantile
 ** Problem is probably worse if we ever decide to drop samples
