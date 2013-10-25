@@ -25,19 +25,35 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     assayData <- assayDataNew(storage.mode = "lockedEnvironment", intensity = intensities)
     sampleNames <- sampleNames(assayData)
     featureNames <- featureNames(assayData)
-    
-    # Sample covariates
-    sexes <- rep(NA, ncol(assayData$intensity))
-    names(sexes) <- sampleNames
-    
+
+    pheno <- data.frame(row.names = sampleNames)
     if (!"Sample_Group" %in% colnames(pData(RGChannelSet))) {
         stop("Argument RGChannelSet must be presented such that phenoData(RGChannelSet)$Sample_Group exists.")
     } else {
-        groups <- pData(RGChannelSet)$Sample_Group
+        pheno <- data.frame(pheno, Sample_Group = pData(RGChannelSet)$Sample_Group)
     }
     
-    phenoData <- AnnotatedDataFrame(data.frame(sex = sexes[sampleNames], group = groups[sampleNames], 
-        row.names = sampleNames))
+    if ("Array" %in% colnames(pData(RGChannelSet))) {
+        pheno <- data.frame(pheno, Array= pData(RGChannelSet)$Array)
+    }
+    
+    if ("Slide" %in% colnames(pData(RGChannelSet))) {
+        pheno <- data.frame(pheno, Slide = pData(RGChannelSet)$Slide)
+    }
+    
+    if ("Origin" %in% colnames(pData(RGChannelSet))) {
+        pheno <- data.frame(pheno, Origin = pData(RGChannelSet)$Origin)
+    }
+    
+    if ("Sample_Sex" %in% colnames(pData(RGChannelSet))) {
+        sexes <- pData(RGChannelSet)$Sample_Sex
+    } else {
+        #TODO: use predict sex
+        sexes <- rep(NA, ncol(assayData$intensity))
+        # ---
+    }
+    pheno <- data.frame(pheno, Sample_Sex = sexes)
+    phenoData <- AnnotatedDataFrame(pheno)
     
     # Feature covariates
     featureData <- AnnotatedDataFrame(data.frame(getAnnotation(RGChannelSet, what=c("Locations", "SNPs.137CommonSingle"))))
