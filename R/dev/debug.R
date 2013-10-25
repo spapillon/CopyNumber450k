@@ -11,12 +11,15 @@ library(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
 
 ################################################################################ 
 
-source("~/git/CopyNumber450k/R/dev/extractFromRGChannelSet.R")
+source("~/git/CopyNumber450k/R/dev/extract.R")
 source("~/git/CopyNumber450k/R/dev/normalization.functional.R")
 source("~/git/CopyNumber450k/R/dev/normalization.quantile.R")
 
-source("~/git/CopyNumber450k/R/dev/MethylCNVDataSet.R")
-source("~/git/CopyNumber450k/R/dev/MethylCNVDataSet.methods.R")
+source("~/git/CopyNumber450k/R/dev/class.R")
+source("~/git/CopyNumber450k/R/dev/methods.R")
+source("~/git/CopyNumber450k/R/dev/comparison.R")
+source("~/git/CopyNumber450k/R/dev/plots.R")
+
 
 ################################################################################ 
 
