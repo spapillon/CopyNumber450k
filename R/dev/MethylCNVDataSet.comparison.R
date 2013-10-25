@@ -9,7 +9,7 @@ setMethod("findCNV", signature("MethylCNVDataSet"), function(object, CNVs, type)
         stop("Argument [CNV] type must be {gain, loss, both}.")
     }
     
-    segments_list <- object@segments
+    segments_list <- segments(object)
     
     if (type == "both") {
         op <- function(a) a[, "isSignificant"]
@@ -52,7 +52,7 @@ setMethod("intersectCNV", signature("CNVObject"), function(object, sample_indice
         stop("Argument [CNV] type must be {gain, loss, both}.")
     }
     
-    segments_list <- object@segments[sample_indices]
+    segments_list <- segments(object)[sample_indices]
     
     if (type == "both") {
         op <- function(a) a[, "isSignificant"]

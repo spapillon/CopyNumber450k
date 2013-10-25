@@ -7,8 +7,7 @@ library(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
 ################################################################################ 
 
 # load('~/git/CopyNumber450k/data/control_RGset.RData')
-# pData(control_RGset)$Sample_Group[1] <- 'case' control_RGset <-
-# updateObject(control_RGset)
+# pData(control_RGset)$Sample_Group[1] <- 'case' updateObject(control_RGset)
 
 ################################################################################ 
 

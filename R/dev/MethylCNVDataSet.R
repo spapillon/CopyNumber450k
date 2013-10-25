@@ -25,6 +25,14 @@ setMethod("getSummary", signature("MethylCNVDataSet"), function(object) {
 
 ################################################################################ 
 
+setGeneric("segments", function(object) standardGeneric("segments"))
+
+setMethod("segments", signature("MethylCNVDataSet"), function(object) {
+    object@segments
+})
+
+################################################################################ 
+
 MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     if (!is(RGChannelSet, "RGChannelSet")) {
         stop("Argument RGChannelSet must be of type minfi::RGChannelSet-class.")
@@ -71,7 +79,7 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     phenoData <- AnnotatedDataFrame(pheno)
     
     # Feature covariates
-    featureData <- AnnotatedDataFrame(data.frame(getAnnotation(RGChannelSet, what = c("Locations", 
+    featureData <- AnnotatedDataFrame(as.data.frame(getAnnotation(RGChannelSet, what = c("Locations", 
         "SNPs.137CommonSingle", "Other"))))
     
     # TODO: Experimental description (MIAxE): experimentData
@@ -84,7 +92,8 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     # (AnnotatedDataFrame-class): protocolData
     
     new("MethylCNVDataSet", summary = summary, assayData = assayData, phenoData = phenoData, 
-        featureData = featureData, annotation = annotation, manifest = manifest)
+        featureData = featureData, annotation = annotation, manifest = manifest, 
+        segments = list())
 }
 
 ################################################################################  

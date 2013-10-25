@@ -180,12 +180,12 @@ setGeneric("plotSample", function(object, index, chr, start, end) standardGeneri
 
 setMethod("plotSample", signature("MethylCNVDataSet"), function(object, index, chr, 
     start, end) {
-    if (length(object@segments) == 0) {
+    if (length(segments(object)) == 0) {
         stop("Object has not been segmentized yet.")
     }
     
     # TODO: Avoid the use of '@' and use the filters
-    sample_segments <- object@segments[[index]]
+    sample_segments <- segments(object)[[index]]
     sample_filters <- rep(FALSE, nrow(sample_segments))
     sample_name <- sampleNames(object)[index]
     # ---
