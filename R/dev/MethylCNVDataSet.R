@@ -1,6 +1,7 @@
 ################################################################################ 
 
-setClass("MethylCNVDataSet", representation(summary = "list", segments = "list"), 
+setClass("MethylCNVDataSet", representation(summary = "list", segments = "list",
+                manifest = "IlluminaMethylationManifest"), 
     contains = "eSet")
 
 ################################################################################ 
@@ -18,7 +19,7 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     
     # Summary of methylation data
     summary <- extractFromRGChannelSet450k(RGChannelSet)
-    
+
     # High-throughput data
     MSet <- preprocessRaw(RGChannelSet)
     intensities <- getMeth(MSet) + getUnmeth(MSet)
@@ -56,7 +57,7 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     phenoData <- AnnotatedDataFrame(pheno)
     
     # Feature covariates
-    featureData <- AnnotatedDataFrame(data.frame(getAnnotation(RGChannelSet, what=c("Locations", "SNPs.137CommonSingle"))))
+    featureData <- AnnotatedDataFrame(data.frame(getAnnotation(RGChannelSet, what=c("Locations", "SNPs.137CommonSingle", "Other"))))
     # featureData <- AnnotatedDataFrame(data.frame(isUsed = featuresUsed, row.names =
     # featureNames))
     
@@ -64,11 +65,11 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     
     # Assay description
     annotation <- annotation(RGChannelSet)
-    
+    manifest <- getManifest(RGChannelSet)
     ### Equipment-generated variables describing sample phenotypes
     ### (AnnotatedDataFrame-class): protocolData
-    new("MethylCNVDataSet", summary = summary, assayData = assayData, phenoData = phenoData, 
-        featureData = featureData, annotation = annotation)
+    new("MethylCNVDataSet", summary = summary, assayData = assayData, phenoData = phenoData,
+            featureData = featureData, annotation = annotation,  manifest = manifest)
 }
 
 ################################################################################  
