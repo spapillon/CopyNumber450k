@@ -40,7 +40,7 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
         row.names = sampleNames))
     
     # Feature covariates
-    featureData <- AnnotatedDataFrame()
+    featureData <- AnnotatedDataFrame(data.frame(getAnnotation(RGChannelSet, what=c("Locations", "SNPs.137CommonSingle"))))
     # featureData <- AnnotatedDataFrame(data.frame(isUsed = featuresUsed, row.names =
     # featureNames))
     
@@ -51,7 +51,6 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     
     ### Equipment-generated variables describing sample phenotypes
     ### (AnnotatedDataFrame-class): protocolData
-    
     new("MethylCNVDataSet", summary = summary, assayData = assayData, phenoData = phenoData, 
         featureData = featureData, annotation = annotation)
 }

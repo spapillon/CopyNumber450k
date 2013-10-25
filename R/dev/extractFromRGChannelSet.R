@@ -55,7 +55,7 @@ extractFromRGChannelSet450k <- function(RGChannelSet) {
     probesII <- getProbeInfo(IlluminaHumanMethylation450kmanifest, type = "II")
     
     # Chr probes.
-    locations <- getLocations(IlluminaHumanMethylation450kannotation.ilmn.v1.2)  # TODO: getLocation(RGSet) does not work
+    locations <- getLocations(RGChannelSet)  # TODO: getLocation(RGSet) does not work
     autosomal <- names(locations[seqnames(locations) %in% paste0("chr", 1:22)])
     chrY <- names(locations[seqnames(locations) == "chrY"])
     chrX <- names(locations[seqnames(locations) == "chrX"])
