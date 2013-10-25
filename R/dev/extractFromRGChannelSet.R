@@ -51,8 +51,8 @@ extractFromRGChannelSet450k <- function(RGChannelSet) {
     oob <- list(greenOOB = greenOOB, redOOB = redOOB)
     
     # Defining the Type I, II Green and II Red probes;
-    probesI <- getProbeInfo(IlluminaHumanMethylation450kmanifest, type = "I")
-    probesII <- getProbeInfo(IlluminaHumanMethylation450kmanifest, type = "II")
+    probesI <- getProbeInfo(RGChannelSet, type = "I")
+    probesII <- getProbeInfo(RGChannelSet, type = "II")
     
     # Chr probes.
     locations <- getLocations(RGChannelSet)  # TODO: getLocation(RGSet) does not work
