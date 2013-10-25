@@ -1,3 +1,5 @@
+################################################################################ 
+
 setGeneric("predictSampleSexes", function(object, threshold = -3) standardGeneric("predictSampleSexes"))
 
 # Returns list containing the sex of each sample via sex chromosome methylation
@@ -8,7 +10,7 @@ setMethod("predictSampleSexes", signature("MethylCNVDataSet"), function(object, 
     predicted_sexes <- ifelse(diffs <= threshold, "Female", "Male")
 })
 
-
+################################################################################ 
 
 setGeneric("normalize", function(object, type = c("functional", "quantile")) {
     standardGeneric("normalize")
@@ -20,12 +22,11 @@ setMethod("normalize", signature("MethylCNVDataSet"), function(object, type) {
     method <- match.arg(type)
     
     if (!method %in% c("functional", "quantile")) {
-        stop("Expected argument [normalization] type to be {default, quantile}.")
+        stop("Argument [normalization] type must be {default, quantile}.")
     }
     
     sexes <- pData(object)$sex
-    featuresUsed <- fData(object)$isUsed
-    intensities <- assayData(object)$intensity[featuresUsed, ]
+    intensities <- assayData(object)$intensity
     
     if (method == "functional") {
         fData(object)$intensity <- functionalNormalization(cnMatrix = intensities, 
@@ -49,7 +50,7 @@ setMethod("normalize", signature("MethylCNVDataSet"), function(object, type) {
     object
 })
 
-
+################################################################################ 
 
 setGeneric("segmentize", function(object, verbose = TRUE, p.adjust.method = "bonferroni", 
     plotting = FALSE) standardGeneric("segmentize"))
@@ -165,4 +166,6 @@ setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose,
     names(x) <- names(segments_per_sample)
     object@segments <- x
     object
-}) 
+})
+
+################################################################################  

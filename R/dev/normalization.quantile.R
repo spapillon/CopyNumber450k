@@ -1,3 +1,5 @@
+################################################################################ 
+
 # Main function call for quantile normalization
 quantileNormalization <- function(cnMatrix, predictedSex = NULL) {
     
@@ -48,4 +50,6 @@ quantileNormalization <- function(cnMatrix, predictedSex = NULL) {
     message("Quantile Normalization done.")
     
     cnMatrix
-} 
+}
+
+################################################################################  

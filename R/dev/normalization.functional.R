@@ -1,3 +1,5 @@
+################################################################################ 
+
 # Build the matrix of control probes intensities for the correction of the
 # quantile distributions Extraction of the Control matrix
 buildControlMatrix450k <- function(extractedData) {
@@ -110,6 +112,8 @@ buildControlMatrix450k <- function(extractedData) {
     model.matrix
 }
 
+################################################################################ 
+
 # Return the corrected quantile distributions
 returnFit <- function(model.matrix, quantiles, nPCs) {
     quantiles[1, ] <- 0
@@ -130,6 +134,8 @@ returnFit <- function(model.matrix, quantiles, nPCs) {
     newQuantiles <- meanFunction + res
     newQuantiles
 }
+
+################################################################################ 
 
 # Assumes that the predicted sex is 1 and 2. The sex prediction function used by
 # default respects this Return the corrected quantile distributions for the
@@ -154,6 +160,8 @@ returnFitX <- function(model.matrix, quantiles, nPCs, sex) {
     newQuantiles
 }
 
+################################################################################ 
+
 # Normalize a matrix of intensities with the corrected quantile distributions
 normalizeByType <- function(intMatrix, newQuantiles) {
     normMatrix <- matrix(NA, nrow(intMatrix), ncol(intMatrix))
@@ -177,6 +185,8 @@ normalizeByType <- function(intMatrix, newQuantiles) {
         result
     })
 }
+
+################################################################################ 
 
 # Main function call for normalization
 functionalNormalization <- function(cnMatrix, extractedData, nPCs = 4, predictedSex) {
@@ -245,4 +255,6 @@ functionalNormalization <- function(cnMatrix, extractedData, nPCs = 4, predicted
     message("Normalization done.")
     
     cnMatrix
-} 
+}
+
+################################################################################  

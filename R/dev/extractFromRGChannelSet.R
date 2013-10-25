@@ -1,3 +1,5 @@
+################################################################################ 
+
 # Extract various statistics from channel and methylation values contained in
 # RGChannelSet
 extractFromRGChannelSet450k <- function(RGChannelSet) {
@@ -116,4 +118,6 @@ extractFromRGChannelSet450k <- function(RGChannelSet) {
     list(mQuantiles = mQuantiles, betaQuantiles = betaQuantiles, methQuantiles = methQuantiles, 
         unmethQuantiles = unmethQuantiles, cnQuantiles = cnQuantiles, greenControls = greenControls, 
         redControls = redControls, XYMedians = XYMedians, oob = oob)
-} 
+}
+
+################################################################################  
