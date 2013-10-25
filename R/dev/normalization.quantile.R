@@ -1,13 +1,13 @@
 ################################################################################ 
 
 # Main function call for quantile normalization
-quantileNormalization <- function(cnMatrix, predictedSex = NULL) {
+quantileNormalization <- function(cnMatrix, annotation, manifest, predictedSex = NULL) {
     
-    probesI <- getProbeInfo(IlluminaHumanMethylation450kmanifest, type = "I")
-    probesII <- getProbeInfo(IlluminaHumanMethylation450kmanifest, type = "II")
+    probesI <- getProbeInfo(manifest, type = "I")
+    probesII <- getProbeInfo(manifest, type = "II")
     
     # Chr probes:
-    locations <- getLocations(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
+    locations <- getLocations(minfi:::.getAnnotationString(annotation))
     autosomal <- names(locations[seqnames(locations) %in% paste0("chr", 1:22)])
     chrY <- names(locations[seqnames(locations) == "chrY"])
     chrX <- names(locations[seqnames(locations) == "chrX"])

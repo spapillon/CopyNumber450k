@@ -16,10 +16,10 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     if (!is(RGChannelSet, "RGChannelSet")) {
         stop("Argument RGChannelSet must be of type minfi::RGChannelSet-class.")
     }
-    
+    browser()
     # Summary of methylation data
     summary <- extractFromRGChannelSet450k(RGChannelSet)
-
+    
     # High-throughput data
     MSet <- preprocessRaw(RGChannelSet)
     intensities <- getMeth(MSet) + getUnmeth(MSet)

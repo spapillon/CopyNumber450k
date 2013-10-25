@@ -2,20 +2,20 @@
 
 # Extract various statistics from channel and methylation values contained in
 # RGChannelSet
-extractFromRGChannelSet450k <- function(RGChannelSet) {
+extractFromRGChannelSet450k <- function(RGset) {
     controlType <- c("BISULFITE CONVERSION I", "BISULFITE CONVERSION II", "EXTENSION", 
         "HYBRIDIZATION", "NEGATIVE", "NON-POLYMORPHIC", "NORM_A", "NORM_C", "NORM_G", 
         "NORM_T", "SPECIFICITY I", "SPECIFICITY II", "TARGET REMOVAL", "STAINING")
     
-    MSet <- preprocessRaw(RGChannelSet)
-    intensityRed <- getRed(RGChannelSet)
-    intensityGreen <- getGreen(RGChannelSet)
+    MSet <- preprocessRaw(RGset)
+    intensityRed <- getRed(RGset)
+    intensityGreen <- getGreen(RGset)
     methylated <- getMeth(MSet)
     unmethylated <- getUnmeth(MSet)
     betaValues <- getBeta(MSet)
     mValues <- getM(MSet)
     intensities <- methylated + unmethylated
-    
+       
     # Extraction of the controls
     greenControls = vector("list", length(controlType))
     redControls = vector("list", length(controlType))
@@ -24,9 +24,9 @@ extractFromRGChannelSet450k <- function(RGChannelSet) {
     
     for (i in 1:length(controlType)) {
         if (controlType[i] != "STAINING") {
-            ctrlAddress <- getControlAddress(RGChannelSet, controlType = controlType[i])
+            ctrlAddress <- getControlAddress(RGset, controlType = controlType[i])
         } else {
-            ctrlAddress <- getControlAddress(RGChannelSet, controlType = controlType[i])[c(2, 
+            ctrlAddress <- getControlAddress(RGset, controlType = controlType[i])[c(2, 
                 3, 4, 6)]
         }
         redControls[[i]] <- intensityRed[ctrlAddress, ]
@@ -34,16 +34,16 @@ extractFromRGChannelSet450k <- function(RGChannelSet) {
     }
     
     # Extraction of undefined negative control probes
-    locusNames <- getManifestInfo(RGChannelSet, "locusNames")
-    TypeI.Red <- getProbeInfo(RGChannelSet, type = "I-Red")
-    TypeI.Green <- getProbeInfo(RGChannelSet, type = "I-Green")
+    locusNames <- getManifestInfo(RGset, "locusNames")
+    TypeI.Red <- getProbeInfo(RGset, type = "I-Red")
+    TypeI.Green <- getProbeInfo(RGset, type = "I-Green")
     
     numberQuantiles <- 100
     probs <- 1:numberQuantiles/100
     
-    greenOOB <- rbind(getGreen(RGChannelSet)[TypeI.Red$AddressA, ], getGreen(RGChannelSet)[TypeI.Red$AddressB, 
+    greenOOB <- rbind(getGreen(RGset)[TypeI.Red$AddressA, ], getGreen(RGset)[TypeI.Red$AddressB, 
         ])
-    redOOB <- rbind(getRed(RGChannelSet)[TypeI.Green$AddressA, ], getRed(RGChannelSet)[TypeI.Green$AddressB, 
+    redOOB <- rbind(getRed(RGset)[TypeI.Green$AddressA, ], getRed(RGset)[TypeI.Green$AddressB, 
         ])
     
     greenOOB <- apply(greenOOB, 2, function(x) quantile(x, probs = probs, na.rm = T))
@@ -51,11 +51,12 @@ extractFromRGChannelSet450k <- function(RGChannelSet) {
     oob <- list(greenOOB = greenOOB, redOOB = redOOB)
     
     # Defining the Type I, II Green and II Red probes;
-    probesI <- getProbeInfo(RGChannelSet, type = "I")
-    probesII <- getProbeInfo(RGChannelSet, type = "II")
+    probesI <- getProbeInfo(RGset, type = "I")
+    probesII <- getProbeInfo(RGset, type = "II")
     
     # Chr probes.
-    locations <- getLocations(RGChannelSet)  # TODO: getLocation(RGSet) does not work
+
+    locations <- getLocations(RGset)  # TODO: getLocation(RGSet) does not work
     autosomal <- names(locations[seqnames(locations) %in% paste0("chr", 1:22)])
     chrY <- names(locations[seqnames(locations) == "chrY"])
     chrX <- names(locations[seqnames(locations) == "chrX"])
