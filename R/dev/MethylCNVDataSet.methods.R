@@ -235,19 +235,19 @@ setMethod("plotSex", signature("MethylCNVDataSet"), function(object) {
 
 ################################################################################  
 
-setGeneric("getColoring", function(object, color.by = c("slide.row", "slide.col", 
-                            "sample.group", "array", "origin"), color.function = rainbow) standardGeneric("getColoring"))
+setGeneric("getColoring", function(object, color.by = c("array.row", "array.col", 
+                            "sample.group", "slide", "origin"), color.function = rainbow) standardGeneric("getColoring"))
 setMethod("getColoring", signature("MethylCNVDataSet"), function(object, color.by, color.function) {
     coloring <- match.arg(color.by)
     # TODO: Add verification if column exist???
-    if (coloring == "slide.row") {
-        samples <- substr(pData(object)$Slide, 1, 3)
-    } else if (coloring == "slide.col") {
-        samples <- substr(pData(object)$Slide, 4, 6)
+    if (coloring == "array.row") {
+        samples <- substr(pData(object)$Array, 1, 3)
+    } else if (coloring == "array.col") {
+        samples <- substr(pData(object)$Array, 4, 6)
     } else if (coloring == "sample.group") {
         samples <- pData(object)$Sample_Group
-    } else if (coloring == "array") {
-        samples <- pData(object)$Array
+    } else if (coloring == "slide") {
+        samples <- pData(object)$Slide
     } else if (coloring == "origin") {
         samples <- pData(object)$Origin
     }
@@ -260,8 +260,8 @@ setMethod("getColoring", signature("MethylCNVDataSet"), function(object, color.b
 
 ################################################################################  
 
-setGeneric("plotDensity", function(object, color.by =  c("slide.row", "slide.col", 
-                        "sample.group", "array", "origin"), color.function = rainbow, legend.position = "topright") 
+setGeneric("plotDensity", function(object, color.by = c("array.row", "array.col", 
+                        "sample.group", "slide", "origin"), color.function = rainbow, legend.position = "topright") 
                 standardGeneric("plotDensity"))
 
 setMethod("plotDensity", signature("MethylCNVDataSet"), function(object, color.by, color.function, 
@@ -272,7 +272,7 @@ setMethod("plotDensity", signature("MethylCNVDataSet"), function(object, color.b
     coloring <- getColoring(object, color.by, color.function)
     myPlot <- plot(density(intensities), col = coloring$sample.colors[1], ylim = c(0, 
                     9e-05), main = match.arg(color.by))
-    sapply(2:ncol(int_matrix), function(i) lines(density(intensities[, i]), col = coloring$sample.colors[i]))
+    sapply(2:ncol(intensities), function(i) lines(density(intensities[, i]), col = coloring$sample.colors[i]))
                 
     if (!is.null(legend.position)) {
         legend(legend.position, legend = coloring$groups, fill = coloring$group.colors)
@@ -283,8 +283,8 @@ setMethod("plotDensity", signature("MethylCNVDataSet"), function(object, color.b
 
 ################################################################################  
 
-setGeneric("plotPCA", function(object, color.by =  c("slide.row", "slide.col", 
-                        "sample.group", "array", "origin"), color.function = rainbow, legend.position = "topright")
+setGeneric("plotPCA", function(object, color.by = c("array.row", "array.col", 
+                        "sample.group", "slide", "origin"), color.function = rainbow, legend.position = "topright")
                  standardGeneric("plotPCA"))
 
 setMethod("plotPCA", signature("MethylCNVDataSet"), function(object, color.by, color.function, 
