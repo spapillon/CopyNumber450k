@@ -160,10 +160,11 @@ setGeneric("plotSample", function(object, index, chr, start, end) standardGeneri
 
 setMethod("plotSample", signature("MethylCNVDataSet"), function(object, index, chr, start, 
             end) {
+    # TODO: Avoid the use of "@" and use the filters
     sample_segments <- object@segments[[index]]
     sample_filters <- rep(FALSE, nrow(sample_segments))
     sample_name <- sampleNames(object)[index]
-          
+    # ---      
     if (missing(chr)) {# Plotting the whole genome
 
         chromosomes <- unique(sample_segments[, "chrom"])   
@@ -214,3 +215,88 @@ setMethod("plotSample", signature("MethylCNVDataSet"), function(object, index, c
           
     myPlot
 })
+
+################################################################################  
+
+setGeneric("plotSex", function(object, index, chr, start, end) standardGeneric("plotSex"))
+
+setMethod("plotSex", signature("MethylCNVDataSet"), function(object) {
+    # TODO: Avoid the use of "@" operator
+    cnQuantiles <- object@summary$cnQuantiles
+    # ---
+    myPlot <- plot(log2(cnQuantiles$Y[250, ]) - log2(cnQuantiles$X[250, ]), 
+            1:length(cnQuantiles$Y[250, ]))
+    abline(v = -2.5, lty = 3, col = "red")
+    text(x = -4, y = 0.5, label = "Female", col = "red")
+    text(x = -1, y = 0.5, label = "Male", col = "red")
+
+    myPlot
+})
+
+################################################################################  
+
+setGeneric("getColoring", function(object, color.by = c("sentrix.row", "sentrix.col", 
+                            "sample.group", "chip.id"), color.function = rainbow) standardGeneric("getColoring"))
+setMethod("getColoring", signature("MethylCNVDataSet"), function(object, color.by, color.function) {
+    coloring <- match.arg(color.by)
+    # TODO: Use the proper calls using phenoData or pData            
+    if (coloring == "sentrix.row") {
+        samples <- sampleChipRows(object)
+    } else if (coloring == "sentrix.col") {
+        samples <- sampleChipColumns(object)
+    } else if (coloring == "sample.group") {
+        samples <- sampleGroups(object)
+    } else if (coloring == "chip.id") {
+        samples <- sampleChipIDs(object)
+    }
+    # ---            
+    cols <- color.function(length(unique(samples)))
+    col_vec <- cols[match(samples, unique(samples))]
+
+    list(sample.colors = col_vec, groups = unique(samples), group.colors = cols)
+}) 
+
+################################################################################  
+
+setGeneric("plotDensity", function(object, color.by = c("sentrix.row", "sentrix.col", 
+                            "sample.group", "chip.id"), color.function = rainbow, legend.position = "topright") 
+                standardGeneric("plotDensity"))
+
+setMethod("plotDensity", signature("CNVObject"), function(object, color.by, color.function, 
+                    legend.position) {
+    # TODO: This assumes that bad probes have been dropped
+    intensities <- assayData(object)$intensity
+    # ---
+    coloring <- getColoring(object, color.by, color.function)
+    myPlot <- plot(density(intensities), col = coloring$sample.colors[1], ylim = c(0, 
+                    9e-05), main = match.arg(color.by))
+    sapply(2:ncol(int_matrix), function(i) lines(density(intensities[, i]), col = coloring$sample.colors[i]))
+                
+    if (!is.null(legend.position)) {
+        legend(legend.position, legend = coloring$groups, fill = coloring$group.colors)
+    }
+
+    myPlot
+})
+
+################################################################################  
+
+setGeneric("plotPCA", function(object, color.by = c("sentrix.row", "sentrix.col", 
+                            "sample.group", "chip.id"), color.function = rainbow, legend.position = "topright")
+                 standardGeneric("plotPCA"))
+
+setMethod("plotPCA", signature("CNVObject"), function(object, color.by, color.function, 
+                    legend.position) {
+    # TODO: This assumes that bad probes have been dropped
+    intensities <- assayData(object)$intensity
+    # ---
+    coloring <- getColoring(object, color.by, color.function)
+    pca <- prcomp(t(intensities))
+    myPlot <- plot(pca$x, col = coloring$sample.colors, main = match.arg(color.by))
+                
+    if (!is.null(legend.position)) {
+        legend(legend.position, legend = coloring$groups, fill = coloring$group.colors)
+    }
+                
+    myPlot
+ })
