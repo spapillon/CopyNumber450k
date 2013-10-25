@@ -1,7 +1,19 @@
+setGeneric("predictSampleSexes", function(object, threshold = -3) standardGeneric("predictSampleSexes"))
+
+# Returns list containing the sex of each sample via sex chromosome methylation intensity-based prediction.
+setMethod("predictSampleSexes", signature("MethylCNVDataSet"), function(object, threshold) {
+    cnQuantiles <- object@summary$cnQuantiles
+    diffs <- log2(cnQuantiles$Y[250, ]) - log2(cnQuantiles$X[250, ])
+    predicted_sexes <- ifelse(diffs <= threshold, "Female", "Male")
+})
+
+
+
 setGeneric("normalize", function(object, type = c("functional", "quantile")) {
     standardGeneric("normalize")
 })
 
+# Returns a new MethylCNVDataSet object whose intensities have been normalized to the user-specified method.
 setMethod("normalize", signature("MethylCNVDataSet"), function(object, type) {
     method <- match.arg(type)
     
@@ -38,8 +50,9 @@ setMethod("normalize", signature("MethylCNVDataSet"), function(object, type) {
 
 
 setGeneric("segmentize", function(object, verbose = TRUE, p.adjust.method = "bonferroni", 
-    plotting = F) standardGeneric("segmentize"))
+    plotting = FALSE) standardGeneric("segmentize"))
 
+# Returns a new MethylCNVDataSet object. TODO: Fix this lol
 setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose, 
     p.adjust.method, plotting) {
     if (length(segments(object)) > 0) {
@@ -54,7 +67,8 @@ setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose,
     sampleNames <- sampleNames(object)[groups != "control"]
     
     # TODO: Annotation?
-    annotation <- probesAnnotation(object)[featuresUsed, ]
+    filteredAnnotations <- probesAnnotation(object)[featuresUsed, ]
+    allAnnotations <- probesAnnotation(object)
     
     control_intensity <- intensities[, groups == "control"]
     case_intensity <- as.matrix(intensities[, groups != "control"])
@@ -73,7 +87,7 @@ setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose,
     require(DNAcopy)
     # ---
     
-    CNA.object <- CNA(cases_log2, ordered(annotation$CHR), as.numeric(annotation$MAPINFO), 
+    CNA.object <- CNA(cases_log2, ordered(filteredAnnotations$CHR), as.numeric(filteredAnnotations$MAPINFO), 
         data.type = "logratio", sampleid = sampleNames)
     smoothed.CNA.object <- smooth.CNA(CNA.object)
     segment.smoothed.CNA.object <- segment(smoothed.CNA.object, min.width = 5, verbose = 1, 
@@ -101,8 +115,8 @@ setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose,
             }
             
             # Extract probes
-            probes <- probesAnnotation(object)$CHR == cnv["chrom"] & as.numeric(probesAnnotation(object)$MAPINFO) >= 
-                as.numeric(cnv["loc.start"]) & as.numeric(probesAnnotation(object)$MAPINFO) <= 
+            probes <- allAnnotations$CHR == cnv["chrom"] & as.numeric(allAnnotations$MAPINFO) >= 
+                as.numeric(cnv["loc.start"]) & as.numeric(allAnnotations$MAPINFO) <= 
                 as.numeric(cnv["loc.end"])
             
             # Compute segment values
@@ -123,7 +137,7 @@ setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose,
             }
             
             # Extract genes in the segment
-            genes <- as.character(probesAnnotation(object)$UCSC_RefGene_Name[probes])
+            genes <- as.character(allAnnotations$UCSC_RefGene_Name[probes])
             genes <- unique(unlist(strsplit(x = genes, ";")))
             genes <- paste(genes, collapse = ";")
             l <- as.numeric(cnv["loc.end"]) - as.numeric(cnv["loc.start"])
