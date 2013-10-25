@@ -8,6 +8,7 @@ setMethod("predictSampleSexes", signature("MethylCNVDataSet"), function(object, 
     cnQuantiles <- object@summary$cnQuantiles
     diffs <- log2(cnQuantiles$Y[250, ]) - log2(cnQuantiles$X[250, ])
     predicted_sexes <- ifelse(diffs <= threshold, "Female", "Male")
+    predicted_sexes
 })
 
 ################################################################################ 
