@@ -8,11 +8,9 @@ setMethod("plotSample", signature("MethylCNVDataSet"), function(object, index, c
         stop("Object has not been segmentized yet.")
     }
     
-    # TODO: Avoid the use of '@' and use the filters
     sample_segments <- segments(object)[[index]]
     sample_filters <- rep(FALSE, nrow(sample_segments))
     sample_name <- sampleNames(object)[index]
-    # ---
     
     if (missing(chr)) {
         # Plotting the whole genome
