@@ -9,7 +9,7 @@ setMethod("findCNV", signature("MethylCNVDataSet"), function(object, CNVs, type)
         stop("Argument [CNV] type must be {gain, loss, both}.")
     }
     
-    segments_list <- segments(object)
+    segments_list <- getSegments(object)
     
     if (type == "both") {
         op <- function(a) a[, "isSignificant"]
@@ -38,7 +38,7 @@ setGeneric("intersectCNV", function(object, sample_indices, type = "both") stand
 
 setMethod("intersectCNV", signature("MethylCNVDataSet"), function(object, sample_indices, 
     type) {
-    sample_count <- length(segments(object))
+    sample_count <- length(getSegments(object))
     
     if (missing(sample_indices)) {
         sample_indices <- 1:sample_count
@@ -52,7 +52,7 @@ setMethod("intersectCNV", signature("MethylCNVDataSet"), function(object, sample
         stop("Argument [CNV] type must be {gain, loss, both}.")
     }
     
-    segments_list <- segments(object)[sample_indices]
+    segments_list <- getSegments(object)[sample_indices]
     
     if (type == "both") {
         op <- function(a) a[, "isSignificant"]
@@ -104,7 +104,9 @@ setGeneric("subgroupDifference", function(object, group1_indices, group2_indices
 
 setMethod("subgroupDifference", signature("MethylCNVDataSet"), function(object, group1_indices, 
     group2_indices) {
-    sample_count <- length(segments(object))
+    # TODO: Is this line correct?
+    sample_count <- length(getSegments(object))
+    # ---
     
     if (!is.integer(group1_indices)) {
         stop("Argument group1_indices must be a integer vector.")

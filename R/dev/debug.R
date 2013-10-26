@@ -1,18 +1,18 @@
 ################################################################################ 
 
-# library(minfi)
+library(minfi)
 
-# library(IlluminaHumanMethylation450kmanifest)
+library(IlluminaHumanMethylation450kmanifest)
 
-# library(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
+library(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
 
 ################################################################################ 
 
-# load('~/git/CopyNumber450k/data/control_RGset.RData')
+load('~/git/CopyNumber450k/data/control_RGset.RData')
 
-# pData(control_RGset)$Sample_Group[1] <- 'case'
+pData(control_RGset)$Sample_Group[1] <- 'case'
 
-# control_RGset <- updateObject(control_RGset)
+control_RGset <- updateObject(control_RGset)
 
 ################################################################################ 
 

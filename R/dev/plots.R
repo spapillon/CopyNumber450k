@@ -4,11 +4,11 @@ setGeneric("plotSample", function(object, index, chr, start, end) standardGeneri
 
 setMethod("plotSample", signature("MethylCNVDataSet"), function(object, index, chr, 
     start, end) {
-    if (length(segments(object)) == 0) {
+    if (length(getSegments(object)) == 0) {
         stop("Object has not been segmentized yet.")
     }
     
-    sample_segments <- segments(object)[[index]]
+    sample_segments <- getSegments(object)[[index]]
     sample_filters <- rep(FALSE, nrow(sample_segments))
     sample_name <- sampleNames(object)[index]
     

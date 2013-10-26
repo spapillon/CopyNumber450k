@@ -25,9 +25,9 @@ setMethod("getSummary", signature("MethylCNVDataSet"), function(object) {
 
 ################################################################################ 
 
-setGeneric("segments", function(object) standardGeneric("segments"))
+setGeneric("getSegments", function(object) standardGeneric("getSegments"))
 
-setMethod("segments", signature("MethylCNVDataSet"), function(object) {
+setMethod("getSegments", signature("MethylCNVDataSet"), function(object) {
     object@segments
 })
 
