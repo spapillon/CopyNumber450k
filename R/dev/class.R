@@ -92,11 +92,13 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     # TODO: Equipment-generated variables describing sample phenotypes
     # (AnnotatedDataFrame-class): protocolData
     
-    browser()
-    
-    new("MethylCNVDataSet", summary = summary, assayData = assayData, phenoData = phenoData, 
+    object <- new("MethylCNVDataSet", summary = summary, assayData = assayData, phenoData = phenoData, 
         featureData = featureData, annotation = annotation, manifest = manifest, 
         segments = list())
+
+    # TODO: Weird to put it here... should predictSampleSex just be a general function and not a method?
+    pData(object)$Sample_Sex <- predictSampleSexes(object)
+    object
 }
 
 ################################################################################  
