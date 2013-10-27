@@ -14,6 +14,7 @@ Imports: IlluminaHumanMethylation450kmanifest,
   preprocessCore,
   minfi,
   DNAcopy,
+  Biobase,
   methods
-Depends:
+Depends: Biobase, minfi
 LinkingTo:
