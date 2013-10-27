@@ -33,7 +33,7 @@ setMethod("getSegments", signature("CNV450kSet"), function(object) {
 
 ################################################################################ 
 
-CNV450kSetFromRGChannelSet <- function(RGChannelSet) {
+CNV450kSet <- function(RGChannelSet) {
     if (!is(RGChannelSet, "RGChannelSet")) {
         stop("Argument RGChannelSet must be of type minfi::RGChannelSet-class.")
     }
