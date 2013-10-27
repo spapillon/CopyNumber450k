@@ -1,21 +1,19 @@
 Package: CopyNumber450k
 Type: Software
-Title: R package for parallelized mRMR ensemble feature selection
-Version: 2.0.2
-Date: 2013-05-14
+Title: R package for calling CNV from Illumina 450k methylation microarrays 
+Version: 1.0.0
+Date: 2013-10-27
 Author: Simon Papillon-Cavanagh, Jean-Philippe Fortin, Nicolas De Jay
 Maintainer: Simon Papillon-Cavanagh <simon.papillon-cavanagh@mail.mcgill.ca>
-Description: This package contains a set of function to compute mutual information matrices from continuous, categorical and survival variables. It also contains function to perform feature selection with mRMR and a new ensemble mRMR technique.
+Description: This package contains a set of functions that allow CNV calling from Illumina 450k methylation microarrays.
 License: Artistic-2.0
-Imports: IlluminaHumanMethylation450kmanifest, IlluminaHumanMethylation450kannotation.ilmn.v1.2, matrixStats, gmodels, preprocessCore
-Depends: methods, minfi
+Imports: IlluminaHumanMethylation450kmanifest,
+  IlluminaHumanMethylation450kannotation.ilmn.v1.2,
+  matrixStats,
+  gmodels,
+  preprocessCore,
+  minfi,
+  DNAcopy,
+  methods
+Depends:
 LinkingTo:
-Collate: CNVObject.R
-  CNVObject_initialization.R
-  CNVObject_accession.R
-  CNVObject_replacement.R
-  CNVObject_comparison.R
-  CNVObject_plotting.R
-  quantileNormalization.R
-  functionalNormalization.R
-  extractFromRGSet450k.R

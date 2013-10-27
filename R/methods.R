@@ -95,10 +95,6 @@ setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose,
         cases_log2 <- as.matrix(cases_log2)
     }
     
-    # TODO: Send this to the DESCRIPTION file ?
-    require(DNAcopy)
-    # ---
-    
     CNA.object <- CNA(cases_log2, ordered(annotation$chr, levels = c(paste("chr", 
         1:22, sep = ""), "chrX", "chrY")), as.numeric(annotation$pos), data.type = "logratio", 
         sampleid = sampleNames)

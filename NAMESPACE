@@ -1,1 +1,16 @@
-exportPattern("^[^\\.]")
+export(initialize,
+  getManifest,
+  getSummary,
+  getSegments,
+  findCNV,
+  intersectCNV,
+  subgroupDifference,
+  predictSampleSexes,
+  dropSNPprobes,
+  normalize,
+  segmentize,
+  plotSample,
+  plotSex,
+  getColoring,
+  plotDensity,
+  plotPCA)
