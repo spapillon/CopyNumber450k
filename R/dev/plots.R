@@ -88,31 +88,31 @@ setMethod("getColoring", signature("MethylCNVDataSet"), function(object, color.b
     coloring <- match.arg(color.by)
     
     if (coloring == "array.row") {
-        if ("Array" %in% colnames(pData(object))) {
+        if (!"Array" %in% colnames(pData(object))) {
             stop("Column \"Array\" must be present in pData(object) in order for coloring = \"array.row\" to be used.")
         }
         
         samples <- substr(pData(object)$Array, 1, 3)
     } else if (coloring == "array.col") {
-        if ("Array" %in% colnames(pData(object))) {
+        if (!"Array" %in% colnames(pData(object))) {
             stop("Column \"Array\" must be present in pData(object) in order for coloring = \"array.col\" to be used.")
         }
         
         samples <- substr(pData(object)$Array, 4, 6)
     } else if (coloring == "sample.group") {
-        if ("Sample_Group" %in% colnames(pData(object))) {
+        if (!"Sample_Group" %in% colnames(pData(object))) {
             stop("Column \"Sample_Group\" must be present in pData(object) in order for coloring = \"sample.group\" to be used.")
         }
         
         samples <- pData(object)$Sample_Group
     } else if (coloring == "slide") {
-        if ("Slide" %in% colnames(pData(object))) {
+        if (!"Slide" %in% colnames(pData(object))) {
             stop("Column \"Slide\" must be present in pData(object) in order for coloring = \"slide\" to be used.")
         }
         
         samples <- pData(object)$Slide
     } else if (coloring == "origin") {
-        if ("Origin" %in% colnames(pData(object))) {
+        if (!"Origin" %in% colnames(pData(object))) {
             stop("Column \"Origin\" must be present in pData(object) in order for coloring = \"origin\" to be used.")
         }
         
