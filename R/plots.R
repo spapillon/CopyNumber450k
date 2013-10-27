@@ -65,15 +65,23 @@ setMethod("plotSample", signature("CNV450kSet"), function(object, index, chr, st
 
 ################################################################################ 
 
-setGeneric("plotSex", function(object, index, chr, start, end) standardGeneric("plotSex"))
+setGeneric("plotSex", function(object, color.by = c("array.row", "array.col", 
+    "sample.group", "slide", "origin"), color.function = rainbow, legend.position = "topright") standardGeneric("plotSex"))
 
-setMethod("plotSex", signature("CNV450kSet"), function(object) {
+setMethod("plotSex", signature("CNV450kSet"), function(object, color.by = c("array.row", "array.col", 
+    "sample.group", "slide", "origin"), color.function = rainbow, legend.position = "topright") {
     cnQuantiles <- getSummary(object)$cnQuantiles
+    coloring <- getColoring(object, color.by, color.function)
+    
     myPlot <- plot(log2(cnQuantiles$Y[250, ]) - log2(cnQuantiles$X[250, ]), 1:length(cnQuantiles$Y[250, 
-        ]), main = "Sex Prediction", xlab = "Sex", ylab = "Index")
+        ]), main = "Sex Prediction", xlab = "Sex", ylab = "Index", col=coloring$sample.colors)
     abline(v = -2.5, lty = 3, col = "red")
     text(x = -4, y = 0.5, label = "Female", col = "red")
     text(x = -1, y = 0.5, label = "Male", col = "red")
+    
+    if (!is.null(legend.position)) {
+        legend(legend.position, legend = coloring$groups, fill = coloring$group.colors)
+    }
     
     myPlot
 })
