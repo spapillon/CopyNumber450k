@@ -2,8 +2,8 @@
 
 setGeneric("plotSample", function(object, index, chr, start, end) standardGeneric("plotSample"))
 
-setMethod("plotSample", signature("MethylCNVDataSet"), function(object, index, chr, 
-    start, end) {
+setMethod("plotSample", signature("CNV450kSet"), function(object, index, chr, start, 
+    end) {
     if (length(getSegments(object)) == 0) {
         stop("Object has not been segmentized yet.")
     }
@@ -67,7 +67,7 @@ setMethod("plotSample", signature("MethylCNVDataSet"), function(object, index, c
 
 setGeneric("plotSex", function(object, index, chr, start, end) standardGeneric("plotSex"))
 
-setMethod("plotSex", signature("MethylCNVDataSet"), function(object) {
+setMethod("plotSex", signature("CNV450kSet"), function(object) {
     cnQuantiles <- getSummary(object)$cnQuantiles
     myPlot <- plot(log2(cnQuantiles$Y[250, ]) - log2(cnQuantiles$X[250, ]), 1:length(cnQuantiles$Y[250, 
         ]), main = "Sex Prediction", xlab = "Sex", ylab = "Index")
@@ -83,8 +83,7 @@ setMethod("plotSex", signature("MethylCNVDataSet"), function(object) {
 setGeneric("getColoring", function(object, color.by = c("array.row", "array.col", 
     "sample.group", "slide", "origin"), color.function = rainbow) standardGeneric("getColoring"))
 
-setMethod("getColoring", signature("MethylCNVDataSet"), function(object, color.by, 
-    color.function) {
+setMethod("getColoring", signature("CNV450kSet"), function(object, color.by, color.function) {
     coloring <- match.arg(color.by)
     
     if (coloring == "array.row") {
@@ -132,8 +131,8 @@ setMethod("getColoring", signature("MethylCNVDataSet"), function(object, color.b
 setGeneric("plotDensity", function(object, color.by = c("array.row", "array.col", 
     "sample.group", "slide", "origin"), color.function = rainbow, legend.position = "topright") standardGeneric("plotDensity"))
 
-setMethod("plotDensity", signature("MethylCNVDataSet"), function(object, color.by, 
-    color.function, legend.position) {
+setMethod("plotDensity", signature("CNV450kSet"), function(object, color.by, color.function, 
+    legend.position) {
     # TODO: This assumes that bad probes have been dropped
     intensities <- assayData(object)$intensity
     # ---
@@ -155,7 +154,7 @@ setMethod("plotDensity", signature("MethylCNVDataSet"), function(object, color.b
 setGeneric("plotPCA", function(object, color.by = c("array.row", "array.col", "sample.group", 
     "slide", "origin"), color.function = rainbow, legend.position = "topright") standardGeneric("plotPCA"))
 
-setMethod("plotPCA", signature("MethylCNVDataSet"), function(object, color.by, color.function, 
+setMethod("plotPCA", signature("CNV450kSet"), function(object, color.by, color.function, 
     legend.position) {
     # TODO: This assumes that bad probes have been dropped
     intensities <- assayData(object)$intensity

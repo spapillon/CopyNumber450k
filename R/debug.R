@@ -8,9 +8,9 @@ library(IlluminaHumanMethylation450kannotation.ilmn.v1.2)
 
 ################################################################################ 
 
-load('~/git/CopyNumber450k/data/control_RGset.RData')
+load("~/git/CopyNumber450k/data/control_RGset.RData")
 
-pData(control_RGset)$Sample_Group[1] <- 'case'
+pData(control_RGset)$Sample_Group[1] <- "case"
 
 control_RGset <- updateObject(control_RGset)
 
@@ -27,7 +27,7 @@ source("~/git/CopyNumber450k/R/dev/plots.R")
 
 ################################################################################ 
 
-mcds <- MethylCNVDataSetFromRGChannelSet(control_RGset)
+mcds <- CNV450kSet(control_RGset)
 pData(mcds)$Sample_Sex <- predictSampleSexes(mcds)
 
 mcds.f <- normalize(mcds, "functional")

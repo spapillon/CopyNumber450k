@@ -2,7 +2,7 @@
 
 setGeneric("findCNV", function(object, CNVs, type = "both") standardGeneric("findCNV"))
 
-setMethod("findCNV", signature("MethylCNVDataSet"), function(object, CNVs, type) {
+setMethod("findCNV", signature("CNV450kSet"), function(object, CNVs, type) {
     if (!is.character(CNVs)) {
         stop("Argument CNVs must be a character vector.")
     } else if (!gain %in% c("gain", "loss", "both")) {
@@ -36,7 +36,7 @@ setMethod("findCNV", signature("MethylCNVDataSet"), function(object, CNVs, type)
 
 setGeneric("intersectCNV", function(object, sample_indices, type = "both") standardGeneric("intersectCNV"))
 
-setMethod("intersectCNV", signature("MethylCNVDataSet"), function(object, sample_indices, 
+setMethod("intersectCNV", signature("CNV450kSet"), function(object, sample_indices, 
     type) {
     sample_count <- length(getSegments(object))
     
@@ -102,7 +102,7 @@ subgroupDifferenceCNVByType <- function(group1_CNVs, group2_CNVs, group1_size, g
 
 setGeneric("subgroupDifference", function(object, group1_indices, group2_indices) standardGeneric("subgroupDifference"))
 
-setMethod("subgroupDifference", signature("MethylCNVDataSet"), function(object, group1_indices, 
+setMethod("subgroupDifference", signature("CNV450kSet"), function(object, group1_indices, 
     group2_indices) {
     # TODO: Is this line correct?
     sample_count <- length(getSegments(object))

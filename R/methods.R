@@ -4,7 +4,7 @@ setGeneric("predictSampleSexes", function(object, threshold = -3) standardGeneri
 
 # Returns list containing the sex of each sample via sex chromosome methylation
 # intensity-based prediction.
-setMethod("predictSampleSexes", signature("MethylCNVDataSet"), function(object, threshold) {
+setMethod("predictSampleSexes", signature("CNV450kSet"), function(object, threshold) {
     cnQuantiles <- getSummary(object)$cnQuantiles
     diffs <- log2(cnQuantiles$Y[250, ]) - log2(cnQuantiles$X[250, ])
     predicted_sexes <- ifelse(diffs <= threshold, "Female", "Male")
@@ -15,7 +15,7 @@ setMethod("predictSampleSexes", signature("MethylCNVDataSet"), function(object, 
 
 setGeneric("dropSNPprobes", function(object, maf_threshold = 0) standardGeneric("dropSNPprobes"))
 
-setMethod("dropSNPprobes", signature("MethylCNVDataSet"), function(object, maf_threshold) {
+setMethod("dropSNPprobes", signature("CNV450kSet"), function(object, maf_threshold) {
     annotation <- fData(object)
     
     # c('Probe_rs', 'Probe_maf', 'CpG_rs', 'CpG_maf', 'SBE_rs', 'SBE_maf')
@@ -36,9 +36,9 @@ setGeneric("normalize", function(object, type = c("functional", "quantile")) {
     standardGeneric("normalize")
 })
 
-# Returns a new MethylCNVDataSet object whose intensities have been normalized to
-# the user-specified method.
-setMethod("normalize", signature("MethylCNVDataSet"), function(object, type) {
+# Returns a new CNV450kSet object whose intensities have been normalized to the
+# user-specified method.
+setMethod("normalize", signature("CNV450kSet"), function(object, type) {
     method <- match.arg(type)
     
     if (!method %in% c("functional", "quantile")) {
@@ -67,9 +67,9 @@ setMethod("normalize", signature("MethylCNVDataSet"), function(object, type) {
 setGeneric("segmentize", function(object, verbose = TRUE, p.adjust.method = "bonferroni", 
     plotting = FALSE) standardGeneric("segmentize"))
 
-# Returns a new MethylCNVDataSet object.
-setMethod("segmentize", signature("MethylCNVDataSet"), function(object, verbose, 
-    p.adjust.method, plotting) {
+# Returns a new CNV450kSet object.
+setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adjust.method, 
+    plotting) {
     if (length(getSegments(object)) != 0 && verbose) {
         warning("Object has already been segmentized.")
     }

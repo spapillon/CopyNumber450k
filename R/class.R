@@ -1,17 +1,17 @@
 ################################################################################ 
 
-setClass("MethylCNVDataSet", representation(summary = "list", segments = "list", 
-    manifest = "IlluminaMethylationManifest"), contains = "eSet")
+setClass("CNV450kSet", representation(summary = "list", segments = "list", manifest = "IlluminaMethylationManifest"), 
+    contains = "eSet")
 
 ################################################################################ 
 
-setMethod("initialize", signature("MethylCNVDataSet"), function(.Object, ...) {
+setMethod("initialize", signature("CNV450kSet"), function(.Object, ...) {
     .Object <- callNextMethod(.Object, ...)
 })
 
 ################################################################################ 
 
-setMethod("getManifest", signature("MethylCNVDataSet"), function(object) {
+setMethod("getManifest", signature("CNV450kSet"), function(object) {
     object@manifest
 })
 
@@ -19,7 +19,7 @@ setMethod("getManifest", signature("MethylCNVDataSet"), function(object) {
 
 setGeneric("getSummary", function(object) standardGeneric("getSummary"))
 
-setMethod("getSummary", signature("MethylCNVDataSet"), function(object) {
+setMethod("getSummary", signature("CNV450kSet"), function(object) {
     object@summary
 })
 
@@ -27,13 +27,13 @@ setMethod("getSummary", signature("MethylCNVDataSet"), function(object) {
 
 setGeneric("getSegments", function(object) standardGeneric("getSegments"))
 
-setMethod("getSegments", signature("MethylCNVDataSet"), function(object) {
+setMethod("getSegments", signature("CNV450kSet"), function(object) {
     object@segments
 })
 
 ################################################################################ 
 
-MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
+CNV450kSetFromRGChannelSet <- function(RGChannelSet) {
     if (!is(RGChannelSet, "RGChannelSet")) {
         stop("Argument RGChannelSet must be of type minfi::RGChannelSet-class.")
     }
@@ -92,11 +92,12 @@ MethylCNVDataSetFromRGChannelSet <- function(RGChannelSet) {
     # TODO: Equipment-generated variables describing sample phenotypes
     # (AnnotatedDataFrame-class): protocolData
     
-    object <- new("MethylCNVDataSet", summary = summary, assayData = assayData, phenoData = phenoData, 
+    object <- new("CNV450kSet", summary = summary, assayData = assayData, phenoData = phenoData, 
         featureData = featureData, annotation = annotation, manifest = manifest, 
         segments = list())
-
-    # TODO: Weird to put it here... should predictSampleSex just be a general function and not a method?
+    
+    # TODO: Weird to put it here... should predictSampleSex just be a general
+    # function and not a method?
     pData(object)$Sample_Sex <- predictSampleSexes(object)
     object
 }
