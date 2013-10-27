@@ -40,7 +40,7 @@ This class has a few accessors defined on top of those provided in \code{eSet}. 
   \describe{
     \item{\code{getManifest(object)}}{Gets the manifest associated with the object.}
     \item{\code{getSegments(object)}}{Gets list of segments produced by the \code{segmentize} method.}
-    \item{\code{getSummary(object)}}{Gets statistics extracted from raw data (\code{RGChannelSet}) and preprocessed methylation data (code\{MethylSet}) that are used internally.}
+    \item{\code{getSummary(object)}}{Gets statistics extracted from raw data (\code{RGChannelSet}) and preprocessed methylation data (\code{MethylSet}) that are used internally.}
   }
 }
 
