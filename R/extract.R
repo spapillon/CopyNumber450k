@@ -56,7 +56,7 @@ extractFromRGChannelSet450k <- function(RGset) {
     
     # Chr probes.
     locations <- getLocations(RGset)
-    
+
     # This is a hack, I coerce the Rle object (seqnames(locations)) into a vector
     # since the base::%in% method has issues dispatching to the correct match()
     # method in the package NAMESPACE
