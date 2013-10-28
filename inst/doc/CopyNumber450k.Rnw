@@ -1,13 +1,55 @@
-% 
-\documentclass[a4paper]{article}
-\usepackage{Sweave}
+%\VignetteIntrexEntry{CopyNumber450k Guide}
+%\VignetteDepends{CNV450kSet,minfi,IlluminaMethylationManifest}
+%\VignettePackage{CNV450kSet}
+\documentclass[12pt]{article}
+<<options,echo=FALSE,results=hide>>=
+options(width=70)
+@
+\SweaveOpts{eps=FALSE,echo=TRUE}
+\usepackage{times}
+\usepackage{color,hyperref}
+\usepackage[numbers]{natbib}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.75}
+\hypersetup{colorlinks,breaklinks,
+            linkcolor=darkblue,urlcolor=darkblue,
+            anchorcolor=darkblue,citecolor=darkblue}
+\usepackage{parskip}
 
-\title{}
-\author{spapillo}
+
+\newcommand{\Rcode}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{\textsf{#1}}
+\newcommand{\software}[1]{\textsf{#1}}
+\newcommand{\R}{\software{R}}
+
+\title{The CopyNumber450k User's Guide\\Calling CNVs from Illumina 450k
+Methylation Arrays}
+\author{Simon Papillon-Cavanagh, Jean-Philippe Fortin, Nicolas De Jay}
 
 \begin{document}
-
 \maketitle
 
+\section{Introduction}
+
+The \Rpackage{CopyNumber450k} package provides tools for calling CNVs from
+Illumina 450k methylation arrays for humans.  Arrays from other platforms are not currently supported.
+
+\section{Reading Data}
+
+A single \Rcode{RGChannelSet}, representing the raw intensities of red and green
+channels of a 450k methylation assay, must be read into a \Rcode{CNV450kSet}. 
+It is strongly advised for users to prepare the \Rcode{RGChannelSet} as
+prescribed in \Rpackage{minfi} documentation. The \Rcode{CNV450kSet} internally
+extracts what is needed from the \Rcode{RGChannelSet} and related
+\Rcode{MethylSet} and \Rcode{IlluminaMethylationManifest} what it needs, that is, the raw intensities, the preprocessed methylation and unmethylation signals as well as genomic annotations.
+
+\section{SessionInfo}
+
+<<sessionInfo,results=tex,echo=FALSE>>=
+toLatex(sessionInfo())
+@
+
+% \nocite{*}
+% \bibliographystyle{unsrturl}
+% \bibliography{}
 
 \end{document}
