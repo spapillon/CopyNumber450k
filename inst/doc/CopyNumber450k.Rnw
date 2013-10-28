@@ -1,4 +1,4 @@
-%\VignetteIntrexEntry{CopyNumber450k Guide}
+%\VignetteIndexEntry{CopyNumber450k User's Guide}
 %\VignetteDepends{CNV450kSet,minfi,IlluminaMethylationManifest}
 %\VignettePackage{CNV450kSet}
 \documentclass[12pt]{article}
@@ -14,7 +14,6 @@ options(width=70)
             linkcolor=darkblue,urlcolor=darkblue,
             anchorcolor=darkblue,citecolor=darkblue}
 \usepackage{parskip}
-
 
 \newcommand{\Rcode}[1]{{\texttt{#1}}}
 \newcommand{\Rpackage}[1]{\textsf{#1}}
