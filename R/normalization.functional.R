@@ -124,8 +124,7 @@ returnFit <- function(model.matrix, quantiles, nPCs) {
     meanFunction <- apply(quantiles, 1, mean)
     res <- quantiles - meanFunction
     
-    
-    ### Estimation of UD(s)
+
     for (i in 1:nrow(quantiles)) {
         model <- lm(res[i, ] ~ model.matrix - 1)
         res[i, ] <- res[i, ] - model$fitted.values
@@ -137,28 +136,9 @@ returnFit <- function(model.matrix, quantiles, nPCs) {
 
 ################################################################################ 
 
-# Assumes that the predicted sex is 1 and 2. The sex prediction function used by
-# default respects this Return the corrected quantile distributions for the
-# X-chromosome intensities
-returnFitX <- function(model.matrix, quantiles, nPCs, sex) {
-    
-    quantiles1 <- quantiles[, sex == "Male"]
-    model.matrix1 <- model.matrix[sex == "Male", ]
-    
-    newQuantiles1 <- returnFit(model.matrix = model.matrix1, quantiles = quantiles1, 
-        nPCs = nPCs)
-    
-    quantiles2 <- quantiles[, sex == "Female"]
-    model.matrix2 <- model.matrix[sex == "Female", ]
-    
-    newQuantiles2 <- returnFit(model.matrix = model.matrix2, quantiles = quantiles2, 
-        nPCs = nPCs)
-    
-    newQuantiles <- quantiles
-    newQuantiles[, sex == "Male"] <- newQuantiles1
-    newQuantiles[, sex == "Female"] <- newQuantiles2
-    newQuantiles
-}
+
+
+
 
 ################################################################################ 
 
@@ -181,7 +161,6 @@ normalizeByType <- function(intMatrix, newQuantiles) {
         
         target <- as.vector(target)
         result <- normalize.quantiles.use.target(matrix(crtColumn.reduced), target)
-        message(paste("Sample ", i, " is normalized"))
         result
     })
 }
@@ -189,82 +168,43 @@ normalizeByType <- function(intMatrix, newQuantiles) {
 ################################################################################ 
 
 # Main function call for normalization
-functionalNormalization <- function(cnMatrix, extractedData, annotation, manifest, 
-    nPCs = 4, predictedSex) {
+functionalNormalization <- function(cnMatrix, extractedData, manifest, 
+    nPCs = 4) {
+    
     probesI <- getProbeInfo(manifest, type = "I")
     probesII <- getProbeInfo(manifest, type = "II")
-    
-    # Chr probes:
-    locations <- getLocations(minfi:::.getAnnotationString(annotation))
-    #autosomal <- names(locations[seqnames(locations) %in% paste0("chr", 1:22)])
-    #chrY <- names(locations[seqnames(locations) == "chrY"])
-    #chrX <- names(locations[seqnames(locations) == "chrX"])
-    
-    # This is a hack, I coerce the Rle object (seqnames(locations)) into a vector
-    # since the base::%in% method has issues dispatching to the correct match()
-    # method in the package NAMESPACE
-    # autosomal <- names(locations[seqnames(locations) %in% paste0("chr", 1:22)])
-    probe_names <- names(locations)
-    locations <- as.vector(data.frame(seqnames(locations))[,1])
-    names(locations) <- probe_names
-    autosomal <- names(locations)[locations %in%  paste0("chr", 1:22)]
-    chrY <- names(locations)[locations == "chrY"]
-    chrX <- names(locations)[locations == "chrX"]
-    # End hack
-    
-    probesIGrn <- intersect(probesI$Name[probesI$Color == "Grn"], autosomal)
-    probesIRed <- intersect(probesI$Name[probesI$Color == "Red"], autosomal)
-    probesII <- intersect(probesII$Name, autosomal)
+    probesIGrn <- probesI$Name[probesI$Color == "Grn"]
+    probesIRed <- probesI$Name[probesI$Color == "Red"]
     
     uProbeNames <- rownames(cnMatrix)
     uProbesIGrn <- intersect(uProbeNames, probesIGrn)
     uProbesIRed <- intersect(uProbeNames, probesIRed)
-    uProbesII <- intersect(uProbeNames, probesII)
-    uProbesX <- intersect(uProbeNames, chrX)
-    uProbesY <- intersect(uProbeNames, chrY)
-    
-    II <- match(uProbesII, uProbeNames)
-    IRed <- match(uProbesIRed, uProbeNames)
+    uProbesII   <- intersect(uProbeNames, probesII)
+     
+    II     <- match(uProbesII,   uProbeNames)
+    IRed   <- match(uProbesIRed, uProbeNames)
     IGreen <- match(uProbesIGrn, uProbeNames)
-    X <- match(uProbesX, uProbeNames)
-    Y <- match(uProbesY, uProbeNames)
-    types <- c("II", "IRed", "IGreen", "X", "Y")
-    indList <- list(II, IRed, IGreen, X, Y)
+
     
-    cnList <- list(extractedData$cnQuantiles$II, extractedData$cnQuantiles$IRed, 
-        extractedData$cnQuantiles$IGrn, extractedData$cnQuantiles$X, extractedData$cnQuantiles$Y)
+    types <- c("II", "IRed", "IGreen")
+    indList <- list(II, IRed, IGreen)
+    messages <- c("type II", "type I Green", "type I Red")
+    
     
     model.matrix <- buildControlMatrix450k(extractedData)
-    
-    messages <- c("type II", "type I Green", "type I Red")
-    message("Normalization of the autosomal probes...")
-    
+    cnList <- list(extractedData$cnQuantiles$II, extractedData$cnQuantiles$IRed, 
+        extractedData$cnQuantiles$IGrn)
+
+    ### Normalization
     for (i in 1:3) {
         message(paste0("Normalization of the ", messages[i], " probes..."))
-        message("Generating the adjusted quantile distributions...")
         
         newQuantiles <- returnFit(model.matrix = model.matrix, quantiles = cnList[[i]], 
             nPCs = nPCs)
         
-        message("Normalizing subset of probes...")
         cnMatrix[indList[[i]], ] <- normalizeByType(cnMatrix[indList[[i]], ], newQuantiles)
     }
-    
-    if (length(X) != 0) {
-        message("Normalization of the X-chromosome...")
-        newQuantiles <- returnFitX(model.matrix = model.matrix, quantiles = cnList[[4]], 
-            nPCs = nPCs, sex = predictedSex)
-        cnMatrix[X, ] <- normalizeByType(cnMatrix[X, ], newQuantiles)
-    }
-    
-    if (length(Y) != 0) {
-        message("Quantile normalization of the Y-chromosome...")
-        cnMatrix[Y, predictedSex == "Male"] <- preprocessCore::normalize.quantiles(cnMatrix[Y, 
-            predictedSex == "Male"])
-        cnMatrix[Y, predictedSex == "Female"] <- preprocessCore::normalize.quantiles(cnMatrix[Y, 
-            predictedSex == "Female"])
-    }
-    
+
     message("Normalization done.")
     
     cnMatrix

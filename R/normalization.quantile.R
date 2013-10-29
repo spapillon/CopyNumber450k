@@ -1,63 +1,25 @@
 ################################################################################ 
 
 # Main function call for quantile normalization
-quantileNormalization <- function(cnMatrix, annotation, manifest, predictedSex = NULL) {
+quantileNormalization <- function(cnMatrix, manifest) {
     
     probesI <- getProbeInfo(manifest, type = "I")
     probesII <- getProbeInfo(manifest, type = "II")
-    
-    # Chr probes:
-    locations <- getLocations(minfi:::.getAnnotationString(annotation))
-    #autosomal <- names(locations[seqnames(locations) %in% paste0("chr", 1:22)])
-    #chrY <- names(locations[seqnames(locations) == "chrY"])
-    #chrX <- names(locations[seqnames(locations) == "chrX"])
-    
-    # This is a hack, I coerce the Rle object (seqnames(locations)) into a vector
-    # since the base::%in% method has issues dispatching to the correct match()
-    # method in the package NAMESPACE
-    # autosomal <- names(locations[seqnames(locations) %in% paste0("chr", 1:22)])
-    probe_names <- names(locations)
-    locations <- as.vector(data.frame(seqnames(locations))[,1])
-    names(locations) <- probe_names
-    autosomal <- names(locations)[locations %in%  paste0("chr", 1:22)]
-    chrY <- names(locations)[locations == "chrY"]
-    chrX <- names(locations)[locations == "chrX"]
-    # End hack
-    
-    probesIGrn <- intersect(probesI$Name[probesI$Color == "Grn"], autosomal)
-    probesIRed <- intersect(probesI$Name[probesI$Color == "Red"], autosomal)
-    probesII <- intersect(probesII$Name, autosomal)
+    probesIGrn <- probesI$Name[probesI$Color == "Grn"]
+    probesIRed <- probesI$Name[probesI$Color == "Red"]
     
     uProbeNames <- rownames(cnMatrix)
     uProbesIGrn <- intersect(uProbeNames, probesIGrn)
     uProbesIRed <- intersect(uProbeNames, probesIRed)
-    uProbesII <- intersect(uProbeNames, probesII)
-    uProbesX <- intersect(uProbeNames, chrX)
-    uProbesY <- intersect(uProbeNames, chrY)
-    
-    II <- match(uProbesII, uProbeNames)
-    IRed <- match(uProbesIRed, uProbeNames)
+    uProbesII   <- intersect(uProbeNames, probesII)
+     
+    II     <- match(uProbesII,   uProbeNames)
+    IRed   <- match(uProbesIRed, uProbeNames)
     IGreen <- match(uProbesIGrn, uProbeNames)
-    X <- match(uProbesX, uProbeNames)
-    Y <- match(uProbesY, uProbeNames)
-    
-    cnMatrix[II, ] <- preprocessCore::normalize.quantiles(cnMatrix[II, ])
-    cnMatrix[IRed, ] <- preprocessCore::normalize.quantiles(cnMatrix[IRed, ])
+        
+    cnMatrix[II, ]     <- preprocessCore::normalize.quantiles(cnMatrix[II, ])
+    cnMatrix[IRed, ]   <- preprocessCore::normalize.quantiles(cnMatrix[IRed, ])
     cnMatrix[IGreen, ] <- preprocessCore::normalize.quantiles(cnMatrix[IGreen, ])
-    
-    if (!is.null(predictedSex)) {
-        cnMatrix[Y, predictedSex == "Male"] <- preprocessCore::normalize.quantiles(cnMatrix[Y, 
-            predictedSex == "Male"])
-        cnMatrix[Y, predictedSex == "Female"] <- preprocessCore::normalize.quantiles(cnMatrix[Y, 
-            predictedSex == "Female"])
-        cnMatrix[X, predictedSex == "Male"] <- preprocessCore::normalize.quantiles(cnMatrix[X, 
-            predictedSex == "Male"])
-        cnMatrix[X, predictedSex == "Female"] <- preprocessCore::normalize.quantiles(cnMatrix[X, 
-            predictedSex == "Female"])
-    } else {
-        cnMatrix[Y, ] <- preprocessCore::normalize.quantiles(cnMatrix[Y, ])
-        cnMatrix[X, ] <- preprocessCore::normalize.quantiles(cnMatrix[X, ])
-    }
     
     message("Quantile Normalization done.")
     

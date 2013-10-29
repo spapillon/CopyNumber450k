@@ -45,17 +45,16 @@ setMethod("normalize", signature("CNV450kSet"), function(object, type) {
         stop("Argument [normalization] type must be {default, quantile}.")
     }
     
-    sexes <- pData(object)$Sample_Sex
+    #sexes <- pData(object)$Sample_Sex
+    #annotation <- annotation(object)
     intensities <- assayData(object)$intensity
-    annotation <- annotation(object)
     manifest <- getManifest(object)
     
     if (method == "functional") {
-        new_intensities <- functionalNormalization(cnMatrix = intensities, extractedData = getSummary(object), 
-            annotation = annotation, manifest = manifest, predictedSex = sexes)
+        new_intensities <- functionalNormalization(cnMatrix = intensities, extractedData = getSummary(object), manifest = manifest)
     } else if (method == "quantile") {
-        new_intensities <- quantileNormalization(cnMatrix = intensities, annotation = annotation, 
-            manifest = manifest, predictedSex = sexes)
+        new_intensities <- quantileNormalization(cnMatrix = intensities, 
+            manifest = manifest)
     }
     
     assayData(object) <- assayDataNew(storage.mode = "lockedEnvironment", intensity = new_intensities)
