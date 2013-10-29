@@ -7,11 +7,11 @@ quantileNormalization <- function(cnMatrix, manifest) {
     probesII <- getProbeInfo(manifest, type = "II")
     probesIGrn <- probesI$Name[probesI$Color == "Grn"]
     probesIRed <- probesI$Name[probesI$Color == "Red"]
-    
+
     uProbeNames <- rownames(cnMatrix)
     uProbesIGrn <- intersect(uProbeNames, probesIGrn)
     uProbesIRed <- intersect(uProbeNames, probesIRed)
-    uProbesII   <- intersect(uProbeNames, probesII)
+    uProbesII   <- intersect(uProbeNames, probesII$Name)
      
     II     <- match(uProbesII,   uProbeNames)
     IRed   <- match(uProbesIRed, uProbeNames)

@@ -179,7 +179,7 @@ functionalNormalization <- function(cnMatrix, extractedData, manifest,
     uProbeNames <- rownames(cnMatrix)
     uProbesIGrn <- intersect(uProbeNames, probesIGrn)
     uProbesIRed <- intersect(uProbeNames, probesIRed)
-    uProbesII   <- intersect(uProbeNames, probesII)
+    uProbesII   <- intersect(uProbeNames, probesII$Name)
      
     II     <- match(uProbesII,   uProbeNames)
     IRed   <- match(uProbesIRed, uProbeNames)
