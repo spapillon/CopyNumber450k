@@ -1,12 +1,12 @@
 ################################################################################ 
 
-setGeneric("findCNV", function(object, CNVs, type = "both") standardGeneric("findCNV"))
+setGeneric("findCNV", function(object, gene_names, type = "both") standardGeneric("findCNV"))
 
-setMethod("findCNV", signature("CNV450kSet"), function(object, CNVs, type) {
-    if (!is.character(CNVs)) {
-        stop("Argument CNVs must be a character vector.")
+setMethod("findCNV", signature("CNV450kSet"), function(object, gene_names, type) {
+    if (!is.character(gene_names)) {
+        stop("Argument gene_names must be a character vector.")
     } else if (!type %in% c("gain", "loss", "both")) {
-        stop("Argument [CNV] type must be {gain, loss, both}.")
+        stop("Argument type must be {gain, loss, both}.")
     }
     
     segments_list <- getSegments(object)
@@ -23,12 +23,12 @@ setMethod("findCNV", signature("CNV450kSet"), function(object, CNVs, type) {
         used_CNVs <- op(segments_list[[i]])
         genes <- unique(unlist(strsplit(x = segments_list[[i]][used_CNVs, "genes"], 
             ";")))
-        CNVs %in% genes
+        gene_names %in% genes
     })
     
     ifelse(is.matrix(x), x <- t(x), x <- as.matrix(x))
     rownames(x) <- names(segments_list)
-    colnames(x) <- CNVs
+    colnames(x) <- gene_names
     x
 })
 
