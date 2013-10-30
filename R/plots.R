@@ -141,9 +141,8 @@ setGeneric("plotDensity", function(object, color.by = c("array.row", "array.col"
 
 setMethod("plotDensity", signature("CNV450kSet"), function(object, color.by, color.function, 
     legend.position) {
-    # TODO: This assumes that bad probes have been dropped
+    
     intensities <- assayData(object)$intensity
-    # ---
     
     coloring <- getColoring(object, color.by, color.function)
     myPlot <- plot(density(intensities), col = coloring$sample.colors[1], ylim = c(0, 
@@ -164,9 +163,8 @@ setGeneric("plotPCA", function(object, color.by = c("array.row", "array.col", "s
 
 setMethod("plotPCA", signature("CNV450kSet"), function(object, color.by, color.function, 
     legend.position) {
-    # TODO: This assumes that bad probes have been dropped
+
     intensities <- assayData(object)$intensity
-    # ---
     
     coloring <- getColoring(object, color.by, color.function)
     pca <- prcomp(t(intensities))
