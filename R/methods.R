@@ -28,8 +28,6 @@ setMethod("normalize", signature("CNV450kSet"), function(object, type = c("funct
         stop("Argument [normalization] type must be {default, quantile}.")
     }
     
-    #sexes <- pData(object)$Sample_Sex
-    #annotation <- annotation(object)
     intensities <- assayData(object)$intensity
     manifest <- getManifest(object)
     
@@ -67,8 +65,12 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
     control_intensity <- intensities[, groups == "control"]
     case_intensity <- as.matrix(intensities[, groups != "control"])
     
-    control_sexes <- sexes[groups == "control"]
-    case_sexes <- sexes[groups != "control"]
+    consider_sexes <- !any(is.na(sexes))
+    if(consider_sexes)
+    {
+        control_sexes <- sexes[groups == "control"]
+        case_sexes <- sexes[groups != "control"]
+    }
     
     control_medians <- apply(control_intensity, 1, median, na.rm = TRUE)
     cases_log2 <- log2(case_intensity/control_medians)
@@ -76,7 +78,7 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
     if (is.vector(cases_log2)) {
         cases_log2 <- as.matrix(cases_log2)
     }
-    
+
     CNA.object <- CNA(cases_log2, ordered(annotation$chr, levels = c(paste("chr", 
         1:22, sep = ""), "chrX", "chrY")), as.numeric(annotation$pos), data.type = "logratio", 
         sampleid = sampleNames)
@@ -99,7 +101,8 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
         result <- t(apply(segments_per_sample[[i]], 1, function(cnv) {
             # When assessing sexual chromosomes, only consider controls of the same sex as
             # the sample.
-            if (cnv["chrom"] %in% c("chrX", "chrY")) {
+                   
+            if (cnv["chrom"] %in% c("chrX", "chrY") & consider_sexes) {
                 used_controls <- control_sexes == case_sexes[i]
             } else {
                 used_controls <- rep(TRUE, ncol(control_intensity))
