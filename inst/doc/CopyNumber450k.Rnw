@@ -30,7 +30,7 @@ Methylation Arrays}
 \section{Introduction}
 
 The \Rpackage{CopyNumber450k} package provides tools for calling CNVs from
-Illumina 450k methylation arrays for humans.  Arrays from other platforms are not currently supported.
+Illumina 450k methylation arrays.
 
 \section{Reading Data}
 
@@ -39,13 +39,49 @@ channels of a 450k methylation assay, must be read into a \Rcode{CNV450kSet}.
 It is strongly advised for users to prepare the \Rcode{RGChannelSet} as
 prescribed in \Rpackage{minfi} documentation. The \Rcode{CNV450kSet} internally
 extracts what is needed from the \Rcode{RGChannelSet} and related
-\Rcode{MethylSet} and \Rcode{IlluminaMethylationManifest} what it needs, that is, the raw intensities, the preprocessed methylation and unmethylation signals as well as genomic annotations.
+\Rcode{MethylSet} and \Rcode{IlluminaMethylationManifest} what it needs, that is, the raw intensities, 
+the preprocessed methylation and unmethylation signals as well as genomic annotations.
+We also provide a control set of 52 healthy patients with nominally no CNVs as
+part of the \Rpackage{CopyNumber450kData} package, available on Bioconductor.
+
+We strongly suggest you read \Rpackage{minfi}'s vignette on how to load data and
+use quality control plots to ensure that it is of acceptable quality. Moreover,
+in order to ensure posteriority of object annotations, \Rpackage{minfi} provides
+the \Rcode{updateObject} function which should be ran on
+\Rpackage{CopyNumber450kData}'s control set before combining it with your own
+experiment.
+
+<<readData>>=
+require(CopyNumber450k)
+#data(xxxx)
+control_RGset <- updateObject(control_RGset)
+total_RGset <- combine(control_RGset, my_RGset)
+@ 
+
 
 \section{Normalization}
 
-Currently, CopyNumber450k offers two normalization procedures: quantile normalization and functional normalization \cite{Fortin:2013} . Quantile normalization \cite{Bolstad:2003} assumes that the distributions of signal intensities are similar across subjects. Therefore, we suggest to use this method for datasets with no expected global differences in copy numbers across samples. In case one expects large-scale differences between two or more conditions, e.g. cancer versus normal samples, we strongly recommend functional normalization, a new method developed specifically for the 450k array that does not assume similarity of distributions between samples. \cite{Fortin:2013}. 
+Currently, CopyNumber450k offers two normalization procedures: quantile normalization andfunctional normalization \cite{Fortin:2013} . 
+Quantile normalization \cite{Bolstad:2003} assumes that the distributions of signal intensities are similar across subjects. Therefore, we suggest to use this method for datasets with no expected global differences in copy numbers across samples. In case one expects large-scale differences between two or more conditions, e.g. cancer versus normal samples, we strongly recommend functional normalization, a new method developed specifically for the 450k array that does not assume similarity of distributions between samples. \cite{Fortin:2013}. 
 \\
-\\(PUT HERE THE COMMANDS TO NORMALIZE THE DATA)
+<<normalization>>=
+plotDensity(cns)
+
+cns <- dropSNPprobes(cns, maf_threshold=0.01)
+
+cns.quantile <- normalize(cns, "quantile")
+plotDensity(cns.quantile)
+
+cns.functional <- normalize(cns, "functional")
+plotDensity(cns.functional)
+@
+
+\section{Segmentation}
+
+\\
+<<segmentation>>=
+cns.functional <- segmentize(cns.functional)
+@
 
 \section{SessionInfo}
 
