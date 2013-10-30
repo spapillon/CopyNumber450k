@@ -32,13 +32,9 @@ setMethod("dropSNPprobes", signature("CNV450kSet"), function(object, maf_thresho
 
 ################################################################################ 
 
-setGeneric("normalize", function(object, type = c("functional", "quantile")) {
-    standardGeneric("normalize")
-})
-
 # Returns a new CNV450kSet object whose intensities have been normalized to the
 # user-specified method.
-setMethod("normalize", signature("CNV450kSet"), function(object, type) {
+setMethod("normalize", signature("CNV450kSet"), function(object, type = c("functional", "quantile")) {
     method <- match.arg(type)
     
     if (!method %in% c("functional", "quantile")) {
