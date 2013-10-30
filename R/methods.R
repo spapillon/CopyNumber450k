@@ -145,7 +145,6 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
         # pvalue correction for multiple testing
         result <- as.data.frame(result, stringsAsFactors = F)
         result$adjusted.pvalue <- p.adjust(result$pvalue, method = p.adjust.method)
-        
         if (verbose) {
             message(paste("Processed", names(segments_per_sample)[i]))
         }
@@ -155,6 +154,25 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
     
     names(x) <- names(segments_per_sample)
     object@segments <- x
+    computeSignificance(object)
+})
+
+
+################################################################################ 
+
+setGeneric("computeSignificance", function(object, p.value.threshold = 0.01, num.mark.threshold = 0)
+            standardGeneric("computeSignificance"))
+
+# Returns a new CNV450kSet object.
+setMethod("computeSignificance", signature("CNV450kSet"), function(object, p.value.threshold, num.mark.threshold) {
+    current_segments <- getSegments(object)
+    new_segments <- lapply(new_segments, function(sample) {
+        significant <- sample$adjusted.pvalue <= p.value.threshold &
+                sample$num.mark >= num.mark.threshold
+        sample$isSignificant <- significant
+        sample
+    })
+    object@segments <- new_segments
     object
 })
 
