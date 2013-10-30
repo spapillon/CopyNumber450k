@@ -90,7 +90,7 @@ CNV450kSet <- function(RGChannelSet) {
     annotation <- annotation(RGChannelSet)
     manifest <- getManifest(RGChannelSet)
     
-    # TODO: Equipment-generated variables describing sample phenotypes
+    # Equipment-generated variables describing sample phenotypes
     protocolData <- protocolData(RGChannelSet)
     
     new("CNV450kSet", summary = summary, assayData = assayData, phenoData = phenoData, 
