@@ -83,18 +83,19 @@ CNV450kSet <- function(RGChannelSet) {
     rownames(featureData) <- featureNames
     featureData <- AnnotatedDataFrame(featureData)
     
-    # TODO: Experimental description (MIAxE): experimentData
+    # Experimental description (MIAxE)
+    experimentData <- experimentData(RGChannelSet)
     
     # Assay description
     annotation <- annotation(RGChannelSet)
     manifest <- getManifest(RGChannelSet)
     
     # TODO: Equipment-generated variables describing sample phenotypes
-    # (AnnotatedDataFrame-class): protocolData
+    protocolData <- protocolData(RGChannelSet)
     
     new("CNV450kSet", summary = summary, assayData = assayData, phenoData = phenoData, 
         featureData = featureData, annotation = annotation, manifest = manifest, 
-        segments = list())
+        experimentData = experimentData, protocolData = protocolData, segments = list())
 
 }
 
