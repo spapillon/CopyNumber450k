@@ -55,7 +55,6 @@ toLatex(sessionInfo())
 @
 
 \nocite{*}
-\bibliographystyle{unsrturl}
 \bibliography{CopyNumber450k.bib}
 
 \end{document}
