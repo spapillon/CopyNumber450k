@@ -11,6 +11,10 @@ setMethod("findCNV", signature("CNV450kSet"), function(object, gene_names, type)
     
     segments_list <- getSegments(object)
     
+    if (length(segments_list) == 0) {
+        stop("Object has not been segmentized yet.")
+    }
+    
     if (type == "both") {
         op <- function(a) a[, "isSignificant"]
     } else if (type == "gain") {
@@ -38,7 +42,12 @@ setGeneric("intersectCNV", function(object, sample_indices, type = "both") stand
 
 setMethod("intersectCNV", signature("CNV450kSet"), function(object, sample_indices, 
     type) {
-    sample_count <- length(getSegments(object))
+    segments_list <- getSegments(object)
+    sample_count <- length(sample_count)
+    
+    if (length(segments_list) == 0) {
+        stop("Object has not been segmentized yet.")
+    }
     
     if (missing(sample_indices)) {
         sample_indices <- 1:sample_count
@@ -49,7 +58,7 @@ setMethod("intersectCNV", signature("CNV450kSet"), function(object, sample_indic
     } else if (length(setdiff(sample_indices, 1:sample_count)) > 0) {
         stop("Argument sample_indices elements must exist in object.")
     } else if (!type %in% c("gain", "loss", "both")) {
-        stop("Argument [CNV] type must be {gain, loss, both}.")
+        stop("Argument type must be {gain, loss, both}.")
     }
     
     segments_list <- getSegments(object)[sample_indices]
@@ -104,9 +113,12 @@ setGeneric("subgroupDifference", function(object, group1_indices, group2_indices
 
 setMethod("subgroupDifference", signature("CNV450kSet"), function(object, group1_indices, 
     group2_indices) {
-    # TODO: Is this line correct?
-    sample_count <- length(getSegments(object))
-    # ---
+    segments_list <- getSegments(object)
+    sample_count <- length(sample_count)
+    
+    if (length(segments_list) == 0) {
+        stop("Object has not been segmentized yet.")
+    }
     
     if (!is.integer(group1_indices)) {
         stop("Argument group1_indices must be a integer vector.")

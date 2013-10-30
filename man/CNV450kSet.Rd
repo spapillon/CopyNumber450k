@@ -43,6 +43,7 @@ This class has a few accessors defined on top of those provided in \code{eSet}. 
     \item{\code{dropSNPprobes(object, maf_threshold = 0)}}{Removes probes mapping to or targeting known SNPs from consideration.  Returns a new CNV450kSet object in which SNP-containing probes are discarded.}
     \item{\code{normalize(object, type = c("functional", "quantile"))}}{Normalizes the intensity matrix and returns normalized object.  Refer to the vignette for details on the types of normalization.}
     \item{\code{segmentize(object, verbose = TRUE, p.adjust.method = "bonferroni", plotting = FALSE)}}{Arranges probes into segments related by signal intensity and proximity.  Certain class methods require that segments be created.  Can optionally produce a plot ???.  Refer to the vignette for more details on the algorithm.}
+    \item{\code{computeSignificance(object, p.value.threshold = 0.01, num.mark.threshold = 10}}{Computes the significance for each segment in each samples.  Requires that \code{segmentize} be called on the object beforehand.}
   }
 }
 \section{Comparison Methods}{
