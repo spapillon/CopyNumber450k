@@ -9,7 +9,7 @@ setMethod("plotSample", signature("CNV450kSet"), function(object, index, chr, st
     }
     
     sample_segments <- getSegments(object)[[index]]
-    sample_filters <- rep(FALSE, nrow(sample_segments))
+    significant_segments <- sample_segments$isSignificant
     sample_name <- sampleNames(object)[index]
     
     if (missing(chr)) {
@@ -37,8 +37,8 @@ setMethod("plotSample", signature("CNV450kSet"), function(object, index, chr, st
         x_axis_type <- NULL
     }
     
-    yMin <- min(c(-1, as.numeric(sample_segments[sample_filters, "seg.mean"])))
-    yMax <- max(c(1, as.numeric(sample_segments[sample_filters, "seg.mean"])))
+    yMin <- min(c(-1, as.numeric(sample_segments[significant_segments, "seg.mean"])))
+    yMax <- max(c(1, as.numeric(sample_segments[significant_segments, "seg.mean"])))
     myPlot <- plot(range(start, end), range(yMin, yMax), type = "n", xaxt = x_axis_type, 
         xlab = "", ylab = "", main = sample_name)
     
@@ -53,7 +53,7 @@ setMethod("plotSample", signature("CNV450kSet"), function(object, index, chr, st
     
     lapply(1:length(chromosomes), function(i) {
         used_segments <- sample_segments[, "chrom"] == chromosomes[i]
-        colors <- ifelse(sample_filters[used_segments], "red", "black")
+        colors <- ifelse(significant_segments[used_segments], "red", "black")
         starts <- as.numeric(sample_segments[used_segments, "loc.start"]) + offset[i]
         ends <- as.numeric(sample_segments[used_segments, "loc.end"]) + offset[i]
         y <- as.numeric(sample_segments[used_segments, "seg.mean"])
