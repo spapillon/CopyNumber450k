@@ -1,6 +1,7 @@
 \name{CNV450kSet-class}
 \Rdversion{1.0}
 \docType{class}
+\alias{CopyNumber450k}
 \alias{CNV450kSet-Class}
 \alias{CNV450kSet}
 \alias{getManifest}
