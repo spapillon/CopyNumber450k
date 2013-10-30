@@ -44,12 +44,10 @@ setMethod("normalize", signature("CNV450kSet"), function(object, type = c("funct
 
 ################################################################################ 
 
-setGeneric("segmentize", function(object, verbose = TRUE, p.adjust.method = "bonferroni", 
-    plotting = FALSE) standardGeneric("segmentize"))
+setGeneric("segmentize", function(object, verbose = TRUE, p.adjust.method = "bonferroni") standardGeneric("segmentize"))
 
 # Returns a new CNV450kSet object.
-setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adjust.method, 
-    plotting) {
+setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adjust.method) {
     if (length(getSegments(object)) != 0 && verbose) {
         warning("Object has already been segmentized.")
     }
@@ -94,10 +92,7 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
     names(segments_per_sample) <- unique(all_segments$ID)
     
     x <- lapply(1:length(segments_per_sample), function(i) {
-        if (plotting) {
-            pdf(paste(names(segments_per_sample)[i], ".pdf", sep = ""))
-        }
-        
+               
         result <- t(apply(segments_per_sample[[i]], 1, function(cnv) {
             # When assessing sexual chromosomes, only consider controls of the same sex as
             # the sample.
@@ -121,13 +116,6 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
             # Compute p-value (2 sided t-test)
             z_score <- (sample_sum - control_mean)/control_sd
             p_value <- 2 * pnorm(-abs(z_score))
-            if (plotting) {
-                window <- range(c(control_int_sum, sample_sum))
-                title <- paste("chr ", cnv["chrom"], " :  ", cnv["loc.start"], "-", 
-                  cnv["loc.end"], sep = "")
-                hist(control_int_sum, main = title, xlim = window, breaks = 20)
-                abline(v = sample_sum, lty = 3, lwd = 2, col = "red")
-            }
             
             # Extract genes in the segment
             genes <- as.character(annotation$UCSC_RefGene_Name[probes])
@@ -137,10 +125,6 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
             c(cnv, seg.length = l, pvalue = p_value, genes = genes, ctrl.mean = control_mean, 
                 ctrl.sd = control_sd, sample.value = sample_sum, z = z_score)
         }))
-        
-        if (plotting) {
-            dev.off()
-        }
         
         # pvalue correction for multiple testing
         result <- as.data.frame(result, stringsAsFactors = F)
