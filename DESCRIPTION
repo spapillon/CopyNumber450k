@@ -1,5 +1,4 @@
 Package: CopyNumber450k
-Type: Software
 Title: R package for calling CNV from Illumina 450k methylation microarrays 
 Version: 1.0.0
 Date: 2013-10-27
