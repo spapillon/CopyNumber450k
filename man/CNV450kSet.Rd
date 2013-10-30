@@ -49,7 +49,7 @@ This class has a few accessors defined on top of those provided in \code{eSet}. 
   The following methods require that \code{segmentize} be called on the object before their calls.
 
   \describe{
-    \item{\code{findCNV(object, gene_names, type = c("gain", "loss", "both"))}}{Returns ??? corresponding to CNV gain, loss or both for a given set of gene names.}
+    \item{\code{findCNV(object, gene_names, type = c("gain", "loss", "both"))}}{Returns a matrix where the value in \code{i, j} is logical field representing the presence or absence of a CNV event for gene \code{i} and sample \code{j}.}
     \item{\code{intersectCNV(object, sample_indices, type = c("gain", "loss", "both"))}}{Returns a vector of gene symbols corresponding to gain or loss of genes within a group, sorted by CNV abundance; \code{sample_indices} is a vector containing the indices of the samples belonging to the group.}
     \item{\code{subgroupDifference(object, group1_indices, group2_indices)}}{Returns two vectors (gains and losses) containing Fisher's exact test p-values on gene-based CNV counts between two sample groups (or conditions); \code{group1_indices} and \code{group2_indices} are vectors containing the indices of the samples belonging to each respective group.}
   }
