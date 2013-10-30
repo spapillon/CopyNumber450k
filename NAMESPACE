@@ -8,7 +8,6 @@ export(CNV450kSet,
   segmentize,
   computeSignificance,
   plotSample,
-  plotSex,
   getColoring,
   plotDensity,
   plotPCA)
