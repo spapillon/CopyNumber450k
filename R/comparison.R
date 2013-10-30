@@ -5,7 +5,7 @@ setGeneric("findCNV", function(object, CNVs, type = "both") standardGeneric("fin
 setMethod("findCNV", signature("CNV450kSet"), function(object, CNVs, type) {
     if (!is.character(CNVs)) {
         stop("Argument CNVs must be a character vector.")
-    } else if (!gain %in% c("gain", "loss", "both")) {
+    } else if (!type %in% c("gain", "loss", "both")) {
         stop("Argument [CNV] type must be {gain, loss, both}.")
     }
     
@@ -48,7 +48,7 @@ setMethod("intersectCNV", signature("CNV450kSet"), function(object, sample_indic
         stop("Argument sample_indices must be a integer vector.")
     } else if (length(setdiff(sample_indices, 1:sample_count)) > 0) {
         stop("Argument sample_indices elements must exist in object.")
-    } else if (!gain %in% c("gain", "loss", "both")) {
+    } else if (!type %in% c("gain", "loss", "both")) {
         stop("Argument [CNV] type must be {gain, loss, both}.")
     }
     
