@@ -6,7 +6,6 @@ Author: Simon Papillon-Cavanagh, Jean-Philippe Fortin, Nicolas De Jay
 Maintainer: Simon Papillon-Cavanagh <simon.papillon-cavanagh@mail.mcgill.ca>
 Description: This package contains a set of functions that allow CNV calling from Illumina 450k methylation microarrays.
 License: Artistic-2.0
-Imports: preprocessCore,
-  methods
+Imports: preprocessCore, methods
 Depends: Biobase, minfi, DNAcopy
 LinkingTo:
