@@ -10,7 +10,7 @@ setMethod("plotSample", signature("CNV450kSet"), function(object, index, chr, st
     
     sample_segments <- getSegments(object)[[index]]
     significant_segments <- sample_segments$isSignificant
-    sample_name <- sampleNames(object)[index]
+    sample_name <- names(getSegments(object))[index]
     
     if (missing(chr)) {
         # Plotting the whole genome
