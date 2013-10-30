@@ -145,7 +145,6 @@ returnFit <- function(model.matrix, quantiles, nPCs) {
 # Normalize a matrix of intensities with the corrected quantile distributions
 normalizeByType <- function(intMatrix, newQuantiles) {
     normMatrix <- matrix(NA, nrow(intMatrix), ncol(intMatrix))
-    library(preprocessCore)
     n <- 500
     
     normMatrix <- sapply(1:ncol(intMatrix), function(i) {
