@@ -160,7 +160,7 @@ normalizeByType <- function(intMatrix, newQuantiles) {
         })
         
         target <- as.vector(target)
-        result <- normalize.quantiles.use.target(matrix(crtColumn.reduced), target)
+        result <- preprocessCore::normalize.quantiles.use.target(matrix(crtColumn.reduced), target)
         result
     })
 }
