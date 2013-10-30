@@ -41,14 +41,21 @@ prescribed in \Rpackage{minfi} documentation. The \Rcode{CNV450kSet} internally
 extracts what is needed from the \Rcode{RGChannelSet} and related
 \Rcode{MethylSet} and \Rcode{IlluminaMethylationManifest} what it needs, that is, the raw intensities, the preprocessed methylation and unmethylation signals as well as genomic annotations.
 
+\section{Normalization}
+
+Currently, CopyNumber450k offers two normalization procedures: quantile normalization and functional normalization \cite{Fortin:2013} . Quantile normalization \cite{Bolstad:2003} assumes that the distributions of signal intensities are similar across subjects. Therefore, we suggest to use this method for datasets with no expected global differences in copy numbers across samples. In case one expects large-scale differences between two or more conditions, e.g. cancer versus normal samples, we strongly recommend functional normalization, a new method developed specifically for the 450k array that does not assume similarity of distributions between samples. \cite{Fortin:2013}. 
+\\
+\\(PUT HERE THE COMMANDS TO NORMALIZE THE DATA)
+
 \section{SessionInfo}
+
 
 <<sessionInfo,results=tex,echo=FALSE>>=
 toLatex(sessionInfo())
 @
 
-% \nocite{*}
-% \bibliographystyle{unsrturl}
-% \bibliography{}
+\nocite{*}
+\bibliographystyle{unsrturl}
+\bibliography{CopyNumber450k.bib}
 
 \end{document}
