@@ -166,7 +166,7 @@ setGeneric("computeSignificance", function(object, p.value.threshold = 0.01, num
 # Returns a new CNV450kSet object.
 setMethod("computeSignificance", signature("CNV450kSet"), function(object, p.value.threshold, num.mark.threshold) {
     current_segments <- getSegments(object)
-    new_segments <- lapply(new_segments, function(sample) {
+    new_segments <- lapply(current_segments, function(sample) {
         significant <- sample$adjusted.pvalue <= p.value.threshold &
                 sample$num.mark >= num.mark.threshold
         sample$isSignificant <- significant
