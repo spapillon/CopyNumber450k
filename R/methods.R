@@ -1,18 +1,5 @@
 ################################################################################ 
 
-setGeneric("predictSampleSexes", function(object, threshold = -3) standardGeneric("predictSampleSexes"))
-
-# Returns list containing the sex of each sample via sex chromosome methylation
-# intensity-based prediction.
-setMethod("predictSampleSexes", signature("CNV450kSet"), function(object, threshold) {
-    cnQuantiles <- getSummary(object)$cnQuantiles
-    diffs <- log2(cnQuantiles$Y[250, ]) - log2(cnQuantiles$X[250, ])
-    predicted_sexes <- ifelse(diffs <= threshold, "Female", "Male")
-    predicted_sexes
-})
-
-################################################################################ 
-
 setGeneric("dropSNPprobes", function(object, maf_threshold = 0) standardGeneric("dropSNPprobes"))
 
 setMethod("dropSNPprobes", signature("CNV450kSet"), function(object, maf_threshold) {
