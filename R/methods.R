@@ -160,7 +160,7 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
 
 ################################################################################ 
 
-setGeneric("computeSignificance", function(object, p.value.threshold = 0.01, num.mark.threshold = 0)
+setGeneric("computeSignificance", function(object, p.value.threshold = 0.01, num.mark.threshold = 10)
             standardGeneric("computeSignificance"))
 
 # Returns a new CNV450kSet object.
@@ -168,7 +168,7 @@ setMethod("computeSignificance", signature("CNV450kSet"), function(object, p.val
     current_segments <- getSegments(object)
     new_segments <- lapply(current_segments, function(sample) {
         significant <- sample$adjusted.pvalue <= p.value.threshold &
-                sample$num.mark >= num.mark.threshold
+                as.numeric(sample$num.mark) >= num.mark.threshold
         sample$isSignificant <- significant
         sample
     })
