@@ -1,5 +1,5 @@
 %\VignetteIndexEntry{CopyNumber450k User's Guide}
-%\VignetteDepends{CNV450kSet,minfi,IlluminaMethylationManifest}
+%\VignetteDepends{minfi}
 %\VignettePackage{CNV450kSet}
 \documentclass[12pt]{article}
 <<options,echo=FALSE,results=hide>>=
