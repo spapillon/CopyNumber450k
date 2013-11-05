@@ -1,7 +1,5 @@
 ################################################################################ 
 
-setGeneric("plotSample", function(object, index, chr, start, end) standardGeneric("plotSample"))
-
 setMethod("plotSample", signature("CNV450kSet"), function(object, index, chr, start, 
     end) {
     if (length(getSegments(object)) == 0) {
@@ -66,9 +64,6 @@ setMethod("plotSample", signature("CNV450kSet"), function(object, index, chr, st
 
 ################################################################################ 
 
-setGeneric("getColoring", function(object, color.by = c("array.row", "array.col", 
-    "sample.group", "slide", "origin"), color.function = rainbow) standardGeneric("getColoring"))
-
 setMethod("getColoring", signature("CNV450kSet"), function(object, color.by, color.function) {
     coloring <- match.arg(color.by)
     
@@ -114,9 +109,6 @@ setMethod("getColoring", signature("CNV450kSet"), function(object, color.by, col
 
 ################################################################################ 
 
-setGeneric("plotDensity", function(object, color.by = c("array.row", "array.col", 
-    "sample.group", "slide", "origin"), color.function = rainbow, legend.position = "topright") standardGeneric("plotDensity"))
-
 setMethod("plotDensity", signature("CNV450kSet"), function(object, color.by, color.function, 
     legend.position) {
     
@@ -135,9 +127,6 @@ setMethod("plotDensity", signature("CNV450kSet"), function(object, color.by, col
 })
 
 ################################################################################ 
-
-setGeneric("plotPCA", function(object, color.by = c("array.row", "array.col", "sample.group", 
-    "slide", "origin"), color.function = rainbow, legend.position = "topright") standardGeneric("plotPCA"))
 
 setMethod("plotPCA", signature("CNV450kSet"), function(object, color.by, color.function, 
     legend.position) {

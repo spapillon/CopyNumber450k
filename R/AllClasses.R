@@ -17,15 +17,11 @@ setMethod("getManifest", signature("CNV450kSet"), function(object) {
 
 ################################################################################ 
 
-setGeneric("getSummary", function(object) standardGeneric("getSummary"))
-
 setMethod("getSummary", signature("CNV450kSet"), function(object) {
     object@summary
 })
 
 ################################################################################ 
-
-setGeneric("getSegments", function(object) standardGeneric("getSegments"))
 
 setMethod("getSegments", signature("CNV450kSet"), function(object) {
     object@segments

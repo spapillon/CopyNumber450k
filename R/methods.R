@@ -1,7 +1,5 @@
 ################################################################################ 
 
-setGeneric("dropSNPprobes", function(object, maf_threshold = 0) standardGeneric("dropSNPprobes"))
-
 setMethod("dropSNPprobes", signature("CNV450kSet"), function(object, maf_threshold) {
     annotation <- fData(object)
     
@@ -43,8 +41,6 @@ setMethod("normalize", signature("CNV450kSet"), function(object, type = c("funct
 })
 
 ################################################################################ 
-
-setGeneric("segmentize", function(object, verbose = TRUE, p.adjust.method = "bonferroni") standardGeneric("segmentize"))
 
 # Returns a new CNV450kSet object.
 setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adjust.method) {
@@ -143,9 +139,6 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
 
 
 ################################################################################ 
-
-setGeneric("computeSignificance", function(object, p.value.threshold = 0.01, num.mark.threshold = 10)
-            standardGeneric("computeSignificance"))
 
 # Returns a new CNV450kSet object.
 setMethod("computeSignificance", signature("CNV450kSet"), function(object, p.value.threshold, num.mark.threshold) {
