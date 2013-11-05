@@ -52,10 +52,10 @@ the \Rcode{updateObject} function which should be ran on
 experiment.
 
 <<readData>>=
-require(CopyNumber450k)
-#data(xxxx)
-control_RGset <- updateObject(control_RGset)
-total_RGset <- combine(control_RGset, my_RGset)
+# require(CopyNumber450k)
+# data(xxxx)
+# control_RGset <- updateObject(control_RGset)
+# total_RGset <- combine(control_RGset, my_RGset)
 @ 
 
 
@@ -65,22 +65,24 @@ Currently, CopyNumber450k offers two normalization procedures: quantile normaliz
 Quantile normalization \cite{Bolstad:2003} assumes that the distributions of signal intensities are similar across subjects. Therefore, we suggest to use this method for datasets with no expected global differences in copy numbers across samples. In case one expects large-scale differences between two or more conditions, e.g. cancer versus normal samples, we strongly recommend functional normalization, a new method developed specifically for the 450k array that does not assume similarity of distributions between samples. \cite{Fortin:2013}. 
 \\
 <<normalization>>=
-plotDensity(cns)
+# plotDensity(cns)
 
-cns <- dropSNPprobes(cns, maf_threshold=0.01)
+# cns <- dropSNPprobes(cns, maf_threshold=0.01)
 
-cns.quantile <- normalize(cns, "quantile")
-plotDensity(cns.quantile)
+# cns.quantile <- normalize(cns, "quantile")
+# plotDensity(cns.quantile)
 
-cns.functional <- normalize(cns, "functional")
-plotDensity(cns.functional)
+# cns.functional <- normalize(cns, "functional")
+# plotDensity(cns.functional)
 @
 
 \section{Segmentation}
 
+Blabla segmentation
 \\
 <<segmentation>>=
-cns.functional <- segmentize(cns.functional)
+# cns.functional <- segmentize(cns.functional)
+message("Dummy Line?")
 @
 
 \section{SessionInfo}
