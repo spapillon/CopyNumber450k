@@ -1,0 +1,8 @@
+inst/*
+inst/doc/*
+debug.R
+.DS_Store
+.git/*
+.gitignore
+.project
+
