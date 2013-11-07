@@ -1,4 +1,4 @@
 CopyNumber450k
 ==============
 
-CN Project for the 450k platform
+R package for calling CNV from Illumina 450k methylation microarrays
