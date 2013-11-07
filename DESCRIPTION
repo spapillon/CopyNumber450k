@@ -10,7 +10,7 @@ Imports: methods
 Depends: Biobase, minfi, DNAcopy, preprocessCore
 LinkingTo:
 LazyData: yes
-biocViews: DNAMethylation, Microarray, Preprocessing, QualityControl, CopyNumberVariant
+biocViews: DNAMethylation, Microarray, Preprocessing, QualityControl, CopyNumberVariants
 Collate: AllClasses.R
   AllGenerics.R
   CNV450kSet-accessors.R
