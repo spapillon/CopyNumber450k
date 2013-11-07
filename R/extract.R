@@ -56,15 +56,15 @@ extractFromRGChannelSet450k <- function(RGset) {
     
     # Chr probes.
     locations <- getLocations(RGset)
-
+    
     # This is a hack, I coerce the Rle object (seqnames(locations)) into a vector
     # since the base::%in% method has issues dispatching to the correct match()
-    # method in the package NAMESPACE
-    # autosomal <- names(locations[seqnames(locations) %in% paste0("chr", 1:22)])
+    # method in the package NAMESPACE autosomal <-
+    # names(locations[seqnames(locations) %in% paste0('chr', 1:22)])
     probe_names <- names(locations)
-    locations <- as.vector(data.frame(seqnames(locations))[,1])
+    locations <- as.vector(data.frame(seqnames(locations))[, 1])
     names(locations) <- probe_names
-    autosomal <- names(locations)[locations %in%  paste0("chr", 1:22)]
+    autosomal <- names(locations)[locations %in% paste0("chr", 1:22)]
     chrY <- names(locations)[locations == "chrY"]
     chrX <- names(locations)[locations == "chrX"]
     # End hack

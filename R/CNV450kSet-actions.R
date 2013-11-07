@@ -19,7 +19,8 @@ setMethod("dropSNPprobes", signature("CNV450kSet"), function(object, maf_thresho
 
 # Returns a new CNV450kSet object whose intensities have been normalized to the
 # user-specified method.
-setMethod("normalize", signature("CNV450kSet"), function(object, type = c("functional", "quantile")) {
+setMethod("normalize", signature("CNV450kSet"), function(object, type = c("functional", 
+    "quantile")) {
     method <- match.arg(type)
     
     if (!method %in% c("functional", "quantile")) {
@@ -30,10 +31,10 @@ setMethod("normalize", signature("CNV450kSet"), function(object, type = c("funct
     manifest <- getManifest(object)
     
     if (method == "functional") {
-        new_intensities <- functionalNormalization(cnMatrix = intensities, extractedData = getSummary(object), manifest = manifest)
-    } else if (method == "quantile") {
-        new_intensities <- quantileNormalization(cnMatrix = intensities, 
+        new_intensities <- functionalNormalization(cnMatrix = intensities, extractedData = getSummary(object), 
             manifest = manifest)
+    } else if (method == "quantile") {
+        new_intensities <- quantileNormalization(cnMatrix = intensities, manifest = manifest)
     }
     
     assayData(object) <- assayDataNew(storage.mode = "lockedEnvironment", intensity = new_intensities)
@@ -60,8 +61,7 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
     case_intensity <- as.matrix(intensities[, groups != "control"])
     
     consider_sexes <- !any(is.na(sexes))
-    if(consider_sexes)
-    {
+    if (consider_sexes) {
         control_sexes <- sexes[groups == "control"]
         case_sexes <- sexes[groups != "control"]
     }
@@ -72,7 +72,7 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
     if (is.vector(cases_log2)) {
         cases_log2 <- as.matrix(cases_log2)
     }
-
+    
     CNA.object <- CNA(cases_log2, ordered(annotation$chr, levels = c(paste("chr", 
         1:22, sep = ""), "chrX", "chrY")), as.numeric(annotation$pos), data.type = "logratio", 
         sampleid = sampleNames)
@@ -88,11 +88,11 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
     names(segments_per_sample) <- unique(all_segments$ID)
     
     x <- lapply(1:length(segments_per_sample), function(i) {
-               
+        
         result <- t(apply(segments_per_sample[[i]], 1, function(cnv) {
             # When assessing sexual chromosomes, only consider controls of the same sex as
             # the sample.
-                   
+            
             if (cnv["chrom"] %in% c("chrX", "chrY") & consider_sexes) {
                 used_controls <- control_sexes == case_sexes[i]
             } else {
@@ -141,11 +141,12 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
 ################################################################################ 
 
 # Returns a new CNV450kSet object.
-setMethod("computeSignificance", signature("CNV450kSet"), function(object, p.value.threshold, num.mark.threshold) {
+setMethod("computeSignificance", signature("CNV450kSet"), function(object, p.value.threshold, 
+    num.mark.threshold) {
     current_segments <- getSegments(object)
     new_segments <- lapply(current_segments, function(sample) {
-        significant <- as.numeric(sample$adjusted.pvalue) <= p.value.threshold &
-                as.numeric(sample$num.mark) >= num.mark.threshold
+        significant <- as.numeric(sample$adjusted.pvalue) <= p.value.threshold & 
+            as.numeric(sample$num.mark) >= num.mark.threshold
         sample$isSignificant <- significant
         sample
     })

@@ -1,10 +1,10 @@
-################################################################################
+################################################################################ 
 
 setMethod("initialize", signature("CNV450kSet"), function(.Object, ...) {
-            .Object <- callNextMethod(.Object, ...)
-        })
+    .Object <- callNextMethod(.Object, ...)
+})
 
-################################################################################
+################################################################################ 
 
 CNV450kSet <- function(RGChannelSet) {
     if (!is(RGChannelSet, "RGChannelSet")) {
@@ -52,7 +52,7 @@ CNV450kSet <- function(RGChannelSet) {
     
     # Feature covariates
     featureData <- as.data.frame(getAnnotation(RGChannelSet, what = c("Locations", 
-                            "SNPs.137CommonSingle", "Other")))
+        "SNPs.137CommonSingle", "Other")))
     rownames(featureData) <- featureNames
     featureData <- AnnotatedDataFrame(featureData)
     
@@ -67,8 +67,8 @@ CNV450kSet <- function(RGChannelSet) {
     protocolData <- protocolData(RGChannelSet)
     
     new("CNV450kSet", summary = summary, assayData = assayData, phenoData = phenoData, 
-            featureData = featureData, annotation = annotation, manifest = manifest, 
-            experimentData = experimentData, protocolData = protocolData, segments = list())
+        featureData = featureData, annotation = annotation, manifest = manifest, 
+        experimentData = experimentData, protocolData = protocolData, segments = list())
     
 }
 

@@ -130,7 +130,7 @@ setMethod("plotDensity", signature("CNV450kSet"), function(object, color.by, col
 
 setMethod("plotPCA", signature("CNV450kSet"), function(object, color.by, color.function, 
     legend.position) {
-
+    
     intensities <- assayData(object)$intensity
     
     coloring <- getColoring(object, color.by, color.function)

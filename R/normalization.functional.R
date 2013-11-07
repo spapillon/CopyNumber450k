@@ -124,7 +124,7 @@ returnFit <- function(model.matrix, quantiles, nPCs) {
     meanFunction <- apply(quantiles, 1, mean)
     res <- quantiles - meanFunction
     
-
+    
     for (i in 1:nrow(quantiles)) {
         model <- lm(res[i, ] ~ model.matrix - 1)
         res[i, ] <- res[i, ] - model$fitted.values
@@ -159,7 +159,8 @@ normalizeByType <- function(intMatrix, newQuantiles) {
         })
         
         target <- as.vector(target)
-        result <- preprocessCore::normalize.quantiles.use.target(matrix(crtColumn.reduced), target)
+        result <- preprocessCore::normalize.quantiles.use.target(matrix(crtColumn.reduced), 
+            target)
         result
     })
 }
@@ -167,8 +168,7 @@ normalizeByType <- function(intMatrix, newQuantiles) {
 ################################################################################ 
 
 # Main function call for normalization
-functionalNormalization <- function(cnMatrix, extractedData, manifest, 
-    nPCs = 4) {
+functionalNormalization <- function(cnMatrix, extractedData, manifest, nPCs = 4) {
     
     probesI <- getProbeInfo(manifest, type = "I")
     probesII <- getProbeInfo(manifest, type = "II")
@@ -178,12 +178,12 @@ functionalNormalization <- function(cnMatrix, extractedData, manifest,
     uProbeNames <- rownames(cnMatrix)
     uProbesIGrn <- intersect(uProbeNames, probesIGrn)
     uProbesIRed <- intersect(uProbeNames, probesIRed)
-    uProbesII   <- intersect(uProbeNames, probesII$Name)
-     
-    II     <- match(uProbesII,   uProbeNames)
-    IRed   <- match(uProbesIRed, uProbeNames)
+    uProbesII <- intersect(uProbeNames, probesII$Name)
+    
+    II <- match(uProbesII, uProbeNames)
+    IRed <- match(uProbesIRed, uProbeNames)
     IGreen <- match(uProbesIGrn, uProbeNames)
-
+    
     
     types <- c("II", "IRed", "IGreen")
     indList <- list(II, IRed, IGreen)
@@ -193,7 +193,7 @@ functionalNormalization <- function(cnMatrix, extractedData, manifest,
     model.matrix <- buildControlMatrix450k(extractedData)
     cnList <- list(extractedData$cnQuantiles$II, extractedData$cnQuantiles$IRed, 
         extractedData$cnQuantiles$IGrn)
-
+    
     ### Normalization
     for (i in 1:3) {
         message(paste0("Normalization of the ", messages[i], " probes..."))
@@ -203,7 +203,7 @@ functionalNormalization <- function(cnMatrix, extractedData, manifest,
         
         cnMatrix[indList[[i]], ] <- normalizeByType(cnMatrix[indList[[i]], ], newQuantiles)
     }
-
+    
     message("Normalization done.")
     
     cnMatrix
