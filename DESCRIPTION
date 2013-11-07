@@ -9,3 +9,5 @@ License: Artistic-2.0
 Imports: methods
 Depends: Biobase, minfi, DNAcopy, preprocessCore
 LinkingTo:
+LazyData: yes
+biocViews: DNAMethylation, Microarray, Preprocessing, QualityControl, CopyNumberVariant
