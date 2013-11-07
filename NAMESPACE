@@ -1,3 +1,5 @@
+importFrom(BiocGenerics, normalize)
+
 export(CNV450kSet,
   getSummary,
   getSegments,
