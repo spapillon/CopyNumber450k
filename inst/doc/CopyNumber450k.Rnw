@@ -2,7 +2,7 @@
 %\VignetteDepends{minfi}
 %\VignettePackage{CNV450kSet}
 \documentclass[12pt]{article}
-<<options,echo=FALSE,results=hide>>=
+<<options,echo=FALSE,results=hide,eval=FALSE>>=
 options(width=70)
 @
 \SweaveOpts{eps=FALSE,echo=TRUE}
@@ -32,59 +32,234 @@ Methylation Arrays}
 The \Rpackage{CopyNumber450k} package provides tools for calling CNVs from
 Illumina 450k methylation arrays.
 
-\section{Reading Data}
 
+
+\subsection{Loading libraries}
+<<load,eval=FALSE>>=
+require(CopyNumber450k)
+require(CopyNumber450kData)
+require(minfiData)
+@
+\section{Example Dataset}
 A single \Rcode{RGChannelSet}, representing the raw intensities of red and green
 channels of a 450k methylation assay, must be read into a \Rcode{CNV450kSet}. 
 It is strongly advised for users to prepare the \Rcode{RGChannelSet} as
 prescribed in \Rpackage{minfi} documentation. The \Rcode{CNV450kSet} internally
 extracts what is needed from the \Rcode{RGChannelSet} and related
-\Rcode{MethylSet} and \Rcode{IlluminaMethylationManifest} what it needs, that is, the raw intensities, 
-the preprocessed methylation and unmethylation signals as well as genomic annotations.
-We also provide a control set of 52 healthy patients with nominally no CNVs as
-part of the \Rpackage{CopyNumber450kData} package, available on Bioconductor.
+\Rcode{MethylSet} and \Rcode{IlluminaMethylationManifest} that it needs, that
+is, the raw intensities, the preprocessed methylation and unmethylation signals as well as genomic annotations.
 
 We strongly suggest you read \Rpackage{minfi}'s vignette on how to load data and
-use quality control plots to ensure that it is of acceptable quality. Moreover,
-in order to ensure posteriority of object annotations, \Rpackage{minfi} provides
-the \Rcode{updateObject} function which should be ran on
-\Rpackage{CopyNumber450kData}'s control set before combining it with your own
-experiment.
+to use quality control plots to ensure that that the data is of acceptable
+quality.
 
-<<readData>>=
-# require(CopyNumber450k)
-# data(xxxx)
-# control_RGset <- updateObject(control_RGset)
-# total_RGset <- combine(control_RGset, my_RGset)
+\subsection{Data requirements}
+In order to construct a \Rcode{CNV450kSet} object, your sample set must
+contain at least one sample whose associated Sample_Group phenotypic data value
+is \Rcode{control}. A sample whose Sample_Group entry is not \Rcode{control} is
+considered to be non-control.
+
+In order to facillitate the use of this package, we prove 52 control samples in the \Rpackage{CopyNumber450kData}.  We strongly suggest that you use those
+controls if you do not have sufficient control samples in your data set and if
+you are studying the human genome.
+
+<<loaddata,eval=FALSE>>=
+# Load control data (n=52) from CopyNumber450kData
+data(RGcontrolSetEx)
+
+# Load example data (n=6) from minfiData
+data(RGsetEx)
+@
+
+\subsection{Creating the object}
+\Rpackage{minfi} provides the \Rcode{combine} function that merges two
+\Rcode{RGChannelSet}s into a single one. It is important to ensure that both
+sets have been assigned to relevant groups (i.e. control samples have
+\Rcode{control} as Sample_Group).
+
+<<createobject,eval=FALSE>>=
+# Combine both RGsets in a single RGset
+RGset <- combine(RGcontrolSetEx, RGsetEx)
+
+# Create the object
+mcds <- CNV450kSet(RGset)
 @ 
 
+\subsection{SNP probes}
+Although \Rpackage{minfi} offers a function to drop SNP probes, it does so only
+for probes that directly target SNP CpGs. We recommend that you use our
+\Rcode{dropSNPprobes} method to drop probes that target and contain known SNPs
+from your data set to ensure better normalization and segmentation in the
+subsequent steps.
+
+<<dropSNPprobes,eval=FALSE>>=
+mcds <- dropSNPprobes(mcds, maf_threshold=0.01)
+@
+
+\section{Data Visualization and Quality Assessment}
+\Rpackage{CopyNumber450k} offers quality assessment plots to identify potential
+batch effects and effects of normalization.
+
+\subsection{Density Plot}
+The density plot allows you to observe differences in density
+distributions between samples. Certain effects, such as array position on the
+chip, can be clearly observed using the density plot. Additionnaly, coloring can
+be based on different sample features. Refer to the method documentation for all
+possible groupings.
+
+\begin{figure} 
+\begin{center}
+<<densityplot,fig=TRUE,eval=FALSE>>=
+par(mfrow=c(1,2))
+plotDensity(mcds)
+plotDensity(mcds, color.by="slide")
+@
+\end{center} 
+\caption{Global sample intensity by array position and by slide}
+\label{fig:densityplot}
+\end{figure}
+
+\subsection{PCA Plot}
+A PCA plotting method, with the same coloring features as \Rcode{plotDensity} is
+provided.
+
+\begin{figure} 
+\begin{center}
+<<PCAplot,fig=TRUE,eval=FALSE>>=
+plotPCA(mcds)
+@
+\end{center} 
+\caption{PCA plot of sample intensities}
+\label{fig:PCAplot}
+\end{figure}
 
 \section{Normalization}
 
-Currently, CopyNumber450k offers two normalization procedures: quantile normalization andfunctional normalization \cite{Fortin:2013} . 
-Quantile normalization \cite{Bolstad:2003} assumes that the distributions of signal intensities are similar across subjects. Therefore, we suggest to use this method for datasets with no expected global differences in copy numbers across samples. In case one expects large-scale differences between two or more conditions, e.g. cancer versus normal samples, we strongly recommend functional normalization, a new method developed specifically for the 450k array that does not assume similarity of distributions between samples. \cite{Fortin:2013}. 
-\\
-<<normalization>>=
-# plotDensity(cns)
+Currently, \Rpackage{CopyNumber450k} offers two normalization procedures:
+quantile normalization and functional normalization \cite{Fortin:2013}. Quantile
+normalization \cite{Bolstad:2003} assumes that the distributions of signal
+intensities are similar across subjects. Therefore, we suggest to use this
+method for datasets with no expected global differences in copy numbers across
+samples. In case one expects large-scale differences between two or more
+conditions, (e.g. cancer samples) we strongly recommend functional
+normalization, a new method developed specifically for the 450k array that does
+not assume similarity of distributions between samples. \cite{Fortin:2013}.
 
-# cns <- dropSNPprobes(cns, maf_threshold=0.01)
+\subsection{Functional normalization}
+The functional normalization, a new method developed specifically for the 450k
+array, allows for a more conservative normalization. As such, it does not assume
+that the samples follow the same distribution and is therefore useful in cases where one can expect gross chromosomal aberrations (e.g. cancer samples).
 
-# cns.quantile <- normalize(cns, "quantile")
-# plotDensity(cns.quantile)
-
-# cns.functional <- normalize(cns, "functional")
-# plotDensity(cns.functional)
+<<funnorm,eval=FALSE>>=
+mcds.f <- normalize(mcds, "functional")
 @
+
+Compared to the previous \Rcode{densityPlot}, post-normalization density
+distributions are much more alike to one another and the
+array position bias is removed.
+
+\begin{figure} 
+\begin{center}
+<<funnormDensity,fig=TRUE,eval=FALSE>>=
+plotPCA(mcds.q)
+@
+\end{center} 
+\caption{Density plot of sample intensities after functional normalization}
+\label{fig:funnormDensity}
+\end{figure}
+
+
+\subsection{Quantile normalization}
+
+The quantile normalization will match all the samples distribution and mostly
+remove any batch effects \cite{Bolstad:2003}.  However, in samples with gross
+chromosomal aberrations, the signal may be lost.  We suggest
+that you use the quantile normalization in samples where you expect small
+aberrations.
+
+<<quannorm,eval=FALSE>>=
+mcds.q <- normalize(mcds, "quantile")
+@
+
+In the context of the example data set we have provided, after
+normalization, the PCA plot clearly seperates two groups, namely male and female patients.
+
+\begin{figure} 
+\begin{center}
+<<quannormPCA,fig=TRUE,eval=FALSE>>=
+plotPCA(mcds.q)
+@
+\end{center} 
+\caption{PCA plot of sample intensities after quantile normalization}
+\label{fig:quannormPCA}
+\end{figure}
+
 
 \section{Segmentation}
 
-Blabla segmentation
-\\
-<<segmentation>>=
-# cns.functional <- segmentize(cns.functional)
-message("Dummy Line?")
+After normalization, it is necessary to bin probes together to identify possibly
+amplified or deleted genomic segments We use a standard binary circular
+segmentation algorithm provided by the \Rpackage{DNAcopy} package.
+After segmentation, we post-process each segment and profile its variability
+among control samples.  This allows us to assess whether the segment intensity
+value is attributable to random variability or if it is significantly
+different than what would be expected by chance.
+Finally, all the genes included in each segment are included in their respective segments.
+
+Let's use the quantile-normalized object to do so, as we do not expect global
+aberrations in our samples.
+
+<<segmentation,eval=FALSE>>=
+mcds.q <- segmentize(mcds.q)
 @
 
+\section{Results}
+
+After segmentation, the \Rcode{getSegments} function returns a list containing
+the genomic segments in which each element represents the segments found in a
+sample.
+
+\subsection{Text format}
+
+The segments can be saved in a \Rcode{CSV}
+format, by iteration througt the result of \Rcode{getSegments}:
+
+<<writecsv,eval=FALSE,eval=FALSE>>=
+segment_list <- getSegments(mcds.q)
+sample_count <- length(segment_list)
+sapply(1:sample_count, function(sample_index) {
+            sample_name <- names(segment_list)[sample_index]
+            write.csv(segment_list[[sample_index]], file=paste(sample_name, ".csv", sep="."))
+    })
+@
+
+
+\subsection{A plot of the sample's genome}
+In order to retreive a visual representation of the sample's genome,
+\Rpackage{CopyNumber450k} offers the \Rcode{plotSample} function.
+\Rcode{plotSample} takes the segmentized \Rcode{CNV450kSet} object and the index of the sample to plot.
+\begin{figure} 
+\begin{center}
+<<plotSample,fig=TRUE,eval=FALSE>>= 
+plotSample(mcds.q, 3)
+@
+\end{center} 
+\caption{Genomic view of a sample}
+\label{fig:plotSample}
+\end{figure}
+
+Additionnaly, the user may specify a region of interest and plot only this
+region.
+
+\begin{figure} 
+\begin{center}
+<<plotSampleFocal,fig=TRUE,eval=FALSE>>= 
+plotSample(mcds.q, 3, chr="chr6")
+@
+\end{center} 
+\caption{Focal view of a sample}
+\label{fig:plotSampleFocal}
+\end{figure}
 \section{SessionInfo}
 
 
