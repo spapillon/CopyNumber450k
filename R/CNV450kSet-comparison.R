@@ -1,7 +1,5 @@
 ################################################################################ 
 
-setGeneric("findCNV", function(object, gene_names, type = "both") standardGeneric("findCNV"))
-
 setMethod("findCNV", signature("CNV450kSet"), function(object, gene_names, type) {
     if (!is.character(gene_names)) {
         stop("Argument gene_names must be a character vector.")
@@ -18,9 +16,9 @@ setMethod("findCNV", signature("CNV450kSet"), function(object, gene_names, type)
     if (type == "both") {
         op <- function(a) a[, "isSignificant"]
     } else if (type == "gain") {
-        op <- function(a) a[, "isSignificant"] && a[, "logratio"] > 0
+        op <- function(a) a[, "isSignificant"] && a[, "seg.mean"] > 0
     } else if (type == "loss") {
-        op <- function(a) a[, "isSignificant"] && a[, "logratio"] < 0
+        op <- function(a) a[, "isSignificant"] && a[, "seg.mean"] < 0
     }
     
     x <- sapply(1:length(segments_list), function(i) {
@@ -37,8 +35,6 @@ setMethod("findCNV", signature("CNV450kSet"), function(object, gene_names, type)
 })
 
 ################################################################################ 
-
-setGeneric("intersectCNV", function(object, sample_indices, type = "both") standardGeneric("intersectCNV"))
 
 setMethod("intersectCNV", signature("CNV450kSet"), function(object, sample_indices, 
     type) {
@@ -66,9 +62,9 @@ setMethod("intersectCNV", signature("CNV450kSet"), function(object, sample_indic
     if (type == "both") {
         op <- function(a) a[, "isSignificant"]
     } else if (type == "gain") {
-        op <- function(a) a[, "isSignificant"] && a[, "logratio"] > 0
+        op <- function(a) a[, "isSignificant"] && a[, "seg.mean"] > 0
     } else if (type == "loss") {
-        op <- function(a) a[, "isSignificant"] && a[, "logratio"] < 0
+        op <- function(a) a[, "isSignificant"] && a[, "seg.mean"] < 0
     }
     
     x <- unlist(sapply(1:length(segments_list), function(i) {
@@ -108,8 +104,6 @@ subgroupDifferenceCNVByType <- function(group1_CNVs, group2_CNVs, group1_size, g
 }
 
 ################################################################################ 
-
-setGeneric("subgroupDifference", function(object, group1_indices, group2_indices) standardGeneric("subgroupDifference"))
 
 setMethod("subgroupDifference", signature("CNV450kSet"), function(object, group1_indices, 
     group2_indices) {

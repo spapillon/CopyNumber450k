@@ -11,3 +11,13 @@ Depends: Biobase, minfi, DNAcopy, preprocessCore
 LinkingTo:
 LazyData: yes
 biocViews: DNAMethylation, Microarray, Preprocessing, QualityControl, CopyNumberVariant
+Collate: AllClasses.R
+  AllGenerics.R
+  CNV450kSet-accessors.R
+  CNV450kSet-actions.R
+  CNV450kSet-comparison.R
+  CNV450kSet-initialize.R
+  CNV450kSet-plot.R
+  extract.R
+  normalization.functional.R
+  normalization.quantile.R

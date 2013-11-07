@@ -1,37 +1,10 @@
-################################################################################ 
-
-setClass("CNV450kSet", representation(summary = "list", segments = "list", manifest = "IlluminaMethylationManifest"), 
-    contains = "eSet")
-
-################################################################################ 
+################################################################################
 
 setMethod("initialize", signature("CNV450kSet"), function(.Object, ...) {
-    .Object <- callNextMethod(.Object, ...)
-})
+            .Object <- callNextMethod(.Object, ...)
+        })
 
-################################################################################ 
-
-setMethod("getManifest", signature("CNV450kSet"), function(object) {
-    object@manifest
-})
-
-################################################################################ 
-
-setGeneric("getSummary", function(object) standardGeneric("getSummary"))
-
-setMethod("getSummary", signature("CNV450kSet"), function(object) {
-    object@summary
-})
-
-################################################################################ 
-
-setGeneric("getSegments", function(object) standardGeneric("getSegments"))
-
-setMethod("getSegments", signature("CNV450kSet"), function(object) {
-    object@segments
-})
-
-################################################################################ 
+################################################################################
 
 CNV450kSet <- function(RGChannelSet) {
     if (!is(RGChannelSet, "RGChannelSet")) {
@@ -79,7 +52,7 @@ CNV450kSet <- function(RGChannelSet) {
     
     # Feature covariates
     featureData <- as.data.frame(getAnnotation(RGChannelSet, what = c("Locations", 
-        "SNPs.137CommonSingle", "Other")))
+                            "SNPs.137CommonSingle", "Other")))
     rownames(featureData) <- featureNames
     featureData <- AnnotatedDataFrame(featureData)
     
@@ -94,9 +67,9 @@ CNV450kSet <- function(RGChannelSet) {
     protocolData <- protocolData(RGChannelSet)
     
     new("CNV450kSet", summary = summary, assayData = assayData, phenoData = phenoData, 
-        featureData = featureData, annotation = annotation, manifest = manifest, 
-        experimentData = experimentData, protocolData = protocolData, segments = list())
-
+            featureData = featureData, annotation = annotation, manifest = manifest, 
+            experimentData = experimentData, protocolData = protocolData, segments = list())
+    
 }
 
 ################################################################################  
