@@ -2,7 +2,7 @@
 %\VignetteDepends{minfi}
 %\VignettePackage{CNV450kSet}
 \documentclass[12pt]{article}
-<<options,echo=FALSE,results=hide,eval=FALSE>>=
+<<options,echo=FALSE,results=hide>>=
 options(width=70)
 @
 \SweaveOpts{eps=FALSE,echo=TRUE}
@@ -35,7 +35,7 @@ Illumina 450k methylation arrays.
 
 
 \subsection{Loading libraries}
-<<load,eval=FALSE>>=
+<<load>>=
 require(CopyNumber450k)
 require(CopyNumber450kData)
 require(minfiData)
@@ -63,7 +63,7 @@ In order to facillitate the use of this package, we prove 52 control samples in 
 controls if you do not have sufficient control samples in your data set and if
 you are studying the human genome.
 
-<<loaddata,eval=FALSE>>=
+<<loaddata>>=
 # Load control data (n=52) from CopyNumber450kData
 data(RGcontrolSetEx)
 
@@ -77,7 +77,7 @@ data(RGsetEx)
 sets have been assigned to relevant groups (i.e. control samples have
 \Rcode{control} as Sample_Group).
 
-<<createobject,eval=FALSE>>=
+<<createobject>>=
 # Combine both RGsets in a single RGset
 RGset <- combine(RGcontrolSetEx, RGsetEx)
 
@@ -92,7 +92,7 @@ for probes that directly target SNP CpGs. We recommend that you use our
 from your data set to ensure better normalization and segmentation in the
 subsequent steps.
 
-<<dropSNPprobes,eval=FALSE>>=
+<<dropSNPprobes>>=
 mcds <- dropSNPprobes(mcds, maf_threshold=0.01)
 @
 
@@ -109,7 +109,7 @@ possible groupings.
 
 \begin{figure} 
 \begin{center}
-<<densityplot,fig=TRUE,eval=FALSE>>=
+<<densityplot,fig=TRUE>>=
 par(mfrow=c(1,2))
 plotDensity(mcds)
 plotDensity(mcds, color.by="slide")
@@ -125,7 +125,7 @@ provided.
 
 \begin{figure} 
 \begin{center}
-<<PCAplot,fig=TRUE,eval=FALSE>>=
+<<PCAplot,fig=TRUE>>=
 plotPCA(mcds)
 @
 \end{center} 
@@ -150,7 +150,7 @@ The functional normalization, a new method developed specifically for the 450k
 array, allows for a more conservative normalization. As such, it does not assume
 that the samples follow the same distribution and is therefore useful in cases where one can expect gross chromosomal aberrations (e.g. cancer samples).
 
-<<funnorm,eval=FALSE>>=
+<<funnorm>>=
 mcds.f <- normalize(mcds, "functional")
 @
 
@@ -160,7 +160,7 @@ array position bias is removed.
 
 \begin{figure} 
 \begin{center}
-<<funnormDensity,fig=TRUE,eval=FALSE>>=
+<<funnormDensity,fig=TRUE>>=
 plotPCA(mcds.q)
 @
 \end{center} 
@@ -177,7 +177,7 @@ chromosomal aberrations, the signal may be lost.  We suggest
 that you use the quantile normalization in samples where you expect small
 aberrations.
 
-<<quannorm,eval=FALSE>>=
+<<quannorm>>=
 mcds.q <- normalize(mcds, "quantile")
 @
 
@@ -186,7 +186,7 @@ normalization, the PCA plot clearly seperates two groups, namely male and female
 
 \begin{figure} 
 \begin{center}
-<<quannormPCA,fig=TRUE,eval=FALSE>>=
+<<quannormPCA,fig=TRUE>>=
 plotPCA(mcds.q)
 @
 \end{center} 
@@ -209,7 +209,7 @@ Finally, all the genes included in each segment are included in their respective
 Let's use the quantile-normalized object to do so, as we do not expect global
 aberrations in our samples.
 
-<<segmentation,eval=FALSE>>=
+<<segmentation>>=
 mcds.q <- segmentize(mcds.q)
 @
 
@@ -224,7 +224,7 @@ sample.
 The segments can be saved in a \Rcode{CSV}
 format, by iteration througt the result of \Rcode{getSegments}:
 
-<<writecsv,eval=FALSE,eval=FALSE>>=
+<<writecsv,eval=FALSE>>=
 segment_list <- getSegments(mcds.q)
 sample_count <- length(segment_list)
 sapply(1:sample_count, function(sample_index) {
@@ -240,7 +240,7 @@ In order to retreive a visual representation of the sample's genome,
 \Rcode{plotSample} takes the segmentized \Rcode{CNV450kSet} object and the index of the sample to plot.
 \begin{figure} 
 \begin{center}
-<<plotSample,fig=TRUE,eval=FALSE>>= 
+<<plotSample,fig=TRUE>>= 
 plotSample(mcds.q, 3)
 @
 \end{center} 
@@ -253,7 +253,7 @@ region.
 
 \begin{figure} 
 \begin{center}
-<<plotSampleFocal,fig=TRUE,eval=FALSE>>= 
+<<plotSampleFocal,fig=TRUE>>= 
 plotSample(mcds.q, 3, chr="chr6")
 @
 \end{center} 
