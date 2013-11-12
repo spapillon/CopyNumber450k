@@ -1,6 +1,8 @@
 %\VignetteIndexEntry{CopyNumber450k User's Guide}
 %\VignetteDepends{minfi}
-%\VignettePackage{CNV450kSet}
+%\VignetteDepends{minfiData}
+%\VignetteDepends{CopyNumber450k}
+%\VignettePackage{CopyNumber450k}
 \documentclass[12pt]{article}
 <<options,echo=FALSE,results=hide>>=
 options(width=70)
@@ -32,14 +34,13 @@ Methylation Arrays}
 The \Rpackage{CopyNumber450k} package provides tools for calling CNVs from
 Illumina 450k methylation arrays.
 
-
-
 \subsection{Loading libraries}
 <<load>>=
 require(CopyNumber450k)
 require(CopyNumber450kData)
 require(minfiData)
 @
+
 \section{Example Dataset}
 A single \Rcode{RGChannelSet}, representing the raw intensities of red and green
 channels of a 450k methylation assay, must be read into a \Rcode{CNV450kSet}. 
@@ -55,11 +56,12 @@ quality.
 
 \subsection{Data requirements}
 In order to construct a \Rcode{CNV450kSet} object, your sample set must
-contain at least one sample whose associated Sample_Group phenotypic data value
-is \Rcode{control}. A sample whose Sample_Group entry is not \Rcode{control} is
-considered to be non-control.
+contain at least one sample whose associated Sample\_Group phenotypic data
+value is \Rcode{control}. A sample whose Sample\_Group entry is not
+\Rcode{control} is considered to be non-control.
 
-In order to facillitate the use of this package, we prove 52 control samples in the \Rpackage{CopyNumber450kData}.  We strongly suggest that you use those
+In order to facillitate the use of this package, we prove 52 control samples in
+the \Rpackage{CopyNumber450kData}. We strongly suggest that you use those
 controls if you do not have sufficient control samples in your data set and if
 you are studying the human genome.
 
@@ -75,7 +77,7 @@ data(RGsetEx)
 \Rpackage{minfi} provides the \Rcode{combine} function that merges two
 \Rcode{RGChannelSet}s into a single one. It is important to ensure that both
 sets have been assigned to relevant groups (i.e. control samples have
-\Rcode{control} as Sample_Group).
+\Rcode{control} as Sample\_Group).
 
 <<createobject>>=
 # Combine both RGsets in a single RGset
@@ -110,12 +112,10 @@ possible groupings.
 \begin{figure} 
 \begin{center}
 <<densityplot,fig=TRUE>>=
-par(mfrow=c(1,2))
 plotDensity(mcds)
-plotDensity(mcds, color.by="slide")
 @
 \end{center} 
-\caption{Global sample intensity by array position and by slide}
+\caption{Global sample intensity by array position}
 \label{fig:densityplot}
 \end{figure}
 
@@ -150,7 +150,7 @@ The functional normalization, a new method developed specifically for the 450k
 array, allows for a more conservative normalization. As such, it does not assume
 that the samples follow the same distribution and is therefore useful in cases where one can expect gross chromosomal aberrations (e.g. cancer samples).
 
-<<funnorm>>=
+<<funnorm,echo=FALSE>>=
 mcds.f <- normalize(mcds, "functional")
 @
 
@@ -161,7 +161,7 @@ array position bias is removed.
 \begin{figure} 
 \begin{center}
 <<funnormDensity,fig=TRUE>>=
-plotPCA(mcds.q)
+plotDensity(mcds.f)
 @
 \end{center} 
 \caption{Density plot of sample intensities after functional normalization}
@@ -177,7 +177,7 @@ chromosomal aberrations, the signal may be lost.  We suggest
 that you use the quantile normalization in samples where you expect small
 aberrations.
 
-<<quannorm>>=
+<<quannorm,echo=FALSE>>=
 mcds.q <- normalize(mcds, "quantile")
 @
 
@@ -229,7 +229,8 @@ segment_list <- getSegments(mcds.q)
 sample_count <- length(segment_list)
 sapply(1:sample_count, function(sample_index) {
             sample_name <- names(segment_list)[sample_index]
-            write.csv(segment_list[[sample_index]], file=paste(sample_name, ".csv", sep="."))
+            write.csv(segment_list[[sample_index]], 
+                    file=paste(sample_name, ".csv", sep="."))
     })
 @
 
@@ -240,8 +241,8 @@ In order to retreive a visual representation of the sample's genome,
 \Rcode{plotSample} takes the segmentized \Rcode{CNV450kSet} object and the index of the sample to plot.
 \begin{figure} 
 \begin{center}
-<<plotSample,fig=TRUE>>= 
-plotSample(mcds.q, 3)
+<<plotSample,fig=TRUE>>=
+plotSample(mcds.q, 1)
 @
 \end{center} 
 \caption{Genomic view of a sample}
@@ -254,20 +255,19 @@ region.
 \begin{figure} 
 \begin{center}
 <<plotSampleFocal,fig=TRUE>>= 
-plotSample(mcds.q, 3, chr="chr6")
+plotSample(mcds.q, 1, chr="chr5")
 @
 \end{center} 
 \caption{Focal view of a sample}
 \label{fig:plotSampleFocal}
 \end{figure}
+
 \section{SessionInfo}
-
-
-<<sessionInfo,results=tex,echo=FALSE>>=
+<<sessionInfo,results=tex>>=
 toLatex(sessionInfo())
 @
 
 \nocite{*}
-\bibliography{CopyNumber450k.bib}
+\bibliography{CopyNumber450k}
 
 \end{document}
