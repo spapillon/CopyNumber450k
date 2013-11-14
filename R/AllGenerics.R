@@ -42,11 +42,11 @@ setGeneric("plotSample", function(object, index, chr, start, end, ...) standardG
 ################################################################################ 
 
 setGeneric("plotDensity", function(object, color.by = c("array.row", "array.col", 
-    "sample.group", "slide", "origin"), color.function = rainbow, legend.position = "topright") standardGeneric("plotDensity"))
+    "sample.group", "slide", "origin"), color.function = rainbow, legend.position = "topright", ...) standardGeneric("plotDensity"))
 
 ################################################################################ 
 
 setGeneric("plotPCA", function(object, color.by = c("array.row", "array.col", "sample.group", 
-    "slide", "origin"), color.function = rainbow, legend.position = "topright") standardGeneric("plotPCA"))
+    "slide", "origin"), color.function = rainbow, legend.position = "topright", ...) standardGeneric("plotPCA"))
 
 ################################################################################  

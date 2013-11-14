@@ -110,7 +110,7 @@ setMethod("getColoring", signature("CNV450kSet"), function(object, color.by, col
 ################################################################################ 
 
 setMethod("plotDensity", signature("CNV450kSet"), function(object, color.by, color.function, 
-    legend.position) {
+    legend.position, ...) {
     
     intensities <- assayData(object)$intensity
     
@@ -129,7 +129,7 @@ setMethod("plotDensity", signature("CNV450kSet"), function(object, color.by, col
 ################################################################################ 
 
 setMethod("plotPCA", signature("CNV450kSet"), function(object, color.by, color.function, 
-    legend.position) {
+    legend.position, ...) {
     
     intensities <- assayData(object)$intensity
     
