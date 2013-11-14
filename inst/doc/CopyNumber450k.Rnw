@@ -112,7 +112,7 @@ possible groupings.
 \begin{figure} 
 \begin{center}
 <<densityplot,fig=TRUE,echo=FALSE>>=
-plotDensity(mcds)
+plotDensity(mcds, main="Pre-normalization density plot")
 @
 \end{center} 
 \caption{Global sample intensity by array position}
@@ -126,7 +126,7 @@ provided.
 \begin{figure} 
 \begin{center}
 <<PCAplot,fig=TRUE,echo=FALSE>>=
-plotPCA(mcds)
+plotPCA(mcds, main="Pre-normalization PCA plot")
 @
 \end{center} 
 \caption{PCA plot of sample intensities}
@@ -161,7 +161,7 @@ array position bias is removed.
 \begin{figure} 
 \begin{center}
 <<funnormDensity,fig=TRUE,echo=FALSE>>=
-plotDensity(mcds.f)
+plotDensity(mcds.f, main="Density plot of functional normalized data")
 @
 \end{center} 
 \caption{Density plot of sample intensities after functional normalization}
@@ -187,7 +187,7 @@ normalization, the PCA plot clearly seperates two groups, namely male and female
 \begin{figure} 
 \begin{center}
 <<quannormPCA,fig=TRUE,echo=FALSE>>=
-plotPCA(mcds.q)
+plotPCA(mcds.q, main="PCA plot of quantile normalized data")
 @
 \end{center} 
 \caption{PCA plot of sample intensities after quantile normalization}
@@ -242,7 +242,7 @@ In order to retreive a visual representation of the sample's genome,
 \begin{figure} 
 \begin{center}
 <<plotSample,fig=TRUE,echo=FALSE>>=
-plotSample(mcds.q, 2)
+plotSample(mcds.q, 2, main="Genomic view of Sample 2")
 @
 \end{center} 
 \caption{Genomic view of a sample}
@@ -255,7 +255,7 @@ region.
 \begin{figure} 
 \begin{center}
 <<plotSampleFocal,fig=TRUE,echo=FALSE>>= 
-plotSample(mcds.q, 2, chr="chr5")
+plotSample(mcds.q, 2, chr="chr5", main="Sample 2 zoom-in")
 @
 \end{center} 
 \caption{Focal view of a sample}
