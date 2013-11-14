@@ -1,7 +1,7 @@
 %\VignetteIndexEntry{CopyNumber450k User's Guide}
-%\VignetteDepends{minfi}
 %\VignetteDepends{minfiData}
 %\VignetteDepends{CopyNumber450k}
+%\VignetteDepends{CopyNumber450kData}
 %\VignettePackage{CopyNumber450k}
 \documentclass[12pt]{article}
 <<options,echo=FALSE,results=hide>>=
@@ -111,7 +111,7 @@ possible groupings.
 
 \begin{figure} 
 \begin{center}
-<<densityplot,fig=TRUE>>=
+<<densityplot,fig=TRUE,echo=FALSE>>=
 plotDensity(mcds)
 @
 \end{center} 
@@ -125,7 +125,7 @@ provided.
 
 \begin{figure} 
 \begin{center}
-<<PCAplot,fig=TRUE>>=
+<<PCAplot,fig=TRUE,echo=FALSE>>=
 plotPCA(mcds)
 @
 \end{center} 
@@ -160,7 +160,7 @@ array position bias is removed.
 
 \begin{figure} 
 \begin{center}
-<<funnormDensity,fig=TRUE>>=
+<<funnormDensity,fig=TRUE,echo=FALSE>>=
 plotDensity(mcds.f)
 @
 \end{center} 
@@ -186,7 +186,7 @@ normalization, the PCA plot clearly seperates two groups, namely male and female
 
 \begin{figure} 
 \begin{center}
-<<quannormPCA,fig=TRUE>>=
+<<quannormPCA,fig=TRUE,echo=FALSE>>=
 plotPCA(mcds.q)
 @
 \end{center} 
@@ -241,8 +241,8 @@ In order to retreive a visual representation of the sample's genome,
 \Rcode{plotSample} takes the segmentized \Rcode{CNV450kSet} object and the index of the sample to plot.
 \begin{figure} 
 \begin{center}
-<<plotSample,fig=TRUE>>=
-plotSample(mcds.q, 1)
+<<plotSample,fig=TRUE,echo=FALSE>>=
+plotSample(mcds.q, 2)
 @
 \end{center} 
 \caption{Genomic view of a sample}
@@ -254,8 +254,8 @@ region.
 
 \begin{figure} 
 \begin{center}
-<<plotSampleFocal,fig=TRUE>>= 
-plotSample(mcds.q, 1, chr="chr5")
+<<plotSampleFocal,fig=TRUE,echo=FALSE>>= 
+plotSample(mcds.q, 2, chr="chr5")
 @
 \end{center} 
 \caption{Focal view of a sample}
