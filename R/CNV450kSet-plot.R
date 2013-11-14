@@ -1,7 +1,7 @@
 ################################################################################ 
 
 setMethod("plotSample", signature("CNV450kSet"), function(object, index, chr, start, 
-    end) {
+    end, ...) {
     if (length(getSegments(object)) == 0) {
         stop("Object has not been segmentized yet.")
     }
@@ -38,7 +38,7 @@ setMethod("plotSample", signature("CNV450kSet"), function(object, index, chr, st
     yMin <- min(c(-1, as.numeric(sample_segments[significant_segments, "seg.mean"])))
     yMax <- max(c(1, as.numeric(sample_segments[significant_segments, "seg.mean"])))
     myPlot <- plot(range(start, end), range(yMin, yMax), type = "n", xaxt = x_axis_type, 
-        xlab = "", ylab = "", main = sample_name)
+        xlab = "", ylab = "", ...)
     
     if (missing(chr)) {
         xlabs <- sapply(2:length(site_per_chr), function(j) {
