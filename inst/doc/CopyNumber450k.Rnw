@@ -105,13 +105,13 @@ batch effects and effects of normalization.
 \subsection{Density Plot}
 The density plot allows you to observe differences in density
 distributions between samples. Certain effects, such as array position on the
-chip, can be clearly observed using the density plot. Additionnaly, coloring can
-be based on different sample features. Refer to the method documentation for all
-possible groupings.
+chip, can be clearly observed using the density plot (Figure
+~\ref{fig:densityplot}). Additionnaly, coloring can be based on different sample
+features. Refer to the method documentation for all possible groupings.
 
 \begin{figure} 
 \begin{center}
-<<densityplot,fig=TRUE,echo=FALSE>>=
+<<densityplot,fig=TRUE,results=hide>>=
 plotDensity(mcds, main="Pre-normalization density plot")
 @
 \end{center} 
@@ -121,12 +121,12 @@ plotDensity(mcds, main="Pre-normalization density plot")
 
 \subsection{PCA Plot}
 A PCA plotting method, with the same coloring features as \Rcode{plotDensity} is
-provided.
+provided (Figure~\ref{fig:PCAplot}).
 
 \begin{figure} 
 \begin{center}
-<<PCAplot,fig=TRUE,echo=FALSE>>=
-plotPCA(mcds, main="Pre-normalization PCA plot")
+<<PCAplot,fig=TRUE,results=hide>>=
+plotPCA(mcds, main="Pre-normalization PCA plot", color.by="sample.group")
 @
 \end{center} 
 \caption{PCA plot of sample intensities}
@@ -148,19 +148,20 @@ not assume similarity of distributions between samples. \cite{Fortin:2013}.
 \subsection{Functional normalization}
 The functional normalization, a new method developed specifically for the 450k
 array, allows for a more conservative normalization. As such, it does not assume
-that the samples follow the same distribution and is therefore useful in cases where one can expect gross chromosomal aberrations (e.g. cancer samples).
+that the samples follow the same distribution and is therefore useful in cases
+where one can expect gross chromosomal aberrations (e.g. cancer samples).
 
-<<funnorm,echo=FALSE>>=
+<<funnorm>>=
 mcds.f <- normalize(mcds, "functional")
 @
 
 Compared to the previous \Rcode{densityPlot}, post-normalization density
 distributions are much more alike to one another and the
-array position bias is removed.
+array position bias is removed (Figure~\ref{fig:funnormDensity}).
 
 \begin{figure} 
 \begin{center}
-<<funnormDensity,fig=TRUE,echo=FALSE>>=
+<<funnormDensity,fig=TRUE,results=hide>>=
 plotDensity(mcds.f, main="Density plot of functional normalized data")
 @
 \end{center} 
@@ -175,19 +176,21 @@ The quantile normalization will match all the samples distribution and mostly
 remove any batch effects \cite{Bolstad:2003}.  However, in samples with gross
 chromosomal aberrations, the signal may be lost.  We suggest
 that you use the quantile normalization in samples where you expect small
-aberrations.
+aberrations .
 
-<<quannorm,echo=FALSE>>=
+<<quannorm>>=
 mcds.q <- normalize(mcds, "quantile")
 @
 
 In the context of the example data set we have provided, after
-normalization, the PCA plot clearly seperates two groups, namely male and female patients.
+normalization, the PCA plot clearly seperates the controls and cases
+(Figure~\ref{fig:quannormPCA}). Also, the PC2 discriminates control samples,
+likely due to sex differences.
 
 \begin{figure} 
 \begin{center}
-<<quannormPCA,fig=TRUE,echo=FALSE>>=
-plotPCA(mcds.q, main="PCA plot of quantile normalized data")
+<<quannormPCA,fig=TRUE,results=hide>>=
+plotPCA(mcds.q, main="PCA plot of quantile normalized data", color.by="sample.group")
 @
 \end{center} 
 \caption{PCA plot of sample intensities after quantile normalization}
@@ -206,11 +209,14 @@ value is attributable to random variability or if it is significantly
 different than what would be expected by chance.
 Finally, all the genes included in each segment are included in their respective segments.
 
-Let's use the quantile-normalized object to do so, as we do not expect global
-aberrations in our samples.
+As per the previous PCA plot, it seems that (Figure~\ref{fig:quannormPCA}) the
+\Rcode{case} samples present gross abherrations. As previously described, the
+functional normalization is appropriate in this situation. Let's proceed using
+the \Rcode{mcds.f} object.
+
 
 <<segmentation>>=
-mcds.q <- segmentize(mcds.q)
+mcds.f <- segmentize(mcds.f)
 @
 
 \section{Results}
@@ -241,8 +247,8 @@ In order to retreive a visual representation of the sample's genome,
 \Rcode{plotSample} takes the segmentized \Rcode{CNV450kSet} object and the index of the sample to plot.
 \begin{figure} 
 \begin{center}
-<<plotSample,fig=TRUE,echo=FALSE>>=
-plotSample(mcds.q, 2, main="Genomic view of Sample 2")
+<<plotSample,fig=TRUE,results=hide>>=
+plotSample(mcds.q, 4, main="Genomic view of Sample 4")
 @
 \end{center} 
 \caption{Genomic view of a sample}
@@ -254,8 +260,8 @@ region.
 
 \begin{figure} 
 \begin{center}
-<<plotSampleFocal,fig=TRUE,echo=FALSE>>= 
-plotSample(mcds.q, 2, chr="chr5", main="Sample 2 zoom-in")
+<<plotSampleFocal,fig=TRUE,results=hide>>= 
+plotSample(mcds.q, 4, chr="chr9", main="Sample 4, chromosome 18 q deletion")
 @
 \end{center} 
 \caption{Focal view of a sample}
