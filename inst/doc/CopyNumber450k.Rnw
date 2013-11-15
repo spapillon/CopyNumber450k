@@ -126,7 +126,8 @@ provided (Figure~\ref{fig:PCAplot}).
 \begin{figure} 
 \begin{center}
 <<PCAplot,fig=TRUE,results=hide>>=
-plotPCA(mcds, main="Pre-normalization PCA plot", color.by="sample.group")
+plotPCA(mcds, main="Pre-normalization PCA plot",
+        color.by="sample.group")
 @
 \end{center} 
 \caption{PCA plot of sample intensities}
@@ -244,11 +245,14 @@ sapply(1:sample_count, function(sample_index) {
 \subsection{A plot of the sample's genome}
 In order to retreive a visual representation of the sample's genome,
 \Rpackage{CopyNumber450k} offers the \Rcode{plotSample} function.
-\Rcode{plotSample} takes the segmentized \Rcode{CNV450kSet} object and the index of the sample to plot.
+\Rcode{plotSample} takes the segmentized \Rcode{CNV450kSet} object and the index
+of the sample to plot as input. For example, we
+can see that sample 2 has no clear chromosomal
+aberrations (Figure~\ref{fig:plotSample}).
 \begin{figure} 
 \begin{center}
 <<plotSample,fig=TRUE,results=hide>>=
-plotSample(mcds.f, 4, main="Genomic view of Sample 4")
+plotSample(mcds.f, 2, main="Genomic view of Sample 2")
 @
 \end{center} 
 \caption{Genomic view of a sample}
@@ -256,7 +260,8 @@ plotSample(mcds.f, 4, main="Genomic view of Sample 4")
 \end{figure}
 
 Additionnaly, the user may specify a region of interest and plot only this
-region.
+region to observe chromosomal breakpoints as illustrated in sample 4 of our
+data set, on chromosome 9 (Figure~\ref{fig:plotSampleFocal}).
 
 \begin{figure} 
 \begin{center}
