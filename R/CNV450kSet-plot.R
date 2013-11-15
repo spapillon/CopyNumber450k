@@ -44,8 +44,7 @@ setMethod("plotSample", signature("CNV450kSet"), function(object, index, chr, st
         xlabs <- sapply(2:length(site_per_chr), function(j) {
             ((site_per_chr[j] - site_per_chr[j - 1])/2) + site_per_chr[j - 1]
         })
-        
-        axis(1, at = xlabs, labels = chromosomes, lty = 0)
+        axis(1, at = xlabs, labels = chromosomes, lty = 0, las=2, cex.axis=0.7)
         abline(v = site_per_chr, lty = 3)
     }
     
@@ -116,7 +115,7 @@ setMethod("plotDensity", signature("CNV450kSet"), function(object, color.by, col
     
     coloring <- getColoring(object, color.by, color.function)
     myPlot <- plot(density(intensities), col = coloring$sample.colors[1], ylim = c(0, 
-        9e-05), main = match.arg(color.by))
+        9e-05), ...)
     sapply(2:ncol(intensities), function(i) lines(density(intensities[, i]), col = coloring$sample.colors[i]))
     
     if (!is.null(legend.position)) {
@@ -135,7 +134,7 @@ setMethod("plotPCA", signature("CNV450kSet"), function(object, color.by, color.f
     
     coloring <- getColoring(object, color.by, color.function)
     pca <- prcomp(t(intensities))
-    myPlot <- plot(pca$x, col = coloring$sample.colors, main = match.arg(color.by))
+    myPlot <- plot(pca$x, col = coloring$sample.colors, ...)
     
     if (!is.null(legend.position)) {
         legend(legend.position, legend = coloring$groups, fill = coloring$group.colors)
