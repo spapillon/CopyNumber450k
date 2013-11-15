@@ -231,7 +231,7 @@ The segments can be saved in a \Rcode{CSV}
 format, by iteration througt the result of \Rcode{getSegments}:
 
 <<writecsv,eval=FALSE>>=
-segment_list <- getSegments(mcds.q)
+segment_list <- getSegments(mcds.f)
 sample_count <- length(segment_list)
 sapply(1:sample_count, function(sample_index) {
             sample_name <- names(segment_list)[sample_index]
@@ -248,7 +248,7 @@ In order to retreive a visual representation of the sample's genome,
 \begin{figure} 
 \begin{center}
 <<plotSample,fig=TRUE,results=hide>>=
-plotSample(mcds.q, 4, main="Genomic view of Sample 4")
+plotSample(mcds.f, 4, main="Genomic view of Sample 4")
 @
 \end{center} 
 \caption{Genomic view of a sample}
@@ -261,7 +261,7 @@ region.
 \begin{figure} 
 \begin{center}
 <<plotSampleFocal,fig=TRUE,results=hide>>= 
-plotSample(mcds.q, 4, chr="chr9", main="Sample 4, chromosome 18 q deletion")
+plotSample(mcds.f, 4, chr="chr9", main="Sample 4, chromosome 18 q deletion")
 @
 \end{center} 
 \caption{Focal view of a sample}
