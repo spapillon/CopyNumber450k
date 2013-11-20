@@ -3,31 +3,35 @@
 %\VignetteDepends{CopyNumber450k}
 %\VignetteDepends{CopyNumber450kData}
 %\VignettePackage{CopyNumber450k}
-\documentclass[12pt]{article}
-<<options,echo=FALSE,results=hide>>=
-options(width=70)
-@
-\SweaveOpts{eps=FALSE,echo=TRUE}
-\usepackage{times}
-\usepackage{color,hyperref}
-\usepackage[numbers]{natbib}
-\definecolor{darkblue}{rgb}{0.0,0.0,0.75}
-\hypersetup{colorlinks,breaklinks,
-            linkcolor=darkblue,urlcolor=darkblue,
-            anchorcolor=darkblue,citecolor=darkblue}
-\usepackage{parskip}
-
 \newcommand{\Rcode}[1]{{\texttt{#1}}}
 \newcommand{\Rpackage}[1]{\textsf{#1}}
 \newcommand{\software}[1]{\textsf{#1}}
 \newcommand{\R}{\software{R}}
 
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{authblk}
+
 \title{The CopyNumber450k User's Guide\\Calling CNVs from Illumina 450k
 Methylation Arrays}
-\author{Simon Papillon-Cavanagh, Jean-Philippe Fortin, Nicolas De Jay}
+\author[1]{Simon Papillon-Cavanagh}
+\author[2]{Jean-Philippe Fortin}
+\author[1]{Nicolas De Jay}
+\author[1]{Jacek Majewski}
+\affil[1]{McGill University, Montreal QC, Canada}
+\affil[2]{John Hopkins University, Baltimore MD, USA}
+
+\SweaveOpts{highlight=TRUE, tidy=TRUE, keep.space=TRUE, keep.blank.space=FALSE, keep.comment=TRUE}
+
+<<setup,echo=FALSE,results=hide,eval=TRUE>>=
+options(keep.source=TRUE)
+@
 
 \begin{document}
+
 \maketitle
+\tableofcontents
 
 \section{Introduction}
 
@@ -44,26 +48,22 @@ require(minfiData)
 \section{Example Dataset}
 A single \Rcode{RGChannelSet}, representing the raw intensities of red and green
 channels of a 450k methylation assay, must be read into a \Rcode{CNV450kSet}. 
-It is strongly advised for users to prepare the \Rcode{RGChannelSet} as
-prescribed in \Rpackage{minfi} documentation. The \Rcode{CNV450kSet} internally
-extracts what is needed from the \Rcode{RGChannelSet} and related
-\Rcode{MethylSet} and \Rcode{IlluminaMethylationManifest} that it needs, that
-is, the raw intensities, the preprocessed methylation and unmethylation signals as well as genomic annotations.
-
-We strongly suggest you read \Rpackage{minfi}'s vignette on how to load data and
-to use quality control plots to ensure that that the data is of acceptable
-quality.
+The \Rcode{CNV450kSet} internally extracts the needed data and annotation from
+the \Rcode{RGChannelSet} object.
+We strongly suggest that the reader consults \Rpackage{minfi}'s vignette on how
+to load data and to use quality control plots to ensure that the data is of acceptable
+quality \cite{minfi}.
 
 \subsection{Data requirements}
-In order to construct a \Rcode{CNV450kSet} object, your sample set must
-contain at least one sample whose associated Sample\_Group phenotypic data
-value is \Rcode{control}. A sample whose Sample\_Group entry is not
-\Rcode{control} is considered to be non-control.
+In order to construct a \Rcode{CNV450kSet} object, the input sample set must
+contain at least three samples whose associated \Rcode{Sample\_Group} phenotypic
+data value is \Rcode{control}. A sample whose \Rcode{Sample\_Group} value is not
+\Rcode{control} is considered to be a case sample and will be analyzed
+and segmented.
 
-In order to facillitate the use of this package, we prove 52 control samples in
-the \Rpackage{CopyNumber450kData}. We strongly suggest that you use those
-controls if you do not have sufficient control samples in your data set and if
-you are studying the human genome.
+In order to facillitate the use of this package, we provide 52 control samples
+in the \Rpackage{CopyNumber450kData} R/Bioconductor package. We strongly suggest
+that you use those controls if you do not have sufficient control samples in your data set.
 
 <<loaddata>>=
 # Load control data (n=52) from CopyNumber450kData
@@ -74,12 +74,18 @@ data(RGsetEx)
 @
 
 \subsection{Creating the object}
-\Rpackage{minfi} provides the \Rcode{combine} function that merges two
-\Rcode{RGChannelSet}s into a single one. It is important to ensure that both
-sets have been assigned to relevant groups (i.e. control samples have
-\Rcode{control} as Sample\_Group).
+The \Rpackage{minfi} package provides the \Rcode{combine} function, which merges
+two \Rcode{RGChannelSet}s into a single object. It is important to ensure that
+samples in both sets have been assigned to relevant groups (i.e. control samples
+have \Rcode{control} as \Rcode{Sample\_Group}). In this case, at least three
+samples in either set must be labelled as \Rcode{control}.  Note that the
+provided control samples in \Rpackage{CopyNumber450kData} are already properly annotated.
 
 <<createobject>>=
+# Ensure that Sample_Group values are valid
+head(pData(RGcontrolSetEx)$Sample_Group)
+head(pData(RGsetEx)$Sample_Group)
+
 # Combine both RGsets in a single RGset
 RGset <- combine(RGcontrolSetEx, RGsetEx)
 
@@ -88,11 +94,14 @@ mcds <- CNV450kSet(RGset)
 @ 
 
 \subsection{SNP probes}
-Although \Rpackage{minfi} offers a function to drop SNP probes, it does so only
-for probes that directly target SNP CpGs. We recommend that you use our
-\Rcode{dropSNPprobes} method to drop probes that target and contain known SNPs
-from your data set to ensure better normalization and segmentation in the
-subsequent steps.
+Single nucleotide polymorphisms (SNPs) affect probe hydridization affinity and
+may therefore artificially skew intensity levels. Hence, it is useful to drop
+the probes that contain or target SNPs. Although \Rpackage{minfi} offers a function
+to drop SNP probes, it does so only for probes that directly target SNP CpGs. We
+recommend that the \Rpackage{CopyNumber450k} \Rcode{dropSNPprobes} method be
+used with our package. Since \Rcode{dropSNPprobes} drops probes that both target
+and contain known SNPs, it leads to a more representative normalization and
+segmentation output.
 
 <<dropSNPprobes>>=
 mcds <- dropSNPprobes(mcds, maf_threshold=0.01)
@@ -100,19 +109,21 @@ mcds <- dropSNPprobes(mcds, maf_threshold=0.01)
 
 \section{Data Visualization and Quality Assessment}
 \Rpackage{CopyNumber450k} offers quality assessment plots to identify potential
-batch effects and effects of normalization.
+batch and normalization effects.
 
 \subsection{Density Plot}
-The density plot allows you to observe differences in density
+The density plot allows the user to observe differences in density
 distributions between samples. Certain effects, such as array position on the
 chip, can be clearly observed using the density plot (Figure
-~\ref{fig:densityplot}). Additionnaly, coloring can be based on different sample
-features. Refer to the method documentation for all possible groupings.
+~\ref{fig:densityplot}). Additionnaly, we offer coloring features which can be
+based on different sample phenotypic features. Refer to the method documentation
+for all possible groupings.
 
 \begin{figure} 
 \begin{center}
 <<densityplot,fig=TRUE,results=hide>>=
-plotDensity(mcds, main="Pre-normalization density plot")
+plotDensity(mcds, main="Pre-normalization density plot",
+        color.by="array.row")
 @
 \end{center} 
 \caption{Global sample intensity by array position}
@@ -137,32 +148,25 @@ plotPCA(mcds, main="Pre-normalization PCA plot",
 \section{Normalization}
 
 Currently, \Rpackage{CopyNumber450k} offers two normalization procedures:
-quantile normalization and functional normalization \cite{Fortin:2013}. Quantile
-normalization \cite{Bolstad:2003} assumes that the distributions of signal
-intensities are similar across subjects. Therefore, we suggest to use this
-method for datasets with no expected global differences in copy numbers across
-samples. In case one expects large-scale differences between two or more
-conditions, (e.g. cancer samples) we strongly recommend functional
-normalization, a new method developed specifically for the 450k array that does
-not assume similarity of distributions between samples. \cite{Fortin:2013}.
+quantile normalization \cite{Bolstad:2003} and functional normalization
+\cite{Fortin:2013}. Underlying quantile normalization is the assumption that the
+distributions of signal intensities are similar across subjects\cite{Bolstad:2003}. Therefore, we
+suggest that this method be used for datasets in which no global
+differences in CNVs across samples are expected. 
 
 \subsection{Functional normalization}
-The functional normalization, a new method developed specifically for the 450k
-array, allows for a more conservative normalization. As such, it does not assume
-that the samples follow the same distribution and is therefore useful in cases
-where one can expect gross chromosomal aberrations (e.g. cancer samples).
-
-<<funnorm>>=
-mcds.f <- normalize(mcds, "functional")
-@
-
-Compared to the previous \Rcode{densityPlot}, post-normalization density
-distributions are much more alike to one another and the
-array position bias is removed (Figure~\ref{fig:funnormDensity}).
+In situations where large-scale
+differences are expected (e.g. gross chromosomal aberrations in cancer samples),
+we strongly recommend the functional normalization, a new method developed
+specifically for the 450k array in which the similarity of distributions between
+samples is not assumed \cite{Fortin:2013}. In this sense functional
+normalization is more conservative than quantile normalization.
 
 \begin{figure} 
 \begin{center}
+
 <<funnormDensity,fig=TRUE,results=hide>>=
+mcds.f <- normalize(mcds, "functional")
 plotDensity(mcds.f, main="Density plot of functional normalized data")
 @
 \end{center} 
@@ -170,51 +174,50 @@ plotDensity(mcds.f, main="Density plot of functional normalized data")
 \label{fig:funnormDensity}
 \end{figure}
 
+Compared to the previous \Rcode{densityPlot} (Figure~\ref{fig:densityplot}),
+post-normalization density distributions are much more similar to one another and the
+array position bias is removed (Figure~\ref{fig:funnormDensity}).
 
 \subsection{Quantile normalization}
 
 The quantile normalization will match all the samples distribution and mostly
-remove any batch effects \cite{Bolstad:2003}.  However, in samples with gross
-chromosomal aberrations, the signal may be lost.  We suggest
+remove any batch effects \cite{Bolstad:2003}. However, in samples with gross
+chromosomal aberrations, the signal may be lost. We suggest
 that you use the quantile normalization in samples where you expect small
-aberrations .
-
-<<quannorm>>=
-mcds.q <- normalize(mcds, "quantile")
-@
-
-In the context of the example data set we have provided, after
-normalization, the PCA plot clearly seperates the controls and cases
-(Figure~\ref{fig:quannormPCA}). Also, the PC2 discriminates control samples,
-likely due to sex differences.
-
+aberrations.
 \begin{figure} 
 \begin{center}
 <<quannormPCA,fig=TRUE,results=hide>>=
-plotPCA(mcds.q, main="PCA plot of quantile normalized data", color.by="sample.group")
+mcds.q <- normalize(mcds, "quantile")
+plotPCA(mcds.q, main="PCA plot of quantile normalized data",
+        color.by="sample.group")
 @
 \end{center} 
 \caption{PCA plot of sample intensities after quantile normalization}
 \label{fig:quannormPCA}
 \end{figure}
 
+In the context of the example dataset we have provided, after
+normalization, the PCA plot clearly seperates the controls and cases
+(Figure~\ref{fig:quannormPCA}), indicating the presence of gross chromosomal
+aberrations in the case samples. It is worth noting that the PC2 discriminates
+control samples, likely due to sex differences.
 
 \section{Segmentation}
 
-After normalization, it is necessary to bin probes together to identify possibly
-amplified or deleted genomic segments We use a standard binary circular
-segmentation algorithm provided by the \Rpackage{DNAcopy} package.
-After segmentation, we post-process each segment and profile its variability
-among control samples.  This allows us to assess whether the segment intensity
-value is attributable to random variability or if it is significantly
-different than what would be expected by chance.
-Finally, all the genes included in each segment are included in their respective segments.
+After normalization, it is necessary to bin probes together in order to identify
+possibly amplified or deleted genomic segments. We use a binary circular
+segmentation algorithm provided by the \Rpackage{DNAcopy} package \cite{dnacopy}.
+After segmentation, each segment is further processed by comparing its median
+intensity to a distribution inferred from the control samples. This allows us to
+assess whether the segment intensity value is attributable to random variability
+or if it is significantly different from what would be expected by chance.
+Finally, each segment is annotated with the genes it contains.
 
-As per the previous PCA plot, it seems that (Figure~\ref{fig:quannormPCA}) the
-\Rcode{case} samples present gross abherrations. As previously described, the
+As per the previous PCA plot (Figure~\ref{fig:quannormPCA}), it seems that the
+case samples present gross aberrations. As previously described, the
 functional normalization is appropriate in this situation. Let's proceed using
 the \Rcode{mcds.f} object.
-
 
 <<segmentation>>=
 mcds.f <- segmentize(mcds.f)
@@ -222,14 +225,15 @@ mcds.f <- segmentize(mcds.f)
 
 \section{Results}
 
-After segmentation, the \Rcode{getSegments} function returns a list containing
-the genomic segments in which each element represents the segments found in a
-sample.
+Provided that the segmentation has been performed on the
+\Rcode{CNV450kSet}, calling \Rcode{getSegments} on the object returns a list
+containing the genomic segments in which each row represents a genomic segment
+found in a sample.
 
 \subsection{Text format}
 
 The segments can be saved in a \Rcode{CSV}
-format, by iteration througt the result of \Rcode{getSegments}:
+format, by iteration through the result of \Rcode{getSegments}:
 
 <<writecsv,eval=FALSE>>=
 segment_list <- getSegments(mcds.f)
@@ -243,16 +247,16 @@ sapply(1:sample_count, function(sample_index) {
 
 
 \subsection{A plot of the sample's genome}
-In order to retreive a visual representation of the sample's genome,
-\Rpackage{CopyNumber450k} offers the \Rcode{plotSample} function.
-\Rcode{plotSample} takes the segmentized \Rcode{CNV450kSet} object and the index
-of the sample to plot as input. For example, we
-can see that sample 2 has no clear chromosomal
+In order to obtain a visual representation of the sample's genome,
+\Rpackage{CopyNumber450k} offers the \Rcode{plotSample} function, which takes
+the segmentized \Rcode{CNV450kSet} object and the index of the sample to plot as
+input. In this example, we can see that sample 4 presents gross chromosomal
 aberrations (Figure~\ref{fig:plotSample}).
+
 \begin{figure} 
 \begin{center}
 <<plotSample,fig=TRUE,results=hide>>=
-plotSample(mcds.f, 2, main="Genomic view of Sample 2")
+plotSample(mcds.f, 4, main="Genomic view of Sample 4")
 @
 \end{center} 
 \caption{Genomic view of a sample}
@@ -260,13 +264,14 @@ plotSample(mcds.f, 2, main="Genomic view of Sample 2")
 \end{figure}
 
 Additionnaly, the user may specify a region of interest and plot only this
-region to observe chromosomal breakpoints as illustrated in sample 4 of our
+region to observe chromosomal breakpoints, as illustrated in sample 4 of our
 data set, on chromosome 9 (Figure~\ref{fig:plotSampleFocal}).
 
 \begin{figure} 
 \begin{center}
 <<plotSampleFocal,fig=TRUE,results=hide>>= 
-plotSample(mcds.f, 4, chr="chr9", main="Sample 4, chromosome 18 q deletion")
+plotSample(mcds.f, 4, chr="chr9",
+        main="Sample 4, focal amplification on chromosome 9")
 @
 \end{center} 
 \caption{Focal view of a sample}
@@ -277,8 +282,7 @@ plotSample(mcds.f, 4, chr="chr9", main="Sample 4, chromosome 18 q deletion")
 <<sessionInfo,results=tex>>=
 toLatex(sessionInfo())
 @
-
-\nocite{*}
-\bibliography{CopyNumber450k}
-
+\bibliographystyle{plain}
+\bibliography{biblio}
 \end{document}
+
