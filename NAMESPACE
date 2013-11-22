@@ -2,7 +2,8 @@ import(methods)
 import(DNAcopy)
 import(minfi)
 import(preprocessCore)
-importFrom(BiocGenerics, normalize)
+import(BiocGenerics)
+import(Biobase)
 
 export(CNV450kSet,
   getSummary,
