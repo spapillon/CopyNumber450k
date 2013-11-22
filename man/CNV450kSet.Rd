@@ -23,8 +23,7 @@
 }
 \usage{
   ## Constructor
-
-  cs <- CNV450kSet(RGChannelSet)
+  CNV450kSet(RGChannelSet)
 }
 \arguments{
   \item{RGChannelSet}{A class defined in the \code{minfi} package that represents raw (unprocessed) data from a two color microarray; specifically an Illumina methylation array.}
