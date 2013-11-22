@@ -4,6 +4,21 @@
 \alias{CopyNumber450k}
 \alias{CNV450kSet-Class}
 \alias{CNV450kSet}
+% Methods
+\alias{getManifest,CNV450kSet-method}
+\alias{getSegments,CNV450kSet-method}
+\alias{getSummary,CNV450kSet-method}
+\alias{dropSNPprobes,CNV450kSet-method}
+\alias{normalize,CNV450kSet-method}
+\alias{segmentize,CNV450kSet-method}
+\alias{findCNV,CNV450kSet-method}
+\alias{intersectCNV,CNV450kSet-method}
+\alias{subgroupDifference,CNV450kSet-method}
+\alias{plotSample,CNV450kSet-method}
+\alias{plotPCA,CNV450kSet-method}
+\alias{plotDensity,CNV450kSet-method}
+\alias{computeSignificance,CNV450kSet-method}
+
 \alias{getManifest}
 \alias{getSegments}
 \alias{getSummary}
@@ -17,7 +32,9 @@
 \alias{plotPCA}
 \alias{plotDensity}
 \alias{computeSignificance}
+
 \title{CNV450kSet instances}
+
 \description{
   This class holds Illumina 450k methylation microarray data and annotations for CNV calling.
 }
