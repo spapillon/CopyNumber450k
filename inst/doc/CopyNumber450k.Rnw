@@ -13,15 +13,15 @@
 \usepackage[utf8]{inputenc}
 \usepackage{authblk}
 
-\title{The CopyNumber450k User's Guide\\Calling CNVs from Illumina 450k
+\title{The CopyNumber450k User's Guide:\\Calling CNVs from Illumina 450k
 Methylation Arrays}
 \author[1]{Simon Papillon-Cavanagh}
 \author[2]{Jean-Philippe Fortin}
-\author[1]{Nicolas De Jay}
+\author[3]{Nicolas De Jay}
 \author[1]{Jacek Majewski}
-\affil[1]{McGill University, Montreal QC, Canada}
+\affil[1]{McGill University and Genome Quebec Innovation Centre, Montreal, QC, Canada}
 \affil[2]{John Hopkins University, Baltimore MD, USA}
-
+\affil[3]{Department of Human Genetics, McGill University, Montreal, QC, Canada}
 \SweaveOpts{highlight=TRUE, tidy=TRUE, keep.space=TRUE, keep.blank.space=FALSE, keep.comment=TRUE}
 
 <<setup,echo=FALSE,results=hide,eval=TRUE>>=
