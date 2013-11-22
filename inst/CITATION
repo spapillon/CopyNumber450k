@@ -1,0 +1,15 @@
+citHeader("To cite CopyNumber450k in publications use:")
+
+citEntry(entry="article",
+  title  ="CopyNumber450k: an R package for CNV inference using Illumina 450k DNA methylation assay",
+  author = "S Papillon-Cavanagh, JP Fortin, N De Jay, J Majewski",
+  journal = "Submitted",
+  year = "2013",
+  volume = "",
+  pages = ".",
+  textVersion = paste("S Papillon-Cavanagh, JP Fortin, N De Jay, J Majewski",
+    "CopyNumber450k: an R package for CNV inference using Illumina 450k DNA methylation assay",
+    "Submitted (2013)."))
+
+citFooter("We have invested our time and effort in creating CopyNumber450k,",
+          "we would be grateful if you could cite it when using it in your analysis.")
