@@ -1,0 +1,47 @@
+- No vignette included for Data package. We ask that a (short, e.g., one-page)
+vignette be included for data packages so other users know the provenance of the
+data and how to use it. Information such as how/from where you obtained the data
+and what you did to use it with your code is useful.
+
+- Package size. The data duplicated between the raw data files and the .rda data
+file swells the size of the package unnecessarily. Have you considered uploading
+the raw data files to GEO and providing a script that uses the Bioconductor
+GEOQuery to download your data data? This is information that would be useful in
+the vignette (with eval=FALSE, of course :) ). With that change, you could just
+include the .rda file, dramatically reducing the size of the package.
+
+Vignette (main package):
+
+- Vignette for main package appears in inst/doc instead of vignettes directory.
+With recent versions of R, vignettes are required to appear in the vignettes
+directory rather than inst/doc.
+- Vignette take about 13 mins to build and 13 mins to run. Per the package
+guidelines document, we ask that vignettes be able to run in <5 mins. Due the
+size of the data package, it seems that most of the run time for the vignettes
+is devoted to crunching large amounts of data. We ask that you consider
+providing a "toy" dataset for the examples in your package to run against so
+that users can easily and quickly see the results of running the key parts of
+your code.
+   - It looks like the data you're using is easily subsettable. For examples for
+which it's important that real-world data be used, how about using subsets of
+the data for the sake of speed?
+   - For examples that you want to run against the entire real-world dataset for
+illustration purposes, you could include these in the vignette and set
+eval=FALSE.
+- In section 6.1 you include code for writing getSegments results in CSV format.
+If you think enough users will want this functionality, this seems like an
+excellent candidate for a helper/convenience function.
+
+Man page:
+
+- No \examples for code package. We ask that runnable examples be provided for
+all user-facing functionality in the package. This would be a good place to use
+the "toy" data set mentioned above.
+
+R files:
+
+- More than 80 chars/line. This isn't strictly a problem, but many users
+appreciate it when lines don't exceed 80 characters.
+- In a couple places you have the number of chromosomes hard-coded as 22. It
+seems like this isn't an issue for the platform you're using, but thought it
+should be brought to your attention.
