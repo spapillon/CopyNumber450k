@@ -12,9 +12,7 @@ include the .rda file, dramatically reducing the size of the package.
 
 Vignette (main package):
 
-- Vignette for main package appears in inst/doc instead of vignettes directory.
-With recent versions of R, vignettes are required to appear in the vignettes
-directory rather than inst/doc.
+
 - Vignette take about 13 mins to build and 13 mins to run. Per the package
 guidelines document, we ask that vignettes be able to run in <5 mins. Due the
 size of the data package, it seems that most of the run time for the vignettes
