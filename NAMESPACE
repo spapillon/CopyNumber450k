@@ -16,4 +16,5 @@ export(CNV450kSet,
   computeSignificance,
   plotSample,
   plotDensity,
-  plotPCA)
+  plotPCA,
+  write.csv)

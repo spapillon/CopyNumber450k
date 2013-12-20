@@ -144,3 +144,15 @@ setMethod("plotPCA", signature("CNV450kSet"), function(object, color.by, color.f
 })
 
 ################################################################################  
+
+setMethod("write.csv", signature("CNV450kSet"), function(object, ...) {
+    segment_list <-getSegments(object)
+    sample_names <- names(segment_list)
+    output <- Reduce(rbind, lapply(1:length(segment_list), function(i) {
+                            name <- sample_names[i]
+                            datum <- segment_list[[i]]
+                            x <- cbind(Sample=rep(name, nrow(datum)), datum)
+                            return(x)
+                        }))
+    write.csv(output, ...)
+})

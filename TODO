@@ -26,9 +26,6 @@ the data for the sake of speed?
    - For examples that you want to run against the entire real-world dataset for
 illustration purposes, you could include these in the vignette and set
 eval=FALSE.
-- In section 6.1 you include code for writing getSegments results in CSV format.
-If you think enough users will want this functionality, this seems like an
-excellent candidate for a helper/convenience function.
 
 Man page:
 
