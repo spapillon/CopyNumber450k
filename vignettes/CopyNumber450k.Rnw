@@ -71,6 +71,8 @@ data(RGcontrolSetEx)
 
 # Load example data (n=6) from minfiData
 data(RGsetEx)
+# In order to reduce vignette building time, let's use only one sample
+RGsetEx <- RGsetEx[, 1]
 @
 
 \subsection{Creating the object}
@@ -236,13 +238,7 @@ The segments can be saved in a \Rcode{CSV}
 format, by iteration through the result of \Rcode{getSegments}:
 
 <<writecsv,eval=FALSE>>=
-segment_list <- getSegments(mcds.f)
-sample_count <- length(segment_list)
-sapply(1:sample_count, function(sample_index) {
-            sample_name <- names(segment_list)[sample_index]
-            write.csv(segment_list[[sample_index]], 
-                    file=paste(sample_name, ".csv", sep="."))
-    })
+write.csv(mcds.f, file="segments.csv")
 @
 
 
@@ -256,7 +252,7 @@ aberrations (Figure~\ref{fig:plotSample}).
 \begin{figure} 
 \begin{center}
 <<plotSample,fig=TRUE,results=hide>>=
-plotSample(mcds.f, 4, main="Genomic view of Sample 4")
+plotSample(mcds.f, 1, main="Genomic view of Sample 1")
 @
 \end{center} 
 \caption{Genomic view of a sample}
@@ -270,8 +266,8 @@ data set, on chromosome 9 (Figure~\ref{fig:plotSampleFocal}).
 \begin{figure} 
 \begin{center}
 <<plotSampleFocal,fig=TRUE,results=hide>>= 
-plotSample(mcds.f, 4, chr="chr9",
-        main="Sample 4, focal amplification on chromosome 9")
+plotSample(mcds.f, 1, chr="chr9",
+        main="Sample 1, focal amplification on chromosome 9")
 @
 \end{center} 
 \caption{Focal view of a sample}
