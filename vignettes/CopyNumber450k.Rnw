@@ -71,6 +71,7 @@ data(RGcontrolSetEx)
 
 # Load example data (n=6) from minfiData
 data(RGsetEx)
+<<<<<<< HEAD
 # In order to reduce vignette building time, let's use only one sample
 RGsetEx <- RGsetEx[, 1]
 @
@@ -268,6 +269,210 @@ data set, on chromosome 9 (Figure~\ref{fig:plotSampleFocal}).
 <<plotSampleFocal,fig=TRUE,results=hide>>= 
 plotSample(mcds.f, 1, chr="chr9",
         main="Sample 1, focal amplification on chromosome 9")
+@
+\end{center} 
+\end{figure}
+
+
+\subsection{Creating the object}
+The \Rpackage{minfi} package provides the \Rcode{combine} function, which merges
+two \Rcode{RGChannelSet}s into a single object. It is important to ensure that
+samples in both sets have been assigned to relevant groups (i.e. control samples
+have \Rcode{control} as \Rcode{Sample\_Group}). In this case, at least three
+samples in either set must be labelled as \Rcode{control}.  Note that the
+provided control samples in \Rpackage{CopyNumber450kData} are already properly annotated.
+
+<<createobject>>=
+# Ensure that Sample_Group values are valid
+head(pData(RGcontrolSetEx)$Sample_Group)
+head(pData(RGsetEx)$Sample_Group)
+
+# Combine both RGsets in a single RGset
+RGset <- combine(RGcontrolSetEx, RGsetEx)
+
+# Create the object
+mcds <- CNV450kSet(RGset)
+@ 
+
+\subsection{SNP probes}
+Single nucleotide polymorphisms (SNPs) affect probe hydridization affinity and
+may therefore artificially skew intensity levels. Hence, it is useful to drop
+the probes that contain or target SNPs. Although \Rpackage{minfi} offers a function
+to drop SNP probes, it does so only for probes that directly target SNP CpGs. We
+recommend that the \Rpackage{CopyNumber450k} \Rcode{dropSNPprobes} method be
+used with our package. Since \Rcode{dropSNPprobes} drops probes that both target
+and contain known SNPs, it leads to a more representative normalization and
+segmentation output.
+
+<<dropSNPprobes>>=
+mcds <- dropSNPprobes(mcds, maf_threshold=0.01)
+@
+
+\section{Data Visualization and Quality Assessment}
+\Rpackage{CopyNumber450k} offers quality assessment plots to identify potential
+batch and normalization effects.
+
+\subsection{Density Plot}
+The density plot allows the user to observe differences in density
+distributions between samples. Certain effects, such as array position on the
+chip, can be clearly observed using the density plot (Figure
+~\ref{fig:densityplot}). Additionnaly, we offer coloring features which can be
+based on different sample phenotypic features. Refer to the method documentation
+for all possible groupings.
+
+\begin{figure} 
+\begin{center}
+<<densityplot,fig=TRUE,results=hide>>=
+plotDensity(mcds, main="Pre-normalization density plot",
+        color.by="array.row")
+@
+\end{center} 
+\caption{Global sample intensity by array position}
+\label{fig:densityplot}
+\end{figure}
+
+\subsection{PCA Plot}
+A PCA plotting method, with the same coloring features as \Rcode{plotDensity} is
+provided (Figure~\ref{fig:PCAplot}).
+
+\begin{figure} 
+\begin{center}
+<<PCAplot,fig=TRUE,results=hide>>=
+plotPCA(mcds, main="Pre-normalization PCA plot",
+        color.by="sample.group")
+@
+\end{center} 
+\caption{PCA plot of sample intensities}
+\label{fig:PCAplot}
+\end{figure}
+
+\section{Normalization}
+
+Currently, \Rpackage{CopyNumber450k} offers two normalization procedures:
+quantile normalization \cite{Bolstad:2003} and functional normalization
+\cite{Fortin:2013}. Underlying quantile normalization is the assumption that the
+distributions of signal intensities are similar across subjects\cite{Bolstad:2003}. Therefore, we
+suggest that this method be used for datasets in which no global
+differences in CNVs across samples are expected. 
+
+\subsection{Functional normalization}
+In situations where large-scale
+differences are expected (e.g. gross chromosomal aberrations in cancer samples),
+we strongly recommend the functional normalization, a new method developed
+specifically for the 450k array in which the similarity of distributions between
+samples is not assumed \cite{Fortin:2013}. In this sense functional
+normalization is more conservative than quantile normalization.
+
+\begin{figure} 
+\begin{center}
+
+<<funnormDensity,fig=TRUE,results=hide>>=
+mcds.f <- normalize(mcds, "functional")
+plotDensity(mcds.f, main="Density plot of functional normalized data")
+@
+\end{center} 
+\caption{Density plot of sample intensities after functional normalization}
+\label{fig:funnormDensity}
+\end{figure}
+
+Compared to the previous \Rcode{densityPlot} (Figure~\ref{fig:densityplot}),
+post-normalization density distributions are much more similar to one another and the
+array position bias is removed (Figure~\ref{fig:funnormDensity}).
+
+\subsection{Quantile normalization}
+
+The quantile normalization will match all the samples distribution and mostly
+remove any batch effects \cite{Bolstad:2003}. However, in samples with gross
+chromosomal aberrations, the signal may be lost. We suggest
+that you use the quantile normalization in samples where you expect small
+aberrations.
+\begin{figure} 
+\begin{center}
+<<quannormPCA,fig=TRUE,results=hide>>=
+mcds.q <- normalize(mcds, "quantile")
+plotPCA(mcds.q, main="PCA plot of quantile normalized data",
+        color.by="sample.group")
+@
+\end{center} 
+\caption{PCA plot of sample intensities after quantile normalization}
+\label{fig:quannormPCA}
+\end{figure}
+
+In the context of the example dataset we have provided, after
+normalization, the PCA plot clearly seperates the controls and cases
+(Figure~\ref{fig:quannormPCA}), indicating the presence of gross chromosomal
+aberrations in the case samples. It is worth noting that the PC2 discriminates
+control samples, likely due to sex differences.
+
+\section{Segmentation}
+
+After normalization, it is necessary to bin probes together in order to identify
+possibly amplified or deleted genomic segments. We use a binary circular
+segmentation algorithm provided by the \Rpackage{DNAcopy} package \cite{dnacopy}.
+After segmentation, each segment is further processed by comparing its median
+intensity to a distribution inferred from the control samples. This allows us to
+assess whether the segment intensity value is attributable to random variability
+or if it is significantly different from what would be expected by chance.
+Finally, each segment is annotated with the genes it contains.
+
+As per the previous PCA plot (Figure~\ref{fig:quannormPCA}), it seems that the
+case samples present gross aberrations. As previously described, the
+functional normalization is appropriate in this situation. Let's proceed using
+the \Rcode{mcds.f} object.
+
+<<segmentation>>=
+mcds.f <- segmentize(mcds.f)
+@
+
+\section{Results}
+
+Provided that the segmentation has been performed on the
+\Rcode{CNV450kSet}, calling \Rcode{getSegments} on the object returns a list
+containing the genomic segments in which each row represents a genomic segment
+found in a sample.
+
+\subsection{Text format}
+
+The segments can be saved in a \Rcode{CSV}
+format, by iteration through the result of \Rcode{getSegments}:
+
+<<writecsv,eval=FALSE>>=
+segment_list <- getSegments(mcds.f)
+sample_count <- length(segment_list)
+sapply(1:sample_count, function(sample_index) {
+            sample_name <- names(segment_list)[sample_index]
+            write.csv(segment_list[[sample_index]], 
+                    file=paste(sample_name, ".csv", sep="."))
+    })
+@
+
+
+\subsection{A plot of the sample's genome}
+In order to obtain a visual representation of the sample's genome,
+\Rpackage{CopyNumber450k} offers the \Rcode{plotSample} function, which takes
+the segmentized \Rcode{CNV450kSet} object and the index of the sample to plot as
+input. In this example, we can see that sample 4 presents gross chromosomal
+aberrations (Figure~\ref{fig:plotSample}).
+
+\begin{figure} 
+\begin{center}
+<<plotSample,fig=TRUE,results=hide>>=
+plotSample(mcds.f, 4, main="Genomic view of Sample 4")
+@
+\end{center} 
+\caption{Genomic view of a sample}
+\label{fig:plotSample}
+\end{figure}
+
+Additionnaly, the user may specify a region of interest and plot only this
+region to observe chromosomal breakpoints, as illustrated in sample 4 of our
+data set, on chromosome 9 (Figure~\ref{fig:plotSampleFocal}).
+
+\begin{figure} 
+\begin{center}
+<<plotSampleFocal,fig=TRUE,results=hide>>= 
+plotSample(mcds.f, 4, chr="chr9",
+        main="Sample 4, focal amplification on chromosome 9")
 @
 \end{center} 
 \caption{Focal view of a sample}

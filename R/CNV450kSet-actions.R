@@ -90,7 +90,7 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
     
     x <- lapply(1:length(segments_per_sample), function(i) {
         
-        result <- t(apply(segments_per_sample[[i]], 1, function(cnv) {
+        result <- apply(segments_per_sample[[i]], 1, function(cnv) {
             # When assessing sexual chromosomes, only consider controls of the same sex as
             # the sample.
             
@@ -105,6 +105,8 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
                 as.numeric(cnv["loc.start"]) & as.numeric(annotation$pos) <= as.numeric(cnv["loc.end"])
             
             # Compute segment values
+            if(sum(probes) < 2 || sum(used_control) < 2)
+                browser()
             control_int_sum <- colSums(control_intensity[probes, used_controls])
             control_mean <- mean(control_int_sum)
             control_sd <- sd(control_int_sum)
@@ -121,12 +123,13 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
             l <- as.numeric(cnv["loc.end"]) - as.numeric(cnv["loc.start"])
             c(cnv, seg.length = l, pvalue = p_value, genes = genes, ctrl.mean = control_mean, 
                 ctrl.sd = control_sd, sample.value = sample_sum, z = z_score)
-        }))
+        })
+        result <- t(result)
         
         # pvalue correction for multiple testing
         result <- as.data.frame(result, stringsAsFactors = F)
         result$adjusted.pvalue <- p.adjust(result$pvalue, method = p.adjust.method)
-        if (verbose) {
+        if (verbose > 0) {
             message(paste("Processed", names(segments_per_sample)[i]))
         }
         

@@ -24,7 +24,7 @@ setGeneric("dropSNPprobes", function(object, maf_threshold = 0) standardGeneric(
 
 ################################################################################ 
 
-setGeneric("segmentize", function(object, verbose = TRUE, p.adjust.method = "bonferroni", min.width = 5,
+setGeneric("segmentize", function(object, verbose = 1, p.adjust.method = "bonferroni", min.width = 5,
                         nperm = 10000, alpha = 0.01, undo.splits = "sdundo", undo.SD = 2) standardGeneric("segmentize"))
 
 ################################################################################ 
