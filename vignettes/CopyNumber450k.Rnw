@@ -252,7 +252,7 @@ aberrations (Figure~\ref{fig:plotSample}).
 \begin{figure} 
 \begin{center}
 <<plotSample,fig=TRUE,results=hide>>=
-plotSample(mcds.f, 1, main="Genomic view of Sample 1")
+plotSample(mcds.f, 4, main="Genomic view of Sample 1")
 @
 \end{center} 
 \caption{Genomic view of a sample}
@@ -266,7 +266,7 @@ data set, on chromosome 9 (Figure~\ref{fig:plotSampleFocal}).
 \begin{figure} 
 \begin{center}
 <<plotSampleFocal,fig=TRUE,results=hide>>= 
-plotSample(mcds.f, 1, chr="chr9",
+plotSample(mcds.f, 4, chr="chr9",
         main="Sample 1, focal amplification on chromosome 9")
 @
 \end{center} 
