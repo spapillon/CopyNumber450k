@@ -3,24 +3,6 @@ vignette be included for data packages so other users know the provenance of the
 data and how to use it. Information such as how/from where you obtained the data
 and what you did to use it with your code is useful.
 
-
-Vignette (main package):
-
-
-- Vignette take about 13 mins to build and 13 mins to run. Per the package
-guidelines document, we ask that vignettes be able to run in <5 mins. Due the
-size of the data package, it seems that most of the run time for the vignettes
-is devoted to crunching large amounts of data. We ask that you consider
-providing a "toy" dataset for the examples in your package to run against so
-that users can easily and quickly see the results of running the key parts of
-your code.
-   - It looks like the data you're using is easily subsettable. For examples for
-which it's important that real-world data be used, how about using subsets of
-the data for the sake of speed?
-   - For examples that you want to run against the entire real-world dataset for
-illustration purposes, you could include these in the vignette and set
-eval=FALSE.
-
 Man page:
 
 - No \examples for code package. We ask that runnable examples be provided for
