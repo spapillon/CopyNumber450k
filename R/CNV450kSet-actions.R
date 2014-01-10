@@ -45,7 +45,7 @@ setMethod("normalize", signature("CNV450kSet"), function(object, type = c("funct
 
 # Returns a new CNV450kSet object.
 setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adjust.method, min.width,
-                        nperm, alpha, undo.splits, undo.SD) {
+                        nperm, alpha, undo.splits, undo.SD, trim) {
     if (length(getSegments(object)) != 0 && verbose) {
         warning("Object has already been segmentized.")
     }
@@ -79,7 +79,7 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
         sampleid = sampleNames)
     smoothed.CNA.object <- smooth.CNA(CNA.object)
     segment.smoothed.CNA.object <- segment(smoothed.CNA.object, min.width = min.width, verbose = verbose, 
-        nperm = nperm, alpha = alpha, undo.splits = undo.splits, undo.SD = undo.SD)
+        nperm = nperm, alpha = alpha, undo.splits = undo.splits, undo.SD = undo.SD, trim=trim)
     
     # formatSegment
     all_segments <- segment.smoothed.CNA.object$output
