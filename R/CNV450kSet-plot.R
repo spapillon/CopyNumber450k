@@ -44,7 +44,7 @@ setMethod("plotSample", signature("CNV450kSet"), function(object, index, chr, st
         xlabs <- sapply(2:length(site_per_chr), function(j) {
             ((site_per_chr[j] - site_per_chr[j - 1])/2) + site_per_chr[j - 1]
         })
-        axis(1, at = xlabs, labels = chromosomes, lty = 0, las=2, cex.axis=0.7)
+        axis(1, at = xlabs, labels = chromosomes, lty = 0, las=2, ...)
         abline(v = site_per_chr, lty = 3)
     }
     
