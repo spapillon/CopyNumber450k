@@ -44,8 +44,8 @@ setMethod("normalize", signature("CNV450kSet"), function(object, type = c("funct
 ################################################################################ 
 
 # Returns a new CNV450kSet object.
-setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adjust.method, min.width,
-                        nperm, alpha, undo.splits, undo.SD, trim) {
+setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adjust.method, 
+    min.width, nperm, alpha, undo.splits, undo.SD, trim) {
     if (length(getSegments(object)) != 0 && verbose) {
         warning("Object has already been segmentized.")
     }
@@ -77,9 +77,10 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
     CNA.object <- CNA(cases_log2, ordered(annotation$chr, levels = c(paste("chr", 
         1:22, sep = ""), "chrX", "chrY")), as.numeric(annotation$pos), data.type = "logratio", 
         sampleid = sampleNames)
-    smoothed.CNA.object <- smooth.CNA(CNA.object, trim=trim)
-    segment.smoothed.CNA.object <- segment(smoothed.CNA.object, min.width = min.width, verbose = verbose, 
-        nperm = nperm, alpha = alpha, undo.splits = undo.splits, undo.SD = undo.SD, trim=trim)
+    smoothed.CNA.object <- smooth.CNA(CNA.object, trim = trim)
+    segment.smoothed.CNA.object <- segment(smoothed.CNA.object, min.width = min.width, 
+        verbose = verbose, nperm = nperm, alpha = alpha, undo.splits = undo.splits, 
+        undo.SD = undo.SD, trim = trim)
     
     # formatSegment
     all_segments <- segment.smoothed.CNA.object$output
@@ -105,7 +106,7 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
                 as.numeric(cnv["loc.start"]) & as.numeric(annotation$pos) <= as.numeric(cnv["loc.end"])
             
             # Compute segment values
-            if(sum(probes) < 2 || sum(used_controls) < 2) {
+            if (sum(probes) < 2 || sum(used_controls) < 2) {
                 control_int_sum <- sum(control_intensity[probes, used_controls])
             } else {
                 control_int_sum <- colSums(control_intensity[probes, used_controls])
