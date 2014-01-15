@@ -77,7 +77,7 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
     CNA.object <- CNA(cases_log2, ordered(annotation$chr, levels = c(paste("chr", 
         1:22, sep = ""), "chrX", "chrY")), as.numeric(annotation$pos), data.type = "logratio", 
         sampleid = sampleNames)
-    smoothed.CNA.object <- smooth.CNA(CNA.object)
+    smoothed.CNA.object <- smooth.CNA(CNA.object, trim=trim)
     segment.smoothed.CNA.object <- segment(smoothed.CNA.object, min.width = min.width, verbose = verbose, 
         nperm = nperm, alpha = alpha, undo.splits = undo.splits, undo.SD = undo.SD, trim=trim)
     
