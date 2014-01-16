@@ -44,7 +44,7 @@ setMethod("plotSample", signature("CNV450kSet"), function(object, index, chr, st
         xlabs <- sapply(2:length(site_per_chr), function(j) {
             ((site_per_chr[j] - site_per_chr[j - 1])/2) + site_per_chr[j - 1]
         })
-        axis(1, at = xlabs, labels = chromosomes, lty = 0, las=2, ...)
+        axis(1, at = xlabs, labels = chromosomes, lty = 0, las = 2, ...)
         abline(v = site_per_chr, lty = 3)
     }
     
@@ -143,16 +143,16 @@ setMethod("plotPCA", signature("CNV450kSet"), function(object, color.by, color.f
     myPlot
 })
 
-################################################################################  
+################################################################################ 
 
 setMethod("write.csv", signature("CNV450kSet"), function(object, ...) {
-    segment_list <-getSegments(object)
+    segment_list <- getSegments(object)
     sample_names <- names(segment_list)
     output <- Reduce(rbind, lapply(1:length(segment_list), function(i) {
-                            name <- sample_names[i]
-                            datum <- segment_list[[i]]
-                            x <- cbind(Sample=rep(name, nrow(datum)), datum)
-                            return(x)
-                        }))
+        name <- sample_names[i]
+        datum <- segment_list[[i]]
+        x <- cbind(Sample = rep(name, nrow(datum)), datum)
+        return(x)
+    }))
     write.csv(output, ...)
-})
+}) 
