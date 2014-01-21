@@ -72,7 +72,8 @@ data(RGcontrolSetEx)
 # Load example data (n=6) from minfiData
 data(RGsetEx)
 # In order to reduce vignette building time, let's use only one sample
-RGsetEx <- RGsetEx[, 1]
+RGsetEx <- RGsetEx[, 6]
+#RGsetEx <- RGsetEx[, 3]
 @
 
 \subsection{Creating the object}
@@ -222,7 +223,7 @@ functional normalization is appropriate in this situation. Let's proceed using
 the \Rcode{mcds.f} object.
 
 <<segmentation>>=
-mcds.f <- segmentize(mcds.f)
+mcds.f <- segmentize(mcds.q)
 @
 
 \section{Results}
@@ -252,7 +253,7 @@ aberrations (Figure~\ref{fig:plotSample}).
 \begin{figure} 
 \begin{center}
 <<plotSample,fig=TRUE,results=hide>>=
-plotSample(mcds.f, 4, main="Genomic view of Sample 1")
+plotSample(mcds.f, 1, main="Genomic view of Sample 1")
 @
 \end{center} 
 \caption{Genomic view of a sample}
@@ -266,8 +267,8 @@ data set, on chromosome 9 (Figure~\ref{fig:plotSampleFocal}).
 \begin{figure} 
 \begin{center}
 <<plotSampleFocal,fig=TRUE,results=hide>>= 
-plotSample(mcds.f, 4, chr="chr9",
-        main="Sample 1, focal amplification on chromosome 9")
+plotSample(mcds.f, 1, chr="chr1",
+        main="Sample 1, focal deletion on chromosome 1")
 @
 \end{center} 
 \end{figure}
