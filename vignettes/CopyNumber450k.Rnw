@@ -223,7 +223,7 @@ functional normalization is appropriate in this situation. Let's proceed using
 the \Rcode{mcds.f} object.
 
 <<segmentation>>=
-mcds.f <- segmentize(mcds.q)
+mcds.f <- segmentize(mcds.f)
 @
 
 \section{Results}
