@@ -18,6 +18,7 @@
 \alias{plotPCA,CNV450kSet-method}
 \alias{plotDensity,CNV450kSet-method}
 \alias{computeSignificance,CNV450kSet-method}
+\alias{write.csv,CNV450kSet-method}
 
 \alias{getManifest}
 \alias{getSegments}
@@ -82,7 +83,48 @@ This class has a few accessors defined on top of those provided in \code{eSet}. 
     \item{\code{plotSample(object, index, chr, start, end)}}{Produces a plot of the genomic segments and relative values for sample at \code{index}. \code{chr, start ,end} are optional parameters to be used to zoom in a specific genomic location.}
     \item{\code{plotDensity(object, color.by = c("array.row", "array.col", "sample.group", "slide", "origin"), color.function = rainbow, legend.position = "topright")}}{Plots the density distribution of the intensity matrix of the object.}
     \item{\code{plotPCA(object, color.by = c("array.row", "array.col", "sample.group", "slide", "origin"), color.function = rainbow, legend.position = "topright")}}{Plots the PCA scatter plot of the intensity matrix of the object.}
+    \item{\code{write.csv(object, ...)}}{Writes the segment output for each sample in csv format.}
   }
+}
+\examples{
+require(CopyNumber450k)
+require(CopyNumber450kData)
+require(minfiData)
+
+# Load the CopyNumber450kData control set
+data(RGcontrolSetEx)
+
+# Load example data (n=6) from minfiData
+data(RGsetEx)
+# In order to reduce vignette building time, let's use only one sample
+RGsetEx <- RGsetEx[, 6]
+
+# Combine both RGsets in a single RGset
+RGset <- combine(RGcontrolSetEx, RGsetEx)
+
+# Create the object
+mcds <- CNV450kSet(RGset)
+
+# Drop SNP probes
+mcds <- dropSNPprobes(mcds, maf_threshold=0.01)
+
+# Normalization
+mcds.f <- normalize(mcds, "functional")
+
+# Some plots
+plotDensity(mcds.f, main="Density plot of functional normalized data")
+plotPCA(mcds.f, main="PCA plot of functional normalized data")
+
+# Segmentation
+mcds.f <- segmentize(mcds.f)
+
+# Plotting the results 
+plotSample(mcds.f, 1, main="Genomic view of Sample 1")
+plotSample(mcds.f, 1, chr="chr1",
+        main="Sample 1, focal deletion on chromosome 1")
+        
+# Saving the results in csv format
+write.csv(mcds.f, file="segments.csv")
 }
 \author{Simon Papillon-Cavanagh, Jean-Philippe Fortin, Nicolas De Jay}
 \seealso{
