@@ -120,8 +120,8 @@ mcds.f <- segmentize(mcds.f)
 
 # Plotting the results 
 plotSample(mcds.f, 1, main="Genomic view of Sample 1")
-plotSample(mcds.f, 1, chr="chr1",
-        main="Sample 1, focal deletion on chromosome 1")
+plotSample(mcds.f, 1, chr="chr11",
+        main="Sample 1, focal amplification on chromosome 11")
         
 # Saving the results in csv format
 write.csv(mcds.f, file="segments.csv")

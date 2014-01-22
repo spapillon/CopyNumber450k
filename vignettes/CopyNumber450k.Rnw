@@ -267,8 +267,8 @@ data set, on chromosome 9 (Figure~\ref{fig:plotSampleFocal}).
 \begin{figure} 
 \begin{center}
 <<plotSampleFocal,fig=TRUE,results=hide>>= 
-plotSample(mcds.f, 1, chr="chr1",
-        main="Sample 1, focal deletion on chromosome 1")
+plotSample(mcds.f, 1, chr="chr11",
+        main="Sample 1, focal amplification on chromosome 11")
 @
 \end{center} 
 \end{figure}
