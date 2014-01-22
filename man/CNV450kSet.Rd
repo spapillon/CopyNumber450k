@@ -97,7 +97,7 @@ data(RGcontrolSetEx)
 # Load example data (n=6) from minfiData
 data(RGsetEx)
 # In order to reduce vignette building time, let's use only one sample
-RGsetEx <- RGsetEx[, 6]
+RGsetEx <- RGsetEx[, 5]
 
 # Combine both RGsets in a single RGset
 RGset <- combine(RGcontrolSetEx, RGsetEx)
@@ -109,22 +109,22 @@ mcds <- CNV450kSet(RGset)
 mcds <- dropSNPprobes(mcds, maf_threshold=0.01)
 
 # Normalization
-mcds.f <- normalize(mcds, "functional")
+mcds <- normalize(mcds, "quantile")
 
 # Some plots
-plotDensity(mcds.f, main="Density plot of functional normalized data")
-plotPCA(mcds.f, main="PCA plot of functional normalized data")
+plotDensity(mcds, main="Density plot of functional normalized data")
+plotPCA(mcds, main="PCA plot of functional normalized data")
 
 # Segmentation
-mcds.f <- segmentize(mcds.f)
+mcds <- segmentize(mcds)
 
 # Plotting the results 
-plotSample(mcds.f, 1, main="Genomic view of Sample 1")
-plotSample(mcds.f, 1, chr="chr11",
-        main="Sample 1, focal amplification on chromosome 11")
+plotSample(mcds, 1, main="Genomic view of Sample 1")
+plotSample(mcds, 1, chr="chr1",
+        main="Sample 1, focal amplification on chromosome 1", ylim=c(-.25,.25))
         
 # Saving the results in csv format
-write.csv(mcds.f, file="segments.csv")
+write.csv(mcds, file="segments.csv")
 }
 \author{Simon Papillon-Cavanagh, Jean-Philippe Fortin, Nicolas De Jay}
 \seealso{
