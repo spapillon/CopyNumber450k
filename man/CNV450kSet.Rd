@@ -105,6 +105,11 @@ RGset <- combine(RGcontrolSetEx, RGsetEx)
 # Create the object
 mcds <- CNV450kSet(RGset)
 
+# In order to speed up example computation, we will randomly subset the
+# probes used by CopyNumber450k. THIS SHOULD NEVER BE DONE AS IT SERVES
+# ONLY FOR SPEEDING UP THE EXAMPLE.
+mcds <- mcds[sample(1:nrow(mcds), 10000), ]
+
 # Drop SNP probes
 mcds <- dropSNPprobes(mcds, maf_threshold=0.01)
 
@@ -120,8 +125,7 @@ mcds <- segmentize(mcds)
 
 # Plotting the results 
 plotSample(mcds, 1, main="Genomic view of Sample 1")
-plotSample(mcds, 1, chr="chr1",
-        main="Sample 1, focal amplification on chromosome 1", ylim=c(-.25,.25))
+plotSample(mcds, 1, chr="chr1", ylim=c(-.25,.25))
         
 # Saving the results in csv format
 write.csv(mcds, file="segments.csv")
