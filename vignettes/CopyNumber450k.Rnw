@@ -45,9 +45,9 @@ described below.
 
 \subsection{Loading libraries}
 <<load>>=
-require(CopyNumber450k)
-require(CopyNumber450kData)
-require(minfiData)
+library(CopyNumber450k)
+library(CopyNumber450kData)
+library(minfiData)
 @
 
 \section{Example Dataset}

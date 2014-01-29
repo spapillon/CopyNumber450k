@@ -87,9 +87,9 @@ This class has a few accessors defined on top of those provided in \code{eSet}. 
   }
 }
 \examples{
-require(CopyNumber450k)
-require(CopyNumber450kData)
-require(minfiData)
+library(CopyNumber450k)
+library(CopyNumber450kData)
+library(minfiData)
 
 # Load the CopyNumber450kData control set
 data(RGcontrolSetEx)
