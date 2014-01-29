@@ -18,3 +18,5 @@ export(CNV450kSet,
   plotDensity,
   plotPCA,
   write.csv)
+  
+exportClasses(CNV450kSet)
