@@ -2,7 +2,7 @@
 \Rdversion{1.0}
 \docType{class}
 \alias{CopyNumber450k}
-\alias{CNV450kSet-Class}
+\alias{CNV450kSet-class}
 \alias{CNV450kSet}
 % Methods
 \alias{getManifest,CNV450kSet-method}
@@ -66,7 +66,7 @@ This class has a few accessors defined on top of those provided in \code{eSet}. 
     \item{\code{dropSNPprobes(object, maf_threshold = 0)}}{Removes probes mapping to or targeting known SNPs from consideration.  Returns a new CNV450kSet object in which SNP-containing probes are discarded.}
     \item{\code{normalize(object, type = c("functional", "quantile"))}}{Normalizes the intensity matrix and returns normalized object.  Refer to the vignette for details on the types of normalization.}
     \item{\code{segmentize(object, verbose = TRUE, p.adjust.method = "bonferroni")}}{Arranges probes into segments related by signal intensity and proximity by circular binary segmentation.  Certain class methods require that segments be created.  Refer to the vignette for more details on the algorithm.}
-    \item{\code{computeSignificance(object, p.value.threshold = 0.01, num.mark.threshold = 10}}{Computes the significance for each segment in each sample.  Requires that \code{segmentize} be called on the object beforehand.}
+    \item{\code{computeSignificance(object, p.value.threshold = 0.01, num.mark.threshold = 10)}}{Computes the significance for each segment in each sample.  Requires that \code{segmentize} be called on the object beforehand.}
   }
 }
 \section{Comparison Methods}{
@@ -81,8 +81,10 @@ This class has a few accessors defined on top of those provided in \code{eSet}. 
 \section{Plotting Methods}{
   \describe{
     \item{\code{plotSample(object, index, chr, start, end)}}{Produces a plot of the genomic segments and relative values for sample at \code{index}. \code{chr, start ,end} are optional parameters to be used to zoom in a specific genomic location.}
-    \item{\code{plotDensity(object, color.by = c("array.row", "array.col", "sample.group", "slide", "origin"), color.function = rainbow, legend.position = "topright")}}{Plots the density distribution of the intensity matrix of the object.}
-    \item{\code{plotPCA(object, color.by = c("array.row", "array.col", "sample.group", "slide", "origin"), color.function = rainbow, legend.position = "topright")}}{Plots the PCA scatter plot of the intensity matrix of the object.}
+    \item{\code{plotDensity(object, color.by = c("array.row", "array.col", "sample.group", "slide", "origin"),\\
+    			color.function = rainbow, legend.position = "topright")}}{Plots the density distribution of the intensity matrix of the object.}
+    \item{\code{plotPCA(object, color.by = c("array.row", "array.col", "sample.group", "slide", "origin"),\\
+    			color.function = rainbow, legend.position = "topright")}}{Plots the PCA scatter plot of the intensity matrix of the object.}
     \item{\code{write.csv(object, ...)}}{Writes the segment output for each sample in csv format.}
   }
 }

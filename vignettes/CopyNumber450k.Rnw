@@ -96,6 +96,11 @@ have \Rcode{control} as \Rcode{Sample\_Group}).  Note that the
 provided control samples in \Rpackage{CopyNumber450kData} are already properly
 annotated.
 
+Please note that in the following code example we will use only a subset of
+probes to proceed. This is to be avoided in real life cases as it will
+significantly reduce the resolution and will output unrealistic results by
+artificially smoothing the segmentation.
+
 <<createobject>>=
 # Ensure that Sample_Group values are valid
 head(pData(RGcontrolSetEx)$Sample_Group)
@@ -106,6 +111,11 @@ RGset <- combine(RGcontrolSetEx, RGsetEx)
 
 # Create the object
 mcds <- CNV450kSet(RGset)
+
+# In order to speed up example computation, we will randomly subset the
+# probes used by CopyNumber450k. THIS SHOULD NEVER BE DONE AS IT SERVES
+# ONLY FOR SPEEDING UP THE EXAMPLE.
+mcds <- mcds[sample(1:nrow(mcds), 10000), ]
 @ 
 
 \subsection{SNP probes}
@@ -239,8 +249,9 @@ write.csv(mcds.q, file="segments.csv")
 In order to obtain a visual representation of the sample's genome,
 \Rpackage{CopyNumber450k} offers the \Rcode{plotSample} function, which takes
 the segmentized \Rcode{CNV450kSet} object and the index of the sample to plot as
-input. In this example, we can see that the assayed sample has a
-fairly large deletion on chromosome 1 (Figure~\ref{fig:plotSample}).
+input. In this example, since we randomly
+subsetted the probes, the resolution will be too
+low to find any interesting results. (Figure~\ref{fig:plotSample}).
 
 \begin{figure} 
 \begin{center}
@@ -260,7 +271,7 @@ amplification on chr1 in the assayed sample (Figure~\ref{fig:plotSamplefocal}).
 \begin{center}
 <<plotSampleFocal,fig=TRUE,results=hide>>= 
 plotSample(mcds.q, 1, chr="chr1",
-        main="Sample 1, focal deletion on chromosome 1", ylim=c(-.25,.25))
+        main="Zoom of chr1", ylim=c(-.25,.25))
 @
 \end{center} 
 \label{fig:plotSamplefocal}
