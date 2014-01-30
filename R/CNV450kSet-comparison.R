@@ -16,18 +16,17 @@ setMethod("findCNV", signature("CNV450kSet"), function(object, gene_names, type)
     if (type == "both") {
         op <- function(a) a[, "isSignificant"]
     } else if (type == "gain") {
-        op <- function(a) a[, "isSignificant"] && a[, "seg.mean"] > 0
+        op <- function(a) (a[, "isSignificant"] & as.numeric(a[, "seg.mean"]) > 0)
     } else if (type == "loss") {
-        op <- function(a) a[, "isSignificant"] && a[, "seg.mean"] < 0
+        op <- function(a) (a[, "isSignificant"] & as.numeric(a[, "seg.mean"]) < 0)
     }
-    
     x <- sapply(1:length(segments_list), function(i) {
         used_CNVs <- op(segments_list[[i]])
         genes <- unique(unlist(strsplit(x = segments_list[[i]][used_CNVs, "genes"], 
             ";")))
         gene_names %in% genes
     })
-    
+
     ifelse(is.matrix(x), x <- t(x), x <- as.matrix(x))
     rownames(x) <- names(segments_list)
     colnames(x) <- gene_names
