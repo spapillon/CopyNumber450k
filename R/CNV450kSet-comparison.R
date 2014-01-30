@@ -61,9 +61,9 @@ setMethod("intersectCNV", signature("CNV450kSet"), function(object, sample_indic
     if (type == "both") {
         op <- function(a) a[, "isSignificant"]
     } else if (type == "gain") {
-        op <- function(a) a[, "isSignificant"] && a[, "seg.mean"] > 0
+        op <- function(a) (a[, "isSignificant"] & a[, "seg.mean"] > 0)
     } else if (type == "loss") {
-        op <- function(a) a[, "isSignificant"] && a[, "seg.mean"] < 0
+        op <- function(a) (a[, "isSignificant"] & a[, "seg.mean"] < 0)
     }
     
     x <- unlist(sapply(1:length(segments_list), function(i) {
