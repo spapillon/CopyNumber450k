@@ -27,6 +27,7 @@ extractFromRGChannelSet450k <- function(RGset, intensities) {
         greenControls[[i]] <- intensityGreen[ctrlAddress, ]
     }
     
+    
     # Extraction of undefined negative control probes
     #locusNames <- getManifestInfo(RGset, "locusNames")
     TypeI.Red <- getProbeInfo(RGset, type = "I-Red")
@@ -34,15 +35,12 @@ extractFromRGChannelSet450k <- function(RGset, intensities) {
     
     numberQuantiles <- 100
     probs <- 1:numberQuantiles/100
+      
+    colQuantiles <- function(x, probs) apply(x, 2, function(col) quantile(col, probs = probs, na.rm = T))
     
-    greenOOB <- rbind(intensityGreen[TypeI.Red$AddressA, ], intensityGreen[TypeI.Red$AddressB, 
-        ])
-    redOOB <- rbind(intensityRed[TypeI.Green$AddressA, ], intensityRed[TypeI.Green$AddressB, 
-        ])
+    oob <- list(greenOOB = colQuantiles(intensityGreen[c(TypeI.Red$AddressA, TypeI.Red$AddressB), ], probs), 
+        redOOB = colQuantiles(intensityRed[c(TypeI.Green$AddressA, TypeI.Green$AddressB), ], probs))
     
-    greenOOB <- apply(greenOOB, 2, function(x) quantile(x, probs = probs, na.rm = T))
-    redOOB <- apply(redOOB, 2, function(x) quantile(x, probs = probs, na.rm = T))
-    oob <- list(greenOOB = greenOOB, redOOB = redOOB)
     
     # Defining the Type I, II Green and II Red probes;
     probesI <- getProbeInfo(RGset, type = "I")
@@ -77,11 +75,8 @@ extractFromRGChannelSet450k <- function(RGset, intensities) {
     
     nq <- 500
     probs <- seq(0, 1, 1/(nq - 1))
-    
-    for (i in 1:5) {
-        cnQuantiles[[i]] <- apply(intensities[indList[[i]], ], 2, function(x) quantile(x, 
-            probs = probs, na.rm = T))
-    }
+    cnQuantiles <- lapply(1:5, function(i) colQuantiles(intensities[indList[[i]], ], probs))
+
     
     print(sort(sapply(ls(),function(x){object.size(get(x))})))		
     list(cnQuantiles = cnQuantiles, greenControls = greenControls, redControls = redControls,  oob = oob)
