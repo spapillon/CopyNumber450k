@@ -2,19 +2,19 @@
 
 # Extract various statistics from channel and methylation values contained in
 # RGChannelSet
-extractFromRGChannelSet450k <- function(RGset) {
+extractFromRGChannelSet450k <- function(RGset, intensities) {
     controlType <- c("BISULFITE CONVERSION I", "BISULFITE CONVERSION II", "EXTENSION", 
         "HYBRIDIZATION", "NEGATIVE", "NON-POLYMORPHIC", "NORM_A", "NORM_C", "NORM_G", 
         "NORM_T", "SPECIFICITY I", "SPECIFICITY II", "TARGET REMOVAL", "STAINING")
     
-    MSet <- preprocessRaw(RGset)
+    #MSet <- preprocessRaw(RGset)
     intensityRed <- getRed(RGset)
     intensityGreen <- getGreen(RGset)
-    methylated <- getMeth(MSet)
-    unmethylated <- getUnmeth(MSet)
-    betaValues <- getBeta(MSet)
-    mValues <- getM(MSet)
-    intensities <- methylated + unmethylated
+    #methylated <- getMeth(MSet)
+    #unmethylated <- getUnmeth(MSet)
+    #betaValues <- getBeta(MSet)
+    #mValues <- getM(MSet)
+    #intensities <- methylated + unmethylated
     
     # Extraction of the controls
     greenControls = vector("list", length(controlType))
@@ -41,9 +41,9 @@ extractFromRGChannelSet450k <- function(RGset) {
     numberQuantiles <- 100
     probs <- 1:numberQuantiles/100
     
-    greenOOB <- rbind(getGreen(RGset)[TypeI.Red$AddressA, ], getGreen(RGset)[TypeI.Red$AddressB, 
+    greenOOB <- rbind(intensityGreen[TypeI.Red$AddressA, ], intensityGreen[TypeI.Red$AddressB, 
         ])
-    redOOB <- rbind(getRed(RGset)[TypeI.Green$AddressA, ], getRed(RGset)[TypeI.Green$AddressB, 
+    redOOB <- rbind(intensityRed[TypeI.Green$AddressA, ], intensityRed[TypeI.Green$AddressB, 
         ])
     
     greenOOB <- apply(greenOOB, 2, function(x) quantile(x, probs = probs, na.rm = T))
@@ -73,7 +73,7 @@ extractFromRGChannelSet450k <- function(RGset) {
     probesIRed <- intersect(probesI$Name[probesI$Color == "Red"], autosomal)
     probesII <- intersect(probesII$Name, autosomal)
     
-    uProbeNames <- rownames(betaValues)
+    uProbeNames <- rownames(intensities)
     uProbesIGrn <- intersect(uProbeNames, probesIGrn)
     uProbesIRed <- intersect(uProbeNames, probesIRed)
     uProbesII <- intersect(uProbeNames, probesII)
@@ -89,44 +89,45 @@ extractFromRGChannelSet450k <- function(RGset) {
     names(indList) <- c("IGrn", "IRed", "II", "X", "Y")
     
     # Quantile extraction
-    mQuantiles <- vector("list", 5)
-    betaQuantiles <- vector("list", 5)
-    methQuantiles <- vector("list", 5)
-    unmethQuantiles <- vector("list", 5)
+    #mQuantiles <- vector("list", 5)
+    #betaQuantiles <- vector("list", 5)
+    #methQuantiles <- vector("list", 5)
+    #unmethQuantiles <- vector("list", 5)
     cnQuantiles <- vector("list", 5)
-    names(mQuantiles) <- c("IGrn", "IRed", "II", "X", "Y")
-    names(betaQuantiles) <- c("IGrn", "IRed", "II", "X", "Y")
-    names(methQuantiles) <- c("IGrn", "IRed", "II", "X", "Y")
-    names(unmethQuantiles) <- c("IGrn", "IRed", "II", "X", "Y")
+    #names(mQuantiles) <- c("IGrn", "IRed", "II", "X", "Y")
+    #names(betaQuantiles) <- c("IGrn", "IRed", "II", "X", "Y")
+    #names(methQuantiles) <- c("IGrn", "IRed", "II", "X", "Y")
+    #names(unmethQuantiles) <- c("IGrn", "IRed", "II", "X", "Y")
     names(cnQuantiles) <- c("IGrn", "IRed", "II", "X", "Y")
     
     nq <- 500
     probs <- seq(0, 1, 1/(nq - 1))
     
     for (i in 1:5) {
-        mQuantiles[[i]] <- apply(mValues[indList[[i]], ], 2, function(x) quantile(x, 
-            probs = probs, na.rm = T))
-        betaQuantiles[[i]] <- apply(betaValues[indList[[i]], ], 2, function(x) quantile(x, 
-            probs = probs, na.rm = T))
-        methQuantiles[[i]] <- apply(methylated[indList[[i]], ], 2, function(x) quantile(x, 
-            probs = probs, na.rm = T))
-        unmethQuantiles[[i]] <- apply(unmethylated[indList[[i]], ], 2, function(x) quantile(x, 
-            probs = probs, na.rm = T))
+        #mQuantiles[[i]] <- apply(mValues[indList[[i]], ], 2, function(x) quantile(x, 
+        #    probs = probs, na.rm = T))
+        #betaQuantiles[[i]] <- apply(betaValues[indList[[i]], ], 2, function(x) quantile(x, 
+        #    probs = probs, na.rm = T))
+        #methQuantiles[[i]] <- apply(methylated[indList[[i]], ], 2, function(x) quantile(x, 
+        #    probs = probs, na.rm = T))
+        #unmethQuantiles[[i]] <- apply(unmethylated[indList[[i]], ], 2, function(x) quantile(x, 
+        #    probs = probs, na.rm = T))
         cnQuantiles[[i]] <- apply(intensities[indList[[i]], ], 2, function(x) quantile(x, 
             probs = probs, na.rm = T))
     }
     
-    medianXU <- unmethQuantiles$X[250, ]
-    medianXM <- methQuantiles$X[250, ]
-    medianYU <- unmethQuantiles$Y[250, ]
-    medianYM <- methQuantiles$Y[250, ]
+    #medianXU <- unmethQuantiles$X[250, ]
+    #medianXM <- methQuantiles$X[250, ]
+    #medianYU <- unmethQuantiles$Y[250, ]
+    #medianYM <- methQuantiles$Y[250, ]
     
-    XYMedians <- list(medianXU = medianXU, medianXM = medianXM, medianYU = medianYU, 
-        medianYM = medianYM)
+    #XYMedians <- list(medianXU = medianXU, medianXM = medianXM, medianYU = medianYU, 
+    #    medianYM = medianYM)
     
-    list(mQuantiles = mQuantiles, betaQuantiles = betaQuantiles, methQuantiles = methQuantiles, 
-        unmethQuantiles = unmethQuantiles, cnQuantiles = cnQuantiles, greenControls = greenControls, 
-        redControls = redControls, XYMedians = XYMedians, oob = oob)
+    #list(mQuantiles = mQuantiles, betaQuantiles = betaQuantiles, methQuantiles = methQuantiles, 
+    #    unmethQuantiles = unmethQuantiles, cnQuantiles = cnQuantiles, greenControls = greenControls, 
+    #    redControls = redControls, XYMedians = XYMedians, oob = oob)
+    list(cnQuantiles = cnQuantiles, greenControls = greenControls, redControls = redControls,  oob = oob)
 }
 
 ################################################################################  

@@ -11,15 +11,16 @@ CNV450kSet <- function(RGChannelSet) {
         stop("Argument RGChannelSet must be of type minfi::RGChannelSet-class.")
     }
     
-    # Summary of methylation data
-    summary <- extractFromRGChannelSet450k(RGChannelSet)
-    
+
     # High-throughput data
     MSet <- preprocessRaw(RGChannelSet)
     intensities <- getMeth(MSet) + getUnmeth(MSet)
     assayData <- assayDataNew(storage.mode = "lockedEnvironment", intensity = intensities)
     sampleNames <- sampleNames(assayData)
     featureNames <- featureNames(assayData)
+        
+    # Summary of methylation data
+    summary <- extractFromRGChannelSet450k(RGChannelSet, intensities)
     
     # Sample covariates - daisy chain the columns
     if ("Sample_Sex" %in% colnames(pData(RGChannelSet))) {
