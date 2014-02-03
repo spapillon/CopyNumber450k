@@ -7,14 +7,8 @@ extractFromRGChannelSet450k <- function(RGset, intensities) {
         "HYBRIDIZATION", "NEGATIVE", "NON-POLYMORPHIC", "NORM_A", "NORM_C", "NORM_G", 
         "NORM_T", "SPECIFICITY I", "SPECIFICITY II", "TARGET REMOVAL", "STAINING")
     
-    #MSet <- preprocessRaw(RGset)
     intensityRed <- getRed(RGset)
     intensityGreen <- getGreen(RGset)
-    #methylated <- getMeth(MSet)
-    #unmethylated <- getUnmeth(MSet)
-    #betaValues <- getBeta(MSet)
-    #mValues <- getM(MSet)
-    #intensities <- methylated + unmethylated
     
     # Extraction of the controls
     greenControls = vector("list", length(controlType))
@@ -34,7 +28,7 @@ extractFromRGChannelSet450k <- function(RGset, intensities) {
     }
     
     # Extraction of undefined negative control probes
-    locusNames <- getManifestInfo(RGset, "locusNames")
+    #locusNames <- getManifestInfo(RGset, "locusNames")
     TypeI.Red <- getProbeInfo(RGset, type = "I-Red")
     TypeI.Green <- getProbeInfo(RGset, type = "I-Green")
     
@@ -69,64 +63,27 @@ extractFromRGChannelSet450k <- function(RGset, intensities) {
     chrX <- names(locations)[locations == "chrX"]
     # End hack
     
-    probesIGrn <- intersect(probesI$Name[probesI$Color == "Grn"], autosomal)
-    probesIRed <- intersect(probesI$Name[probesI$Color == "Red"], autosomal)
-    probesII <- intersect(probesII$Name, autosomal)
     
     uProbeNames <- rownames(intensities)
-    uProbesIGrn <- intersect(uProbeNames, probesIGrn)
-    uProbesIRed <- intersect(uProbeNames, probesIRed)
-    uProbesII <- intersect(uProbeNames, probesII)
-    uProbesX <- intersect(uProbeNames, chrX)
-    uProbesY <- intersect(uProbeNames, chrY)
-    indicesIGrn <- match(uProbesIGrn, uProbeNames)
-    indicesIRed <- match(uProbesIRed, uProbeNames)
-    indicesII <- match(uProbesII, uProbeNames)
-    indicesX <- match(uProbesX, uProbeNames)
-    indicesY <- match(uProbesY, uProbeNames)
-    
-    indList <- list(indicesIGrn, indicesIRed, indicesII, indicesX, indicesY)
-    names(indList) <- c("IGrn", "IRed", "II", "X", "Y")
+    indList <- list("IGrn" =  match(intersect(probesI$Name[probesI$Color == "Grn"], autosomal), uProbeNames), 
+            "IRed" = match(intersect(probesI$Name[probesI$Color == "Red"], autosomal), uProbeNames), 
+            "II" = match(intersect(probesII$Name, autosomal), uProbeNames), 
+            "X" = match(chrX, uProbeNames), 
+            "Y" = match(chrY, uProbeNames))
     
     # Quantile extraction
-    #mQuantiles <- vector("list", 5)
-    #betaQuantiles <- vector("list", 5)
-    #methQuantiles <- vector("list", 5)
-    #unmethQuantiles <- vector("list", 5)
     cnQuantiles <- vector("list", 5)
-    #names(mQuantiles) <- c("IGrn", "IRed", "II", "X", "Y")
-    #names(betaQuantiles) <- c("IGrn", "IRed", "II", "X", "Y")
-    #names(methQuantiles) <- c("IGrn", "IRed", "II", "X", "Y")
-    #names(unmethQuantiles) <- c("IGrn", "IRed", "II", "X", "Y")
     names(cnQuantiles) <- c("IGrn", "IRed", "II", "X", "Y")
     
     nq <- 500
     probs <- seq(0, 1, 1/(nq - 1))
     
     for (i in 1:5) {
-        #mQuantiles[[i]] <- apply(mValues[indList[[i]], ], 2, function(x) quantile(x, 
-        #    probs = probs, na.rm = T))
-        #betaQuantiles[[i]] <- apply(betaValues[indList[[i]], ], 2, function(x) quantile(x, 
-        #    probs = probs, na.rm = T))
-        #methQuantiles[[i]] <- apply(methylated[indList[[i]], ], 2, function(x) quantile(x, 
-        #    probs = probs, na.rm = T))
-        #unmethQuantiles[[i]] <- apply(unmethylated[indList[[i]], ], 2, function(x) quantile(x, 
-        #    probs = probs, na.rm = T))
         cnQuantiles[[i]] <- apply(intensities[indList[[i]], ], 2, function(x) quantile(x, 
             probs = probs, na.rm = T))
     }
     
-    #medianXU <- unmethQuantiles$X[250, ]
-    #medianXM <- methQuantiles$X[250, ]
-    #medianYU <- unmethQuantiles$Y[250, ]
-    #medianYM <- methQuantiles$Y[250, ]
-    
-    #XYMedians <- list(medianXU = medianXU, medianXM = medianXM, medianYU = medianYU, 
-    #    medianYM = medianYM)
-    
-    #list(mQuantiles = mQuantiles, betaQuantiles = betaQuantiles, methQuantiles = methQuantiles, 
-    #    unmethQuantiles = unmethQuantiles, cnQuantiles = cnQuantiles, greenControls = greenControls, 
-    #    redControls = redControls, XYMedians = XYMedians, oob = oob)
+    print(sort(sapply(ls(),function(x){object.size(get(x))})))		
     list(cnQuantiles = cnQuantiles, greenControls = greenControls, redControls = redControls,  oob = oob)
 }
 
