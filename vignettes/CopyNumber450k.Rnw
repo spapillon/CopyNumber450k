@@ -109,8 +109,16 @@ head(pData(RGsetEx)$Sample_Group)
 # Combine both RGsets in a single RGset
 RGset <- combine(RGcontrolSetEx, RGsetEx)
 
+# Once combined, we can throw away the interim objects
+rm(RGcontrolSetEx, RGsetEx)
+gc()
+
 # Create the object
 mcds <- CNV450kSet(RGset)
+
+# We can discard the RGset from this workspace
+rm(RGset)
+gc()
 
 # In order to speed up example computation, we will randomly subset the
 # probes used by CopyNumber450k. THIS SHOULD NEVER BE DONE AS IT SERVES
