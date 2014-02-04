@@ -1,33 +1,27 @@
 ################################################################################ 
 
-# Extract various statistics from channel and methylation values contained in
-# RGChannelSet
-extractFromRGChannelSet450k <- function(RGset, intensities) {
+extractControls <- function(RGset, fun) {
     controlType <- c("BISULFITE CONVERSION I", "BISULFITE CONVERSION II", "EXTENSION", 
         "HYBRIDIZATION", "NEGATIVE", "NON-POLYMORPHIC", "NORM_A", "NORM_C", "NORM_G", 
         "NORM_T", "SPECIFICITY I", "SPECIFICITY II", "TARGET REMOVAL", "STAINING")
-   
-    message("OOB SHIT")   
-    print(gc(reset=T))
-    intensityRed <- getRed(RGset)
-    intensityGreen <- getGreen(RGset)
-    
+    lapply(controlType, function(i) {
+      if (i != "STAINING") {
+          ctrlAddress <- getControlAddress(RGset, controlType = i)
+      } else {
+          ctrlAddress <- getControlAddress(RGset, controlType = i)[c(2, 3, 4, 6)]
+      }
+      fun(RGset)[ctrlAddress, ]
+    })
+}
+
+################################################################################ 
+
+# Extract various statistics from channel and methylation values contained in
+# RGChannelSet
+extractFromRGChannelSet450k <- function(RGset, intensities) {
     # Extraction of the controls
-    greenControls = vector("list", length(controlType))
-    redControls = vector("list", length(controlType))
-    names(greenControls) <- controlType
-    names(redControls) <- controlType
-    
-    for (i in 1:length(controlType)) {
-        if (controlType[i] != "STAINING") {
-            ctrlAddress <- getControlAddress(RGset, controlType = controlType[i])
-        } else {
-            ctrlAddress <- getControlAddress(RGset, controlType = controlType[i])[c(2, 
-                3, 4, 6)]
-        }
-        redControls[[i]] <- intensityRed[ctrlAddress, ]
-        greenControls[[i]] <- intensityGreen[ctrlAddress, ]
-    }
+    greenControls <- extractControls(RGset, getGreen)
+    redControls <- extractControls(RGset, getRed)
     
     # Extraction of undefined negative control probes
     #locusNames <- getManifestInfo(RGset, "locusNames")
@@ -36,14 +30,26 @@ extractFromRGChannelSet450k <- function(RGset, intensities) {
     
     numberQuantiles <- 100
     probs <- 1:numberQuantiles/100
-    
-    greenOOB <- intensityGreen[c(TypeI.Red$AddressA, TypeI.Red$AddressB), ]
-    redOOB <- 	intensityRed[c(TypeI.Green$AddressA, TypeI.Green$AddressB), ]
-    
-    greenOOB <- apply(greenOOB, 2, function(x) quantile(x, probs = probs, na.rm = T))
-    redOOB <- apply(redOOB, 2, function(x) quantile(x, probs = probs, na.rm = T))
-    oob <- list(greenOOB = greenOOB, redOOB = redOOB)
+
+    print(gc(reset=T))
+    greenOOB <- getGreen(RGset)[c(TypeI.Red$AddressA, TypeI.Red$AddressB), ]
+    greenOOB <- apply(greenOOB, 2, function(x) {
+                       #result <- quantile(x, probs = probs, na.rm = T)
+                       #gc()
+                        result <- cor(x,x)
+                       result
+    })
     print(gc())
+
+    redOOB <- getRed(RGset)[c(TypeI.Green$AddressA, TypeI.Green$AddressB), ]
+    redOOB <- apply(redOOB, 2, function(x) {
+                    result <- quantile(x, probs = probs, na.rm = T)
+                    gc()
+                    result
+    })
+
+    oob <- list(greenOOB = greenOOB, redOOB = redOOB)
+    
     
     message("THE OTHER SHIT")
     print(gc(reset=T))
@@ -67,7 +73,6 @@ extractFromRGChannelSet450k <- function(RGset, intensities) {
     chrX <- names(locations)[locations == "chrX"]
     # End hack
     
-    
     uProbeNames <- rownames(intensities)
     indList <- list("IGrn" =  match(intersect(probesI$Name[probesI$Color == "Grn"], autosomal), uProbeNames), 
             "IRed" = match(intersect(probesI$Name[probesI$Color == "Red"], autosomal), uProbeNames), 
@@ -83,12 +88,15 @@ extractFromRGChannelSet450k <- function(RGset, intensities) {
     probs <- seq(0, 1, 1/(nq - 1))
     
     for (i in 1:5) {
-        cnQuantiles[[i]] <- apply(intensities[indList[[i]], ], 2, function(x) quantile(x, 
-            probs = probs, na.rm = T))
+        cnQuantiles[[i]] <- apply(intensities[indList[[i]], ], 2, function(x) {
+                                  result <- quantile(x, probs = probs, na.rm = T)
+                                  result
+            })
     }
     print(gc())
     print(sort(sapply(ls(),function(x){object.size(get(x))})))		
-    list(cnQuantiles = cnQuantiles, greenControls = greenControls, redControls = redControls,  oob = oob)
+    list(cnQuantiles = cnQuantiles, greenControls = greenControls, 
+         redControls = redControls,  oob = oob)
 }
 
 ################################################################################  
