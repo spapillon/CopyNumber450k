@@ -4,7 +4,7 @@ extractControls <- function(RGset, fun) {
     controlType <- c("BISULFITE CONVERSION I", "BISULFITE CONVERSION II", "EXTENSION", 
         "HYBRIDIZATION", "NEGATIVE", "NON-POLYMORPHIC", "NORM_A", "NORM_C", "NORM_G", 
         "NORM_T", "SPECIFICITY I", "SPECIFICITY II", "TARGET REMOVAL", "STAINING")
-    lapply(controlType, function(i) {
+    x <- lapply(controlType, function(i) {
       if (i != "STAINING") {
           ctrlAddress <- getControlAddress(RGset, controlType = i)
       } else {
@@ -12,6 +12,8 @@ extractControls <- function(RGset, fun) {
       }
       fun(RGset)[ctrlAddress, ]
     })
+    names(x) <- controlType
+    x
 }
 
 ################################################################################ 
