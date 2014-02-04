@@ -109,10 +109,6 @@ head(pData(RGsetEx)$Sample_Group)
 # Combine both RGsets in a single RGset
 RGset <- combine(RGcontrolSetEx, RGsetEx)
 
-# Once combined, we can throw away the interim objects
-rm(RGcontrolSetEx, RGsetEx)
-gc()
-
 # Create the object
 mcds <- CNV450kSet(RGset)
 
