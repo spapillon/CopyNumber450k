@@ -6,7 +6,9 @@ extractFromRGChannelSet450k <- function(RGset, intensities) {
     controlType <- c("BISULFITE CONVERSION I", "BISULFITE CONVERSION II", "EXTENSION", 
         "HYBRIDIZATION", "NEGATIVE", "NON-POLYMORPHIC", "NORM_A", "NORM_C", "NORM_G", 
         "NORM_T", "SPECIFICITY I", "SPECIFICITY II", "TARGET REMOVAL", "STAINING")
-    
+   
+    message("OOB SHIT")   
+    print(gc(reset=T))
     intensityRed <- getRed(RGset)
     intensityGreen <- getGreen(RGset)
     
@@ -36,11 +38,15 @@ extractFromRGChannelSet450k <- function(RGset, intensities) {
     probs <- 1:numberQuantiles/100
     
     greenOOB <- intensityGreen[c(TypeI.Red$AddressA, TypeI.Red$AddressB), ]
-    redOOB <- 	intensityRed[c(TypeI.Green$AddressA, TypeI.Green$AddressB),]
+    redOOB <- 	intensityRed[c(TypeI.Green$AddressA, TypeI.Green$AddressB), ]
     
     greenOOB <- apply(greenOOB, 2, function(x) quantile(x, probs = probs, na.rm = T))
     redOOB <- apply(redOOB, 2, function(x) quantile(x, probs = probs, na.rm = T))
     oob <- list(greenOOB = greenOOB, redOOB = redOOB)
+    print(gc())
+    
+    message("THE OTHER SHIT")
+    print(gc(reset=T))
     
     # Defining the Type I, II Green and II Red probes;
     probesI <- getProbeInfo(RGset, type = "I")
@@ -80,7 +86,7 @@ extractFromRGChannelSet450k <- function(RGset, intensities) {
         cnQuantiles[[i]] <- apply(intensities[indList[[i]], ], 2, function(x) quantile(x, 
             probs = probs, na.rm = T))
     }
-    
+    print(gc())
     print(sort(sapply(ls(),function(x){object.size(get(x))})))		
     list(cnQuantiles = cnQuantiles, greenControls = greenControls, redControls = redControls,  oob = oob)
 }

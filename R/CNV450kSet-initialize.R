@@ -21,7 +21,6 @@ CNV450kSet <- function(RGChannelSet) {
         
     # Summary of methylation data
     summary <- extractFromRGChannelSet450k(RGChannelSet, intensities)
-    
     # Sample covariates - daisy chain the columns
     if ("Sample_Sex" %in% colnames(pData(RGChannelSet))) {
         sexes <- pData(RGChannelSet)$Sample_Sex
