@@ -11,10 +11,12 @@ CNV450kSet <- function(RGChannelSet) {
         stop("Argument RGChannelSet must be of type minfi::RGChannelSet-class.")
     }
     
+    if ("Sample_Name" %in% colnames(pData(RGChannelSet))) {
+        sampleNames(RGChannelSet) <- pData(RGChannelSet)$Sample_Name
+    }
     # High-throughput data
     MSet <- preprocessRaw(RGChannelSet)
     intensities <- getMeth(MSet) + getUnmeth(MSet)
-    rm(MSet)
     assayData <- assayDataNew(storage.mode = "lockedEnvironment", intensity = intensities)
     sampleNames <- sampleNames(assayData)
     featureNames <- featureNames(assayData)
@@ -69,6 +71,7 @@ CNV450kSet <- function(RGChannelSet) {
     new("CNV450kSet", summary = summary, assayData = assayData, phenoData = phenoData, 
         featureData = featureData, annotation = annotation, manifest = manifest, 
         experimentData = experimentData, protocolData = protocolData, segments = list())
+    
 }
 
 ################################################################################  
