@@ -1,24 +1,30 @@
 ################################################################################ 
 
 setMethod("plotSample", signature("CNV450kSet"), function(object, index, chr, start, 
-    end, ...) {
+    end, showProbes, ...) {
     if (length(getSegments(object)) == 0) {
         stop("Object has not been segmentized yet.")
     }
     
     sample_segments <- getSegments(object)[[index]]
     significant_segments <- sample_segments$isSignificant
+    segment_values <- as.numeric(sample_segments$seg.mean)
+    segment_colors <- rep("black", nrow(sample_segments))
+    segment_colors[significant_segments & segment_values > 0 ] <- "green"
+    segment_colors[significant_segments & segment_values < 0 ] <- "red"
     sample_name <- names(getSegments(object))[index]
     
     if (missing(chr)) {
         # Plotting the whole genome
+        if(showProbes)
+            warning("You are plotting the whole genome with probes. The result will be cluttered")
         chromosomes <- unique(sample_segments[, "chrom"])
         site_per_chr <- cumsum(c(0, sapply(chromosomes, function(chr) max(as.numeric(sample_segments[sample_segments[, 
             "chrom"] == chr, "loc.end"])))))
         offset <- site_per_chr - min(as.numeric(sample_segments[sample_segments[, 
             "chrom"] == "chr1", "loc.start"]))
         start <- 0
-        end <- max(site_per_chr)
+        end <- as.numeric(max(site_per_chr))
         x_axis_type <- "n"
     } else {
         # Plotting a region
@@ -27,7 +33,7 @@ setMethod("plotSample", signature("CNV450kSet"), function(object, index, chr, st
         }
         
         if (missing(end)) {
-            end <- max(sample_segments[sample_segments[, "chrom"] == chr, "loc.end"])
+            end <- as.numeric(max(sample_segments[sample_segments[, "chrom"] == chr, "loc.end"]))
         }
         
         chromosomes <- chr
@@ -50,11 +56,34 @@ setMethod("plotSample", signature("CNV450kSet"), function(object, index, chr, st
     
     lapply(1:length(chromosomes), function(i) {
         used_segments <- sample_segments[, "chrom"] == chromosomes[i]
-        colors <- ifelse(significant_segments[used_segments], "red", "black")
+        colors <- segment_colors[used_segments]
         starts <- as.numeric(sample_segments[used_segments, "loc.start"]) + offset[i]
         ends <- as.numeric(sample_segments[used_segments, "loc.end"]) + offset[i]
         y <- as.numeric(sample_segments[used_segments, "seg.mean"])
         graphics::segments(starts, y, ends, y, col = colors, lwd = 2, lty = 1)
+#        if(showProbes) {
+#             probe_annotation <- fData(object)
+#             used_probes <- probe_annotation$chr == chromosomes[i] & 
+#                               probe_annotation$pos >= start &
+#                               probe_annotation$pos <= end
+#             probe_annotation <- probe_annotation[used_probes, ]
+#             probe_intensity <- assayData(object)$intensity[used_probes, ]
+#            # We have to find the sample_index that maps to the correct column
+#            # in the intensity matrix!!
+#             sample_idx <- index
+#             control_idx <- 16:67
+#             probe_values <- log2(probe_intensity[,sample_idx] / apply(probe_intensity[ , control_idx], 1, median))
+#            # Compute log2 ratio
+#            probe_colors <- rep("black", sum(used_probes))
+#            lapply(1:nrow(sample_segments[used_segments, ]), function(j) {
+#                segment_start <- as.numeric(sample_segments[used_segments, 'loc.start'][j])
+#                segment_end <- as.numeric(sample_segments[used_segments, 'loc.end'][j])
+#                probes_in_segment <- probe_annotation$pos >= segment_start &
+#                                        probe_annotation$pos <= segment_end
+#                probe_colors[probes_in_segment] <<- segment_colors[used_segments][j]
+#            })
+#            points(x=as.numeric(probe_annotation$pos) + offset[i], y=probe_values, col=probe_colors, pch=20)
+#        }
     })
     
     myPlot
