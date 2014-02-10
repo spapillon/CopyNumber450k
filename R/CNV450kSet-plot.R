@@ -82,7 +82,7 @@ setMethod("plotSample", signature("CNV450kSet"), function(object, index, chr, st
                                         probe_annotation$pos <= segment_end
                 probe_colors[probes_in_segment] <<- segment_colors[used_segments][j]
             })
-            points(x=as.numeric(probe_annotation$pos) + offset[i], y=probe_values, col=probe_colors, pch=20)
+            points(x=as.numeric(probe_annotation$pos) + offset[i], y=probe_values, col=probe_colors, pch=20, cex=0.5)
         }
     })
     
