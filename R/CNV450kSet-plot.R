@@ -61,29 +61,29 @@ setMethod("plotSample", signature("CNV450kSet"), function(object, index, chr, st
         ends <- as.numeric(sample_segments[used_segments, "loc.end"]) + offset[i]
         y <- as.numeric(sample_segments[used_segments, "seg.mean"])
         graphics::segments(starts, y, ends, y, col = colors, lwd = 2, lty = 1)
-#        if(showProbes) {
-#             probe_annotation <- fData(object)
-#             used_probes <- probe_annotation$chr == chromosomes[i] & 
-#                               probe_annotation$pos >= start &
-#                               probe_annotation$pos <= end
-#             probe_annotation <- probe_annotation[used_probes, ]
-#             probe_intensity <- assayData(object)$intensity[used_probes, ]
-#            # We have to find the sample_index that maps to the correct column
-#            # in the intensity matrix!!
-#             sample_idx <- index
-#             control_idx <- 16:67
-#             probe_values <- log2(probe_intensity[,sample_idx] / apply(probe_intensity[ , control_idx], 1, median))
-#            # Compute log2 ratio
-#            probe_colors <- rep("black", sum(used_probes))
-#            lapply(1:nrow(sample_segments[used_segments, ]), function(j) {
-#                segment_start <- as.numeric(sample_segments[used_segments, 'loc.start'][j])
-#                segment_end <- as.numeric(sample_segments[used_segments, 'loc.end'][j])
-#                probes_in_segment <- probe_annotation$pos >= segment_start &
-#                                        probe_annotation$pos <= segment_end
-#                probe_colors[probes_in_segment] <<- segment_colors[used_segments][j]
-#            })
-#            points(x=as.numeric(probe_annotation$pos) + offset[i], y=probe_values, col=probe_colors, pch=20)
-#        }
+        if(showProbes) {
+             probe_annotation <- fData(object)
+             used_probes <- probe_annotation$chr == chromosomes[i] & 
+                               probe_annotation$pos >= start &
+                               probe_annotation$pos <= end
+             probe_annotation <- probe_annotation[used_probes, ]
+             probe_intensity <- assayData(object)$intensity[used_probes, ]
+            # We have to find the sample_index that maps to the correct column
+            # in the intensity matrix!!
+             #sample_idx <- index
+             control_idx <- pData(object)$Sample_Group == "control"
+             probe_values <- log2(probe_intensity[ , sample_name] / apply(probe_intensity[ , control_idx], 1, median))
+            # Compute log2 ratio
+            probe_colors <- rep("black", sum(used_probes))
+            lapply(1:nrow(sample_segments[used_segments, ]), function(j) {
+                segment_start <- as.numeric(sample_segments[used_segments, 'loc.start'][j])
+                segment_end <- as.numeric(sample_segments[used_segments, 'loc.end'][j])
+                probes_in_segment <- probe_annotation$pos >= segment_start &
+                                        probe_annotation$pos <= segment_end
+                probe_colors[probes_in_segment] <<- segment_colors[used_segments][j]
+            })
+            points(x=as.numeric(probe_annotation$pos) + offset[i], y=probe_values, col=probe_colors, pch=20)
+        }
     })
     
     myPlot
