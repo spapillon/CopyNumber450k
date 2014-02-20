@@ -38,32 +38,31 @@ setMethod("findCNV", signature("CNV450kSet"), function(object, gene_names, type)
 setMethod("intersectCNV", signature("CNV450kSet"), function(object, sample_indices, 
     type) {
     segments_list <- getSegments(object)
-    sample_count <- length(sample_count)
     
     if (length(segments_list) == 0) {
         stop("Object has not been segmentized yet.")
     }
     
     if (missing(sample_indices)) {
-        sample_indices <- 1:sample_count
+        sample_indices <- 1:length(segments_list)
     }
-    
+
     if (!is.integer(sample_indices)) {
         stop("Argument sample_indices must be a integer vector.")
-    } else if (length(setdiff(sample_indices, 1:sample_count)) > 0) {
+    } else if (length(setdiff(sample_indices, 1:length(segments_list))) > 0) {
         stop("Argument sample_indices elements must exist in object.")
     } else if (!type %in% c("gain", "loss", "both")) {
         stop("Argument type must be {gain, loss, both}.")
     }
     
-    segments_list <- getSegments(object)[sample_indices]
+    segments_list <- segments_list[sample_indices]
     
     if (type == "both") {
         op <- function(a) a[, "isSignificant"]
     } else if (type == "gain") {
-        op <- function(a) (a[, "isSignificant"] & a[, "seg.mean"] > 0)
+        op <- function(a) (a[, "isSignificant"] & as.numeric(a[, "seg.mean"]) > 0)
     } else if (type == "loss") {
-        op <- function(a) (a[, "isSignificant"] & a[, "seg.mean"] < 0)
+        op <- function(a) (a[, "isSignificant"] & as.numeric(a[, "seg.mean"]) < 0)
     }
     
     x <- unlist(sapply(1:length(segments_list), function(i) {
@@ -107,12 +106,11 @@ subgroupDifferenceCNVByType <- function(group1_CNVs, group2_CNVs, group1_size, g
 setMethod("subgroupDifference", signature("CNV450kSet"), function(object, group1_indices, 
     group2_indices) {
     segments_list <- getSegments(object)
-    sample_count <- length(sample_count)
-    
     if (length(segments_list) == 0) {
         stop("Object has not been segmentized yet.")
     }
-    
+    sample_count <- length(segments_list)
+          
     if (!is.integer(group1_indices)) {
         stop("Argument group1_indices must be a integer vector.")
     } else if (length(setdiff(group1_indices, 1:sample_count)) > 0) {
