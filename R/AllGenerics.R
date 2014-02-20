@@ -39,7 +39,7 @@ setGeneric("getColoring", function(object, color.by = c("array.row", "array.col"
 
 ################################################################################ 
 
-setGeneric("plotSample", function(object, index, chr, start, end, showProbes=F, ...) standardGeneric("plotSample"))
+setGeneric("plotSample", function(object, index, chr, start, end, showProbes = FALSE, ...) standardGeneric("plotSample"))
 
 ################################################################################ 
 

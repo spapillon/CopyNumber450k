@@ -34,10 +34,10 @@ extractFromRGChannelSet450k <- function(RGset, intensities) {
     probs <- 1:numberQuantiles/100
 
     greenOOB <- getGreen(RGset)[c(TypeI.Red$AddressA, TypeI.Red$AddressB), ]
-    greenOOB <- apply(greenOOB, 2, function(x) quantile(x, probs = probs, na.rm = T))
+    greenOOB <- apply(greenOOB, 2, function(x) quantile(x, probs = probs, na.rm = TRUE))
 
     redOOB <- getRed(RGset)[c(TypeI.Green$AddressA, TypeI.Green$AddressB), ]
-    redOOB <- apply(redOOB, 2, function(x) quantile(x, probs = probs, na.rm = T))
+    redOOB <- apply(redOOB, 2, function(x) quantile(x, probs = probs, na.rm = TRUE))
 
     oob <- list(greenOOB = greenOOB, redOOB = redOOB)
     
