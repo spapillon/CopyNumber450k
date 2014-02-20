@@ -1,6 +1,6 @@
 Package: CopyNumber450k
 Title: R package for calling CNV from Illumina 450k methylation microarrays 
-Version: 0.99.3
+Version: 0.99.4
 Date: 2014-02-04
 Author: Simon Papillon-Cavanagh, Jean-Philippe Fortin, Nicolas De Jay
 Maintainer: Simon Papillon-Cavanagh <simon.papillon-cavanagh@mail.mcgill.ca>
