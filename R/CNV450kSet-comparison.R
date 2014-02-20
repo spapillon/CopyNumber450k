@@ -47,8 +47,8 @@ setMethod("intersectCNV", signature("CNV450kSet"), function(object, sample_indic
         sample_indices <- 1:length(segments_list)
     }
 
-    if (!is.integer(sample_indices)) {
-        stop("Argument sample_indices must be a integer vector.")
+    if (!is.numeric(sample_indices)) {
+        stop("Argument sample_indices must be a numeric vector.")
     } else if (length(setdiff(sample_indices, 1:length(segments_list))) > 0) {
         stop("Argument sample_indices elements must exist in object.")
     } else if (!type %in% c("gain", "loss", "both")) {
@@ -111,14 +111,14 @@ setMethod("subgroupDifference", signature("CNV450kSet"), function(object, group1
     }
     sample_count <- length(segments_list)
           
-    if (!is.integer(group1_indices)) {
-        stop("Argument group1_indices must be a integer vector.")
+    if (!is.numeric(group1_indices)) {
+        stop("Argument group1_indices must be a numeric vector.")
     } else if (length(setdiff(group1_indices, 1:sample_count)) > 0) {
         stop("Argument group1_indices' elements must exist in object.")
     }
     
-    if (!is.integer(group2_indices)) {
-        stop("Argument group2_indices must be a integer vector.")
+    if (!is.numeric(group2_indices)) {
+        stop("Argument group2_indices must be a numeric vector.")
     } else if (length(setdiff(group2_indices, 1:sample_count)) > 0) {
         stop("Argument group2_indices' elements must exist in object.")
     }
