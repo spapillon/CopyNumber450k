@@ -79,7 +79,9 @@ data(RGcontrolSetEx)
 # Load example data (n=6) from minfiData
 data(RGsetEx)
 # In order to reduce vignette building time, let's use only one sample
+# and 30 controls (instead of 52)
 RGsetEx <- RGsetEx[, 5]
+RGcontrolSetEx <- RGcontrolSetEx[, sample(1:ncol(RGcontrolSetEx), 30)]
 @
 
 \subsection{Creating the object}
