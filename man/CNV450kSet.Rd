@@ -89,7 +89,6 @@ This class has a few accessors defined on top of those provided in \code{eSet}. 
   }
 }
 \examples{
-library(CopyNumber450k)
 library(CopyNumber450kData)
 library(minfiData)
 
