@@ -100,7 +100,7 @@ buildControlMatrix450k <- function(extractedData) {
     # Imputation
     for (colindex in 1:ncol(model.matrix)) {
         column <- model.matrix[, colindex]
-        column[is.na(column)] <- mean(column, na.rm = T)
+        column[is.na(column)] <- mean(column, na.rm = TRUE)
         model.matrix[, colindex] <- column
     }
     # Scaling

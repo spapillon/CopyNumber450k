@@ -129,7 +129,7 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
         }))
         
         # pvalue correction for multiple testing
-        result <- as.data.frame(result, stringsAsFactors = F)
+        result <- as.data.frame(result, stringsAsFactors = FALSE)
         result$adjusted.pvalue <- p.adjust(result$pvalue, method = p.adjust.method)
         if (verbose > 0) {
             message(paste("Processed", names(segments_per_sample)[i]))

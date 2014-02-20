@@ -76,7 +76,7 @@ extractFromRGChannelSet450k <- function(RGset, intensities) {
     
     for (i in 1:5) {
         cnQuantiles[[i]] <- apply(intensities[indList[[i]], ], 2, 
-                function(x) quantile(x, probs = probs, na.rm = T))
+                function(x) quantile(x, probs = probs, na.rm = TRUE))
     }
 
     list(cnQuantiles = cnQuantiles, greenControls = greenControls, 
