@@ -1,22 +1,24 @@
 Package: CopyNumber450k
-Title: R package for calling CNV from Illumina 450k methylation
-        microarrays
+Title: R package for calling CNV from Illumina 450k methylation microarrays 
 Version: 0.99.4
 Date: 2014-02-04
 Author: Simon Papillon-Cavanagh, Jean-Philippe Fortin, Nicolas De Jay
-Maintainer: Simon Papillon-Cavanagh
-        <simon.papillon-cavanagh@mail.mcgill.ca>
-Description: This package contains a set of functions that allow CNV
-        calling from Illumina 450k methylation microarrays.
+Maintainer: Simon Papillon-Cavanagh <simon.papillon-cavanagh@mail.mcgill.ca>
+Description: This package contains a set of functions that allow CNV calling from Illumina 450k methylation microarrays.
 License: Artistic-2.0
 Imports: methods
 Depends: Biobase, minfi, DNAcopy, preprocessCore, BiocGenerics
 Suggests: CopyNumber450kData, minfiData
 LinkingTo:
 LazyData: yes
-biocViews: DNAMethylation, Microarray, Preprocessing, QualityControl,
-        CopyNumberVariants
-Collate: AllClasses.R AllGenerics.R CNV450kSet-accessors.R
-        CNV450kSet-actions.R CNV450kSet-comparison.R
-        CNV450kSet-initialize.R CNV450kSet-plot.R extract.R
-        normalization.functional.R normalization.quantile.R
+biocViews: DNAMethylation, Microarray, Preprocessing, QualityControl, CopyNumberVariants
+Collate: AllClasses.R
+  AllGenerics.R
+  CNV450kSet-accessors.R
+  CNV450kSet-actions.R
+  CNV450kSet-comparison.R
+  CNV450kSet-initialize.R
+  CNV450kSet-plot.R
+  extract.R
+  normalization.functional.R
+  normalization.quantile.R
