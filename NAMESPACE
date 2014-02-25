@@ -1,0 +1,22 @@
+import(methods) 
+import(DNAcopy)
+import(minfi)
+import(preprocessCore)
+import(BiocGenerics)
+import(Biobase)
+
+export(CNV450kSet,
+  getSummary,
+  getSegments,
+  findCNV,
+  intersectCNV,
+  subgroupDifference,
+  dropSNPprobes,
+  segmentize,
+  computeSignificance,
+  plotSample,
+  plotDensity,
+  plotPCA,
+  write.csv)
+  
+exportClasses(CNV450kSet)
