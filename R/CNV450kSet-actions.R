@@ -67,7 +67,7 @@ setMethod("segmentize", signature("CNV450kSet"), function(object, verbose, p.adj
         case_sexes <- sexes[groups != "control"]
     }
     
-    control_medians <- apply(control_intensity, 1, median, na.rm = TRUE)
+    control_medians <- rowMeans(control_intensity) #apply(control_intensity, 1, median, na.rm = TRUE)
     cases_log2 <- log2(case_intensity/control_medians)
     
     if (is.vector(cases_log2)) {
