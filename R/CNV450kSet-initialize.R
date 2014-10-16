@@ -10,7 +10,7 @@ CNV450kSet <- function(RGChannelSet) {
     if (!is(RGChannelSet, "RGChannelSet")) {
         stop("Argument RGChannelSet must be of type minfi::RGChannelSet-class.")
     }
-    
+        
     if ("Sample_Name" %in% colnames(pData(RGChannelSet))) {
         sampleNames(RGChannelSet) <- pData(RGChannelSet)$Sample_Name
     }
@@ -35,6 +35,9 @@ CNV450kSet <- function(RGChannelSet) {
     if (!"Sample_Group" %in% colnames(pData(RGChannelSet))) {
         stop("Argument RGChannelSet must be presented such that phenoData(RGChannelSet)$Sample_Group exists.")
     } else {
+        if (any(is.na(pData(RGChannelSet)$Sample_Group))) {
+            stop("Sample_Group column contains missing values")
+        }
         phenoData <- data.frame(phenoData, Sample_Group = pData(RGChannelSet)$Sample_Group)
     }
     
