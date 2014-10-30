@@ -10,7 +10,7 @@ setMethod("plotSample", signature("CNV450kSet"), function(object, index, chr, st
     significant_segments <- sample_segments$isSignificant
     segment_values <- as.numeric(sample_segments$seg.mean)
     segment_colors <- rep("black", nrow(sample_segments))
-    segment_colors[significant_segments & segment_values > 0 ] <- "black"
+    segment_colors[significant_segments & segment_values > 0 ] <- "green"
     segment_colors[significant_segments & segment_values < 0 ] <- "red"
     sample_name <- names(getSegments(object))[index]
     
