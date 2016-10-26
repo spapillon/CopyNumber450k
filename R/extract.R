@@ -5,11 +5,7 @@ extractControls <- function(RGset, fun) {
         "HYBRIDIZATION", "NEGATIVE", "NON-POLYMORPHIC", "NORM_A", "NORM_C", "NORM_G", 
         "NORM_T", "SPECIFICITY I", "SPECIFICITY II", "TARGET REMOVAL", "STAINING")
     x <- lapply(controlType, function(i) {
-      if (i != "STAINING") {
-          ctrlAddress <- getControlAddress(RGset, controlType = i)
-      } else {
-          ctrlAddress <- getControlAddress(RGset, controlType = i)[c(2, 3, 4, 6)]
-      }
+      ctrlAddress <- getControlAddress(RGset, controlType = i)
       fun(RGset)[ctrlAddress, ]
     })
     names(x) <- controlType
